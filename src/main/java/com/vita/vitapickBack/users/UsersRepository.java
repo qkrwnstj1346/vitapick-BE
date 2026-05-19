@@ -1,0 +1,18 @@
+package com.vita.vitapickBack.users;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+public interface UsersRepository extends JpaRepository<Users, Long>{
+	
+	//로그인 아이디로 회원 찾기 (로그인, 중복확인)
+	Optional<Users> findByLoginId(String loginId);
+	
+    // 아이디 중복확인
+    boolean existsByLoginId(String loginId);
+
+    // 이메일 중복확인
+    boolean existsByEmail(String email);
+}
