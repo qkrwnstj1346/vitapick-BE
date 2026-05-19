@@ -34,4 +34,5 @@ public class Prd {
     private LocalDateTime crtAt;
     private LocalDateTime updAt;
     private LocalDateTime wdAt;
+    
 }
