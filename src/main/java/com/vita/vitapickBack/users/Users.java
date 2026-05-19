@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class Users {
-
+// test
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userNum;
