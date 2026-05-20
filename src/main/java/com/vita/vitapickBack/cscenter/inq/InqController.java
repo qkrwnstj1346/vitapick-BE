@@ -91,12 +91,14 @@ public class InqController {
 	public ResponseEntity<?> createInq(@RequestBody Inq inq) {
 
 		try {
+			log.info("문의 등록 요청 데이터 => {}", inq);
 
 			inqService.createInq(inq);
 
 			return ResponseEntity.status(HttpStatus.CREATED).build();
 
 		} catch (Exception e) {
+			  e.printStackTrace();
 
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("1:1 문의 등록에 실패했습니다.");
 		}
