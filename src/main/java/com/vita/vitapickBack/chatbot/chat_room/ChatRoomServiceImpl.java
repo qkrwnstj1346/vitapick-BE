@@ -29,14 +29,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public ChatMsg chatMsg(ChatRoomDto dto) {
 
-        // 1. 채팅방 생성
-        ChatRoom chatRoom = ChatRoom.builder()
-                .userNum(dto.getUserNum())
-                .chatStCd("ACTIVE")
-                .crtAt(LocalDateTime.now())
-                .updAt(LocalDateTime.now())
-                .build();
-        chatRoom = chatRoomRepository.save(chatRoom);
+    	// 수정 코드 (기존 방 있으면 재사용, 없으면 새로 생성)
+    	ChatRoom chatRoom = chatRoomRepository
+    	        .findTopByUserNumAndChatStCd(dto.getUserNum(), "ACTIVE")
+    	        .orElseGet(() -> chatRoomRepository.save(
+    	                ChatRoom.builder()
+    	                        .userNum(dto.getUserNum())
+    	                        .chatStCd("ACTIVE")
+    	                        .crtAt(LocalDateTime.now())
+    	                        .updAt(LocalDateTime.now())
+    	                        .build()
+    	        ));
 
         // 2. 사용자 메시지 저장
         ChatMsg userMsg = ChatMsg.builder()
@@ -61,15 +64,19 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 + "아래는 우리 쇼핑몰 상품 목록입니다:\n"
                 + prdInfo + "\n\n"
                 + "사용자 요청: " + dto.getMsgTxt() + "\n\n"
-                + "위 상품 목록 중에서만 선택하고 아래 형식으로만 대답하세요:\n"
-                + "1. 한줄요약: (짧게 한 줄)\n"
+                + "위 상품 목록 중에서만 선택하고 아래 규칙을 반드시 지키세요:\n"
+                + "규칙1. 추천 상품은 반드시 서로 다른 성분의 상품으로 3가지를 고르세요.\n"
+                + "규칙2. 같은 성분(예: 비타민D)이 포함된 상품을 2개 이상 추천하지 마세요. 성분이 겹치면 과다복용이 됩니다.\n"
+                + "규칙3. 사용자의 증상이나 요청에 맞는 다양한 영양소를 조합해서 추천하세요.\n"
+                + "규칙4. 추천 상품들의 주의사항 컬럼을 확인해서 성분 충돌이나 과다복용 위험이 있으면 제외하세요.\n"
+                + "규칙5. 아래 형식으로만 대답하고 다른 말은 절대 하지 마세요.\n\n"
+                + "1. 한줄요약: (사용자 증상에 맞는 추천 이유 한 줄)\n"
                 + "2. 추천상품:\n"
                 + "- 상품ID: X / 상품명: XXX\n"
                 + "- 상품ID: X / 상품명: XXX\n"
                 + "- 상품ID: X / 상품명: XXX\n"
-                + "3. 조합이유: (위 상품들을 함께 섭취했을 때 시너지 효과와 이유를 설명)\n"
-                + "4. 주의사항: (성분 과다섭취, 알레르기 등 간단히)\n"
-                + "반드시 이 형식만 사용하고 다른 말은 하지 마세요.";
+                + "3. 조합이유: (각 상품이 서로 다른 역할을 하며 함께 섭취했을 때 시너지 효과 설명)\n"
+                + "4. 주의사항: (성분 과다섭취, 알레르기 등 간단히)\n";
         String gptResponse = openAiChatModel.call(prompt);
 
         // 5. 봇 응답 저장
