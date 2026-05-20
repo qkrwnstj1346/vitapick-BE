@@ -60,5 +60,7 @@ public class Inq {
 	@UpdateTimestamp
 	@Column(name = "upd_at")
 	private LocalDateTime updAt;
+	
+	// 깃 테스트 
 
 }
