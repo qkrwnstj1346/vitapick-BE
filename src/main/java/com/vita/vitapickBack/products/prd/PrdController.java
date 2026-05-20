@@ -18,4 +18,10 @@ public class PrdController {
     public ResponseEntity<List<Prd>> getAllPrd() {
         return ResponseEntity.ok(prdService.getAllPrd());
     }
+    
+    // 상품 + 이미지 같이 조회
+    @GetMapping("/list/img")
+    public ResponseEntity<List<PrdDTO>> getAllPrdWithImg() {
+        return ResponseEntity.ok(prdService.getAllPrdWithImg());
+    }
 }
