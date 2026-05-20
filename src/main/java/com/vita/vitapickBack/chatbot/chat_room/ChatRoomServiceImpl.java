@@ -50,7 +50,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 3. DB에서 상품 목록 가져오기
         List<Prd> prdList = prdRepository.findAll();
         String prdInfo = prdList.stream()
-                .map(p -> "상품ID:" + p.getPrdId() + " 상품명:" + p.getPrdNm() + " 설명:" + p.getDescTxt() + " 주의사항:" + p.getWarnTxt())
+                .map(p -> "상품ID:" + p.getPrdId() 
+                        + " 상품명:" + p.getPrdNm() 
+                        + " 성분:" + p.getIngr()
+                        + " 주의사항:" + p.getWarnTxt())
                 .collect(Collectors.joining("\n"));
 
      // 4. GPT 호출
