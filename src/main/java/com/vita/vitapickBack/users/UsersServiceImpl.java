@@ -86,6 +86,7 @@ public class UsersServiceImpl implements UsersService{
         // 응답 데이터
         Map<String, Object> result = new HashMap<>();
         result.put("token", token);
+        result.put("userNum", users.getUserNum());
         result.put("loginId", users.getLoginId());
         result.put("userNm", users.getUserNm());
         result.put("roleCd", users.getRoleCd());
