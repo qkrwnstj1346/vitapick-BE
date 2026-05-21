@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.cscenter.inq;
+package com.vita.vitapickBack.cart;
 
 import java.time.LocalDateTime;
 
@@ -11,54 +11,46 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "inq")
+@Table(name = "cart")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Inq {
+public class Cart {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "inq_id")
-	private Long inqId;
+	@Column(name = "cart_id")
+	private Long cartId;
 
 	@Column(name = "user_num", nullable = false)
 	private Long userNum;
 
-	@Column(name = "inq_tp_cd", length = 30, nullable = false)
-	private String inqTpCd;
+	@Column(name = "prd_id")
+	private Long prdId;
 
-	@Column(name = "inq_st_cd", length = 30, nullable = false)
-	private String inqStCd;
+	@Column(name = "cus_id")
+	private Long cusId;
 
-	@Column(name = "ttl", length = 200, nullable = false)
-	private String ttl;
+	@Column(name = "it_qty", nullable = false)
+	private Integer itQty;
 
-	@Column(name = "inq_txt", columnDefinition = "TEXT", nullable = false)
-	private String inqTxt;
-	
-	@Column(name = "ans_txt", columnDefinition = "TEXT")
-	private String ansTxt;
-	
-	@Column(name = "ans_at")
-	private LocalDateTime ansAt;
-
-	@Column(name = "view_cnt", nullable = false)
-	private Integer viewCnt = 0;
+	@Column(name = "selected_yn", nullable = false)
+	private Character selectedYn;
 
 	@CreationTimestamp
-	@Column(name = "crt_at")
+	@Column(name = "crt_at", updatable = false)
 	private LocalDateTime crtAt;
 
 	@UpdateTimestamp
 	@Column(name = "upd_at")
-	private LocalDateTime updAt;	
+	private LocalDateTime updAt;
 
 }

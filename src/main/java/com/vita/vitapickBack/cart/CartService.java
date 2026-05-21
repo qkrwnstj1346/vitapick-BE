@@ -1,0 +1,37 @@
+package com.vita.vitapickBack.cart;
+
+import java.util.List;
+
+public interface CartService {
+
+	// 회원 장바구니 목록 조회
+	List<Cart> findByUserNum(Long userNum);
+
+	// 동일 상품 체크
+	Cart findByUserNumAndPrdId(Long userNum, Long prdId);
+
+	// 장바구니 담기
+	Cart addCart(CartDTO dto);
+
+	// 장바구니 수량 증가/감소/변경
+	Cart updateQty(Long cartId, Integer itQty);
+	
+	// 장바구니 개별 삭제
+	Cart deleteCart(Long cartId);
+
+	// 선택된 장바구니 상품 조회
+	List<Cart> findByUserNumAndSelectedYn(Long userNum, Character selectedYn);
+
+	// 선택 상품 삭제
+	void deleteByUserNumAndSelectedYn(Long userNum, Character selectedYn);
+
+	// 전체 삭제
+	void deleteByUserNum(Long userNum);
+
+	// 개별 수량 최대 10개 체크
+	void checkQty(Integer itQty);
+
+	// 장바구니 전체 수량 99개 체크
+	void totalCheckQty(Long userNum,Integer itQty);
+
+}
