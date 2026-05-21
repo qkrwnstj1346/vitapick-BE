@@ -12,4 +12,7 @@ public interface PrdService {
     
     // 카테고리별 상품 조회 
     List<PrdDTO> getPrdByCategory(int catCd);
+    
+    // 상품 상세 조회
+    PrdDTO getPrdDetail(Long prdId);
 }

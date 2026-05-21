@@ -50,4 +50,20 @@ public class PrdServiceImpl implements PrdService {
         }
         return result;
     }
+    
+    // 상품 상세 조회
+    @Override
+    public PrdDTO getPrdDetail(Long prdId) {
+        Prd prd = prdRepository.findById(prdId)
+                .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+        List<PrdImg> imgList = prdImgRepository.findByPrdId(prdId);
+        String thumbUrl = null;
+        for (PrdImg img : imgList) {
+            if ("THUMB".equals(img.getImgTypeCd())) {
+                thumbUrl = img.getImgUrl();
+                break;
+            }
+        }
+        return new PrdDTO(prd.getPrdId(), prd.getPrdNm(), prd.getPrice(), prd.getBrand(), prd.getDescTxt(), prd.getIngr(), thumbUrl);
+    }
 }
