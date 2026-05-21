@@ -25,9 +25,19 @@ public class CartServiceImpl implements CartService {
 	}
 
 	// 장바구니 담기
+	@Override
+	public Cart addCart(CartDTO dto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 	// 장바구니 수량 증가/감소/변경
+	@Override
+	public Cart updateQty(Long cartId, Integer itQty) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 	// 장바구니 개별 삭제
