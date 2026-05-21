@@ -30,4 +30,10 @@ public class PrdController {
     public ResponseEntity<List<PrdDTO>> getPrdByCategory(@PathVariable("catCd") int catCd) {
         return ResponseEntity.ok(prdService.getPrdByCategory(catCd));
     }
+    
+ // 상품 상세 조회
+    @GetMapping("/detail/{prdId}")
+    public ResponseEntity<PrdDTO> getPrdDetail(@PathVariable("prdId") Long prdId) {
+        return ResponseEntity.ok(prdService.getPrdDetail(prdId));
+    }
 }
