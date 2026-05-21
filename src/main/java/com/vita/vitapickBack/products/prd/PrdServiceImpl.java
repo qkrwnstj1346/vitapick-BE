@@ -24,18 +24,21 @@ public class PrdServiceImpl implements PrdService {
     }
 
     // 상품 + 썸네일 이미지 같이 반환
+ 
     @Override
     public List<PrdDTO> getAllPrdWithImg() {
+        return getPrdDTOList(prdRepository.findAll());
+    }
 
-        // 상품 전체 가져오기
-        List<Prd> prdList = prdRepository.findAll();
+    @Override
+    public List<PrdDTO> getPrdByCategory(int catCd) {
+        return getPrdDTOList(prdRepository.findByCatCd(catCd));
+    }
+
+    private List<PrdDTO> getPrdDTOList(List<Prd> prdList) {
         List<PrdDTO> result = new ArrayList<>();
-
         for (Prd prd : prdList) {
-            // 이 상품의 이미지 목록 가져오기
             List<PrdImg> imgList = prdImgRepository.findByPrdId(prd.getPrdId());
-
-            // 썸네일 이미지 URL 찾기
             String thumbUrl = null;
             for (PrdImg img : imgList) {
                 if ("THUMB".equals(img.getImgTypeCd())) {
@@ -43,18 +46,7 @@ public class PrdServiceImpl implements PrdService {
                     break;
                 }
             }
-
-            // 상품 정보 + 이미지 URL 담기
-            PrdDTO dto = new PrdDTO(
-                    prd.getPrdId(),
-                    prd.getPrdNm(),
-                    prd.getPrice(),
-                    prd.getBrand(),
-                    prd.getDescTxt(),
-                    prd.getIngr(),
-                    thumbUrl
-            );
-            result.add(dto);
+            result.add(new PrdDTO(prd.getPrdId(), prd.getPrdNm(), prd.getPrice(), prd.getBrand(), prd.getDescTxt(), prd.getIngr(), thumbUrl));
         }
         return result;
     }
