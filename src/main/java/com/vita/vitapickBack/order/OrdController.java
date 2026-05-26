@@ -6,6 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.vita.vitapickBack.useraddr.UserAddr;
+import com.vita.vitapickBack.useraddr.UserAddrDTO;
+import com.vita.vitapickBack.useraddr.UserAddrService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -16,6 +20,7 @@ import lombok.extern.log4j.Log4j2;
 public class OrdController {
 
 	private final OrdService ordService;
+	private final UserAddrService userAddrService;
 
 	// 회원 주문 목록 조회
 	@GetMapping
@@ -25,6 +30,30 @@ public class OrdController {
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("주문 내역 조회에 실패했습니다.");
+		}
+	}
+
+	// 주문서 배송지 목록 조회
+	// 주문서 진입 시 사용
+	@GetMapping("/address")
+	public ResponseEntity<?> findOrderAddress(@RequestParam("userNum") Long userNum) {
+		try {
+			List<UserAddr> result = userAddrService.findByUserNum(userNum);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("주문서 배송지 조회에 실패했습니다.");
+		}
+	}
+
+	// 주문서 배송지 등록
+	// 주문서에서 배송지가 없거나 새 배송지를 추가할 때 사용
+	@PostMapping("/address")
+	public ResponseEntity<?> createOrderAddress(@RequestBody UserAddrDTO dto) {
+		try {
+			UserAddr result = userAddrService.createAddr(dto);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("주문서 배송지 등록에 실패했습니다.");
 		}
 	}
 
@@ -61,8 +90,8 @@ public class OrdController {
 		}
 	}
 
-	// 주문번호로 결제 조회
-	@GetMapping("/{ordId}/pay")
+	// 주문 ID로 결제 조회
+	@GetMapping("/pay/order/{ordId}")
 	public ResponseEntity<?> findPayByOrdId(@PathVariable("ordId") Long ordId) {
 		try {
 			Pay result = ordService.findPayByOrdId(ordId);
@@ -91,7 +120,7 @@ public class OrdController {
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} catch (Exception e) {
 			log.error("주문 생성 및 결제 실패", e);
-			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("결제에 실패했습니다.");
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
 		}
 	}
 

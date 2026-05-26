@@ -1,5 +1,7 @@
 package com.vita.vitapickBack.order;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -8,7 +10,6 @@ import com.vita.vitapickBack.cart.Cart;
 import com.vita.vitapickBack.cart.CartRepository;
 import com.vita.vitapickBack.products.prd.Prd;
 import com.vita.vitapickBack.products.prd.PrdRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -61,9 +62,26 @@ public class OrdServiceImpl implements OrdService {
 	@Override
 	public Ord createOrder(OrdDTO orddto) {
 
+		// 배송지 선택 체크
+		if (orddto.getAddrId() == null) {
+			throw new RuntimeException("배송지를 선택해주세요.");
+		}
+
+		// 결제수단 선택 체크
+		if (orddto.getPayDto() == null || orddto.getPayDto().getPayMthdCd() == null) {
+
+			throw new RuntimeException("결제수단을 선택해주세요.");
+		}
+
+		// 주문번호 생성
+		String ordNo = "ORD" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+		// 결제번호 생성
+		String payNo = "PAY" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
 		// 주문 저장
-		Ord ord = Ord.builder().userNum(orddto.getUserNum()).addrId(orddto.getAddrId()).totalAmt(orddto.getTotalAmt())
-				.ordStCd("PAID").build();
+		Ord ord = Ord.builder().userNum(orddto.getUserNum()).ordNo(ordNo).addrId(orddto.getAddrId())
+				.totalAmt(orddto.getTotalAmt()).ordStCd("PAID").build();
 
 		Ord savedOrd = ordRepository.save(ord);
 
@@ -91,6 +109,7 @@ public class OrdServiceImpl implements OrdService {
 
 			// 선택된 장바구니 상품 없을 경우
 			if (cartList == null || cartList.isEmpty()) {
+
 				throw new RuntimeException("선택된 장바구니 상품이 없습니다.");
 			}
 
@@ -102,6 +121,7 @@ public class OrdServiceImpl implements OrdService {
 
 				// 상품 정보 없을 경우
 				if (prd == null) {
+
 					throw new RuntimeException("상품 정보를 찾을 수 없습니다.");
 				}
 
@@ -121,8 +141,8 @@ public class OrdServiceImpl implements OrdService {
 		}
 
 		// 결제 저장
-		Pay pay = Pay.builder().ordId(savedOrd.getOrdId()).payMthdCd(orddto.getPaydto().getPayMthdCd())
-				.payAmt(savedOrd.getTotalAmt()).payStCd("PAID").build();
+		Pay pay = Pay.builder().ordId(savedOrd.getOrdId()).payNo(payNo).payMthdCd(orddto.getPayDto().getPayMthdCd())
+				.payAmt(savedOrd.getTotalAmt()).payStCd("PAID").paidAt(LocalDateTime.now()).build();
 
 		payRepository.save(pay);
 

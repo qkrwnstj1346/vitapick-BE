@@ -29,5 +29,5 @@ public class OrdDTO {
     private List<OrdItDTO> prdList;
     
     // 결제 정보
-    private PayDTO paydto;
+    private PayDTO payDto;
 }
