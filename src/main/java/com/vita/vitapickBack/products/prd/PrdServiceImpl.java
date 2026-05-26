@@ -21,11 +21,15 @@ public class PrdServiceImpl implements PrdService {
     // 카테고리별 상품 목록 + 썸네일 이미지 반환
     @Override
     public List<PrdDTO> getPrdByCategory(int catCd) {
+        // DB에서 catCd로 상품 조회
         List<Prd> prdList = prdRepository.findByCatCd(catCd);
         List<PrdDTO> result = new ArrayList<>();
+
         for (Prd prd : prdList) {
             String thumbUrl = null;
             List<PrdImg> imgList = prdImgRepository.findByPrdId(prd.getPrdId());
+            
+            // 썸네일 이미지 찾기
             for (PrdImg img : imgList) {
                 if ("THUMB".equals(img.getImgTypeCd())) {
                     thumbUrl = img.getImgUrl();
@@ -54,14 +58,25 @@ public class PrdServiceImpl implements PrdService {
             throw new RuntimeException("상품을 찾을 수 없습니다.");
         }
         Prd prd = result.get();
-        String thumbUrl = null;
+
+        // 이미지 목록 가져오기
         List<PrdImg> imgList = prdImgRepository.findByPrdId(prdId);
+
+        // 썸네일이랑 상세 이미지 둘 다 찾기
+        String thumbUrl = null;
+        String detailUrl = null;
         for (PrdImg img : imgList) {
+            // 썸네일 이미지
             if ("THUMB".equals(img.getImgTypeCd())) {
                 thumbUrl = img.getImgUrl();
-                break;
+            }
+            // 상세 이미지
+            if ("DETAIL".equals(img.getImgTypeCd())) {
+                detailUrl = img.getImgUrl();
             }
         }
+
+        // 찾은 정보 담아서 반환
         return PrdDTO.builder()
                 .prdId(prd.getPrdId())
                 .prdNm(prd.getPrdNm())
@@ -70,6 +85,7 @@ public class PrdServiceImpl implements PrdService {
                 .descTxt(prd.getDescTxt())
                 .ingr(prd.getIngr())
                 .thumbImgUrl(thumbUrl)
+                .detailImgUrl(detailUrl)
                 .build();
     }
 }
