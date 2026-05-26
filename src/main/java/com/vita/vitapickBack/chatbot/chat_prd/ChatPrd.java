@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// chat_prd 테이블 엔티티 - 챗봇 추천상품 저장
 @Entity
 @Table(name="chat_prd")
 @Getter

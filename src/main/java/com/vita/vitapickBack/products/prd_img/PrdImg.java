@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// prd_img 테이블 엔티티 - 상품 이미지 (THUMB: 썸네일, DETAIL: 상세이미지)
 @Entity
 @Table(name="prd_img")
 @Getter

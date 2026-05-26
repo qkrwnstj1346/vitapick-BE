@@ -15,23 +15,13 @@ public class PrdController {
 
     private final PrdService prdService;
 
-    @GetMapping("/list")
-    public ResponseEntity<List<Prd>> getAllPrd() {
-        return ResponseEntity.ok(prdService.getAllPrd());
-    }
-    
-    // 상품 + 이미지 같이 조회
-    @GetMapping("/list/img")
-    public ResponseEntity<List<PrdDTO>> getAllPrdWithImg() {
-        return ResponseEntity.ok(prdService.getAllPrdWithImg());
-    }
-    
+    // 카테고리별 상품 조회
     @GetMapping("/list/category/{catCd}")
     public ResponseEntity<List<PrdDTO>> getPrdByCategory(@PathVariable("catCd") int catCd) {
         return ResponseEntity.ok(prdService.getPrdByCategory(catCd));
     }
     
- // 상품 상세 조회
+    // 상품 상세 조회
     @GetMapping("/detail/{prdId}")
     public ResponseEntity<PrdDTO> getPrdDetail(@PathVariable("prdId") Long prdId) {
         return ResponseEntity.ok(prdService.getPrdDetail(prdId));
