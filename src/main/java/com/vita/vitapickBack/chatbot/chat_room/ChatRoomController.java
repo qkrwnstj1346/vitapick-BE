@@ -10,6 +10,7 @@ import com.vita.vitapickBack.chatbot.chat_msg.ChatMsg;
 
 import lombok.RequiredArgsConstructor;
 
+// 챗봇 메시지 요청 창구
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chatbot")

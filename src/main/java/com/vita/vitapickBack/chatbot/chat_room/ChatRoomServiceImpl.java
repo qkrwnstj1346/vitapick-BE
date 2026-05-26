@@ -2,7 +2,7 @@ package com.vita.vitapickBack.chatbot.chat_room;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
@@ -29,17 +29,21 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public ChatMsg chatMsg(ChatRoomDto dto) {
 
-    	// 수정 코드 (기존 방 있으면 재사용, 없으면 새로 생성)
-    	ChatRoom chatRoom = chatRoomRepository
-    	        .findTopByUserNumAndChatStCd(dto.getUserNum(), "ACTIVE")
-    	        .orElseGet(() -> chatRoomRepository.save(
-    	                ChatRoom.builder()
-    	                        .userNum(dto.getUserNum())
-    	                        .chatStCd("ACTIVE")
-    	                        .crtAt(LocalDateTime.now())
-    	                        .updAt(LocalDateTime.now())
-    	                        .build()
-    	        ));
+        // 1. 기존 ACTIVE 채팅방 있으면 재사용, 없으면 새로 생성
+        Optional<ChatRoom> found = chatRoomRepository.findTopByUserNumAndChatStCd(dto.getUserNum(), "ACTIVE");
+        ChatRoom chatRoom;
+        if (found.isPresent()) {
+            chatRoom = found.get();
+        } else {
+            chatRoom = chatRoomRepository.save(
+                ChatRoom.builder()
+                    .userNum(dto.getUserNum())
+                    .chatStCd("ACTIVE")
+                    .crtAt(LocalDateTime.now())
+                    .updAt(LocalDateTime.now())
+                    .build()
+            );
+        }
 
         // 2. 사용자 메시지 저장
         ChatMsg userMsg = ChatMsg.builder()
@@ -52,12 +56,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         // 3. DB에서 상품 목록 가져오기
         List<Prd> prdList = prdRepository.findAll();
-        String prdInfo = prdList.stream()
-                .map(p -> "상품ID:" + p.getPrdId() 
-                        + " 상품명:" + p.getPrdNm() 
-                        + " 성분:" + p.getIngr()
-                        + " 주의사항:" + p.getWarnTxt())
-                .collect(Collectors.joining("\n"));
+        String prdInfo = "";
+        for (Prd p : prdList) {
+            prdInfo += "상품ID:" + p.getPrdId()
+                    + " 상품명:" + p.getPrdNm()
+                    + " 성분:" + p.getIngr()
+                    + " 주의사항:" + p.getWarnTxt() + "\n";
+        }
 
      // 4. GPT 호출
         String prompt = "당신은 비타민 및 건강기능식품 전문가입니다.\n"
@@ -72,9 +77,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 + "규칙5. 아래 형식으로만 대답하고 다른 말은 절대 하지 마세요.\n\n"
                 + "(사용자 증상에 맞는 추천 이유 한 줄)\n"
                 + "추천상품:\n"
-                + "XXX\n"
-                + "XXX\n"
-                + "XXX\n\n"
+                + "상품ID: X / XXX\n"
+                + "상품ID: X / XXX\n"
+                + "상품ID: X / XXX\n\n"
                 + "조합이유: (각 상품이 서로 다른 역할을 하며 함께 섭취했을 때 시너지 효과를 2-3줄로 설명)\n\n"
                 + "주의사항: (성분 과다섭취, 알레르기 등 한 줄로 간단히)\n";
         String gptResponse = openAiChatModel.call(prompt);

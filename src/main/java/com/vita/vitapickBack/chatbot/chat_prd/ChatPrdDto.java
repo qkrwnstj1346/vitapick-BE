@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// 추천상품 저장 요청 DTO (ChatPrdServiceImpl.saveChatPrd 에서 받아서 씀)
 @Getter
 @Setter
 @AllArgsConstructor

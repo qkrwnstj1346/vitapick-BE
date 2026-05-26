@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// chat_room 테이블 엔티티 - 채팅방 (유저 1명당 ACTIVE 채팅방 1개)
 @Entity
 @Table(name="chat_room")
 @Getter

@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
+// ChatMsgService 구현체
 @Service
 @RequiredArgsConstructor
 public class ChatMsgServiceImpl implements ChatMsgService {

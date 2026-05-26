@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// chat_msg 테이블 엔티티 - 유저/AI 메시지 저장
 @Entity
 @Table(name="chat_msg")
 @Getter
