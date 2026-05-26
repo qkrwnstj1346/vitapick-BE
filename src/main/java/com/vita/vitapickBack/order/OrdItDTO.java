@@ -1,0 +1,22 @@
+package com.vita.vitapickBack.order;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class OrdItDTO {
+
+    private Long ordItId;
+    private Long ordId;
+    private Long prdId;
+    private String prdNm;
+    private Integer itQty;
+    private Integer price;
+    private Integer itAmt;
+}

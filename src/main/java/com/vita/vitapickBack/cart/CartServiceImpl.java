@@ -20,30 +20,36 @@ public class CartServiceImpl implements CartService {
 
 	// 동일 상품 체크
 	@Override
-	public Cart findByUserNumAndPrdId(Long userNum, Long prdId) {
-		return cartRepository.findByUserNumAndPrdId(userNum, prdId);
+	public Cart findByUserNumAndCusIdAndPrdId(Long userNum, Long cusId, Long prdId) {
+		return cartRepository.findByUserNumAndCusIdAndPrdId(userNum, cusId, prdId);
+	}
+
+	// 일반 상품 동일 상품 체크
+	@Override
+	public Cart findByUserNumAndCusIdIsNullAndPrdId(Long userNum, Long prdId) {
+		return cartRepository.findByUserNumAndCusIdIsNullAndPrdId(userNum, prdId);
 	}
 
 	// 장바구니 담기
 	@Override
 	public Cart addCart(CartDTO dto) {
-
-		Cart existCart = findByUserNumAndPrdId(dto.getUserNum(), dto.getPrdId());
-
+		Cart existCart;
+		if (dto.getCusId() == null) {
+			existCart = cartRepository.findByUserNumAndCusIdIsNullAndPrdId(dto.getUserNum(), dto.getPrdId());
+		} else {
+			existCart = findByUserNumAndCusIdAndPrdId(dto.getUserNum(), dto.getCusId(), dto.getPrdId());
+		}
 		if (existCart != null) {
 			Integer newQty = existCart.getItQty() + dto.getItQty();
-
 			checkQty(newQty);
 			totalCheckQty(dto.getUserNum(), dto.getItQty());
-
 			existCart.setItQty(newQty);
 			return cartRepository.save(existCart);
 		}
-
 		Cart cart = Cart.builder().userNum(dto.getUserNum()).prdId(dto.getPrdId()).cusId(dto.getCusId())
 				.itQty(dto.getItQty()).selectedYn('Y').build();
-
-		totalCheckQty(dto.getUserNum(), 1);
+		checkQty(dto.getItQty());
+		totalCheckQty(dto.getUserNum(), dto.getItQty());
 
 		return cartRepository.save(cart);
 	}
@@ -52,11 +58,21 @@ public class CartServiceImpl implements CartService {
 	@Override
 	public Cart updateQty(Long cartId, Integer itQty) {
 		Cart cart = cartRepository.findById(cartId).orElse(null);
-
 		if (cart == null) {
 			throw new RuntimeException("장바구니에 담긴 상품이 없습니다.");
 		}
 		checkQty(itQty);
+		List<Cart> cartList = cartRepository.findByUserNum(cart.getUserNum());
+		int totalQty = 0;
+		for (Cart item : cartList) {
+			if (!item.getCartId().equals(cartId)) {
+				totalQty += item.getItQty();
+			}
+		}
+		totalQty += itQty;
+		if (totalQty > 99) {
+			throw new RuntimeException("장바구니에는 상품을 최대 99개까지 담을 수 있습니다.");
+		}
 
 		cart.setItQty(itQty);
 

@@ -8,14 +8,19 @@ public interface CartService {
 	List<Cart> findByUserNum(Long userNum);
 
 	// 동일 상품 체크
-	Cart findByUserNumAndPrdId(Long userNum, Long prdId);
+	// 같은 커스텀(cus_id) 안에서 같은 상품이면 수량 증가
+	Cart findByUserNumAndCusIdAndPrdId(Long userNum, Long cusId, Long prdId);
+	
+	// 일반 상품 동일 상품 체크
+	// cus_id가 없는 일반 상품이면 user_num + prd_id로 체크
+	Cart findByUserNumAndCusIdIsNullAndPrdId(Long userNum, Long prdId);
 
 	// 장바구니 담기
 	Cart addCart(CartDTO dto);
 
 	// 장바구니 수량 증가/감소/변경
 	Cart updateQty(Long cartId, Integer itQty);
-	
+
 	// 장바구니 개별 삭제
 	Cart deleteCart(Long cartId);
 
@@ -32,6 +37,6 @@ public interface CartService {
 	void checkQty(Integer itQty);
 
 	// 장바구니 전체 수량 99개 체크
-	void totalCheckQty(Long userNum,Integer itQty);
+	void totalCheckQty(Long userNum, Integer itQty);
 
 }

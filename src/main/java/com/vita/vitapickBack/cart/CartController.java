@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -36,12 +37,19 @@ public class CartController {
 	}
 
 	// 동일 상품 체크
-	@GetMapping("/check/{userNum}/{prdId}")
-	public ResponseEntity<?> findByUserNumAndPrdId(
-			@PathVariable("userNum") Long userNum,
-			@PathVariable("prdId") Long prdId) {
+	@GetMapping("/check")
+	public ResponseEntity<?> checkCart(@RequestParam("userNum") Long userNum, @RequestParam("prdId") Long prdId,
+			@RequestParam(value = "cusId", required = false) Long cusId) {
 		try {
-			Cart result = cartService.findByUserNumAndPrdId(userNum, prdId);
+			Cart result;
+			// 일반 상품
+			if (cusId == null) {
+				result = cartService.findByUserNumAndCusIdIsNullAndPrdId(userNum, prdId);
+			}
+			// 커스텀 상품
+			else {
+				result = cartService.findByUserNumAndCusIdAndPrdId(userNum, cusId, prdId);
+			}
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("동일 상품 확인에 실패했습니다.");
@@ -61,9 +69,7 @@ public class CartController {
 
 	// 장바구니 수량 증가/감소/변경
 	@PatchMapping("/{cartId}/qty")
-	public ResponseEntity<?> updateQty(
-			@PathVariable("cartId") Long cartId,
-			@RequestBody CartDTO dto) {
+	public ResponseEntity<?> updateQty(@PathVariable("cartId") Long cartId, @RequestBody CartDTO dto) {
 		try {
 			Cart result = cartService.updateQty(cartId, dto.getItQty());
 			return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -129,8 +135,7 @@ public class CartController {
 
 	// 장바구니 전체 수량 99개 체크
 	@GetMapping("/check/total/{userNum}/{itQty}")
-	public ResponseEntity<?> totalCheckQty(
-			@PathVariable("userNum") Long userNum,
+	public ResponseEntity<?> totalCheckQty(@PathVariable("userNum") Long userNum,
 			@PathVariable("itQty") Integer itQty) {
 		try {
 			cartService.totalCheckQty(userNum, itQty);
