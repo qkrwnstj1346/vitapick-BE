@@ -12,11 +12,13 @@ import lombok.NoArgsConstructor;
 
 public class OrdItDTO {
 
-    private Long ordItId;
-    private Long ordId;
-    private Long prdId;
-    private String prdNm;
-    private Integer itQty;
-    private Integer price;
-    private Integer itAmt;
+	private Long ordItId;
+	private Long ordId;
+	private Long prdId;
+	// 커스텀 상품 묶음 번호
+	private Long cusId;
+	private String prdNm;
+	private Integer itQty;
+	private Integer price;
+	private Integer itAmt;
 }

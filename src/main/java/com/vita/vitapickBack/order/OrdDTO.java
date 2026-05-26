@@ -25,6 +25,7 @@ public class OrdDTO {
     private LocalDateTime updAt;
     
     // 주문 상품 목록 
+    // 상품상세 바로구매 시 
     private List<OrdItDTO> prdList;
     
     // 결제 정보

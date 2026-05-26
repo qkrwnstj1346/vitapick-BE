@@ -31,6 +31,9 @@ public class OrdIt {
 
     @Column(name = "prd_id", nullable = false)
     private Long prdId;
+    
+    @Column(name = "cus_id")
+    private Long cusId;
 
     @Column(name = "prd_nm", nullable = false, length = 100)
     private String prdNm;

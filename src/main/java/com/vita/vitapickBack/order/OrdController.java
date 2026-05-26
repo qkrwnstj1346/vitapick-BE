@@ -4,13 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +13,6 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/order")
-
 public class OrdController {
 
 	private final OrdService ordService;
@@ -93,33 +86,23 @@ public class OrdController {
 	// 주문 생성 + 결제
 	@PostMapping
 	public ResponseEntity<?> createOrder(@RequestBody OrdDTO orddto) {
-	    try {
-	        Ord result = ordService.createOrder(orddto);
-	        return ResponseEntity
-	                .status(HttpStatus.OK)
-	                .body(result);
-	    } catch (Exception e) {
-	        return ResponseEntity
-	                .status(HttpStatus.BAD_GATEWAY)
-	                .body("결제에 실패했습니다.");
-	    }
+		try {
+			Ord result = ordService.createOrder(orddto);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception e) {
+			log.error("주문 생성 및 결제 실패", e);
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("결제에 실패했습니다.");
+		}
 	}
 
 	// 주문 완료 페이지
 	@GetMapping("/complete/{ordNo}")
-	public ResponseEntity<?> orderComplete(
-	        @PathVariable("ordNo") String ordNo) {
-	    try {
-	        Ord result = ordService.findByOrdNo(ordNo);
-	        return ResponseEntity
-	                .status(HttpStatus.OK)
-	                .body(result);
-	    } catch (Exception e) {
-	        return ResponseEntity
-	                .status(HttpStatus.BAD_GATEWAY)
-	                .body("주문 완료 정보 조회에 실패했습니다.");
-	    }
+	public ResponseEntity<?> orderComplete(@PathVariable("ordNo") String ordNo) {
+		try {
+			Ord result = ordService.findByOrdNo(ordNo);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("주문 완료 정보 조회에 실패했습니다.");
+		}
 	}
-
-
 }
