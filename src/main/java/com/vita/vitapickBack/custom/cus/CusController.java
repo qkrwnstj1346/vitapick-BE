@@ -26,8 +26,8 @@ public class CusController {
 	// POST /v1/cus/recommend?surId=1&userNum=1
 	@PostMapping("/recommend")
 	public ResponseEntity<?> recommend(
-			@RequestParam Long surId,
-			@RequestParam Long userNum) {
+			@RequestParam("surId") Long surId,
+			@RequestParam("userNum") Long userNum) {
 		try {
 			CusDTO result = cusService.recommend(surId, userNum);
 			log.info("** AI 추천 완료 surId={} userNum={}", surId, userNum);
@@ -42,7 +42,7 @@ public class CusController {
 	// 추천 결과 상세 조회
 	// GET /v1/cus/detail/{cusId}
 	@GetMapping("/detail/{cusId}")
-	public ResponseEntity<?> getCusDetail(@PathVariable Long cusId) {
+	public ResponseEntity<?> getCusDetail(@PathVariable("cusId") Long cusId) {
 		try {
 			CusDTO result = cusService.getCusDetail(cusId);
 			log.info("** 추천 상세 조회 성공 cusId={}", cusId);
@@ -57,7 +57,7 @@ public class CusController {
 	// 내 추천 목록 조회
 	// GET /v1/cus/list/{userNum}
 	@GetMapping("/list/{userNum}")
-	public ResponseEntity<?> getCusList(@PathVariable Long userNum) {
+	public ResponseEntity<?> getCusList(@PathVariable("userNum") Long userNum) {
 		try {
 			List<CusDTO> result = cusService.getCusList(userNum);
 			log.info("** 추천 목록 조회 성공 userNum={}", userNum);
