@@ -25,4 +25,7 @@ public class PrdDTO {
 
     // 썸네일 이미지 URL
     private String thumbImgUrl;
+    
+    // 상세 이미지 URL
+    private String detailImgUrl;
 }

@@ -35,24 +35,28 @@ public class ChatPrdServiceImpl implements ChatPrdService {
     public List<ChatPrdResDto> getRecommendedPrds(Long msgId) {
         List<ChatPrd> chatPrds = chatPrdRepository.findByMsgId(msgId);
         List<ChatPrdResDto> result = new ArrayList<>();
+        
         for (ChatPrd chatPrd : chatPrds) {
             Optional<Prd> prdResult = prdRepository.findById(chatPrd.getPrdId());
-            if (prdResult.isPresent()) {
+            if (prdResult.isPresent()) { // 상품이 존재하는 경우에만 결과에 추가
                 Prd prd = prdResult.get();
+                
                 String thumbUrl = null;
                 List<PrdImg> imgList = prdImgRepository.findByPrdId(prd.getPrdId());
                 for (PrdImg img : imgList) {
                     if ("THUMB".equals(img.getImgTypeCd())) {
                         thumbUrl = img.getImgUrl();
-                        break;
+                        break; // 하나 찾으면 바로 탈출
                     }
                 }
+                
+                // Builder 패턴: new ChatPrdResDto(...) 대신에 가독성 좋게 객체 생성
                 ChatPrdResDto dto = ChatPrdResDto.builder()
                         .prdId(prd.getPrdId())
                         .prdNm(prd.getPrdNm())
                         .price(prd.getPrice())
                         .brand(prd.getBrand())
-                        .thumbImgUrl(thumbUrl)
+                        .thumbImgUrl(thumbUrl) // 상품 썸네일 이미지 URL
                         .chatRecReason(chatPrd.getChatRecReason())
                         .sortNum(chatPrd.getSortNum())
                         .build();
