@@ -88,4 +88,36 @@ public class PrdServiceImpl implements PrdService {
                 .detailImgUrl(detailUrl)
                 .build();
     }
+    // 상품 검색
+    @Override
+    	public List<PrdDTO> searchPrd(String keyword) {
+        // 검색어가 포함된 상품 목록 가져오기
+    	List<Prd> prdList = prdRepository.searchByKeyword(keyword);
+    	
+        List<PrdDTO> result = new ArrayList<>(); 
+        // 각 상품마다 썸네일 이미지 찾아서 DTO에 담기
+        for (Prd prd : prdList) {
+            String thumbUrl = null;
+            List<PrdImg> imgList = prdImgRepository.findByPrdId(prd.getPrdId());
+            // 썸네일 이미지 찾기
+            for (PrdImg img : imgList) {
+                if ("THUMB".equals(img.getImgTypeCd())) {
+                    thumbUrl = img.getImgUrl();
+                    break; 
+                }
+            }
+            // Builder 패턴으로 DTO 생성
+            PrdDTO dto = PrdDTO.builder()
+                    .prdId(prd.getPrdId())
+                    .prdNm(prd.getPrdNm())
+                    .price(prd.getPrice())
+                    .brand(prd.getBrand())
+                    .descTxt(prd.getDescTxt())
+                    .ingr(prd.getIngr())
+                    .thumbImgUrl(thumbUrl)
+                    .build();
+            result.add(dto);
+        }
+        return result;
+    }
 }

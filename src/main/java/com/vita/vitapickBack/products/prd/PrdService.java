@@ -10,4 +10,7 @@ public interface PrdService {
     
     // 상품 상세 조회
     PrdDTO getPrdDetail(Long prdId);
+    
+    // 상품 검색
+    List<PrdDTO> searchPrd(String keyword);
 }

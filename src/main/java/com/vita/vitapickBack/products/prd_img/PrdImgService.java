@@ -2,6 +2,7 @@ package com.vita.vitapickBack.products.prd_img;
 
 import java.util.List;
 
+
 // 이미지 서비스 인터페이스
 public interface PrdImgService {
 

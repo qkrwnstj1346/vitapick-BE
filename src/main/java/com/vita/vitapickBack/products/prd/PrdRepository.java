@@ -3,6 +3,8 @@ package com.vita.vitapickBack.products.prd;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
@@ -13,4 +15,7 @@ public interface PrdRepository extends JpaRepository<Prd, Long> {
 	List<Prd> findByCatCd(int catCd);
 	// useYn 에 따라 조회
 	List<Prd> findByUseYn(String useYn);
+	// 상품명으로 검색
+	@Query("SELECT p FROM Prd p WHERE p.prdNm LIKE %:keyword%")
+	List<Prd> searchByKeyword(@Param("keyword") String keyword);
 }
