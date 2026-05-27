@@ -25,16 +25,18 @@ public class CartController {
 
 	private final CartService cartService;
 
-	// 회원 장바구니 목록 조회
+	// 회원 장바구니 목록 조회(상품 노출)
 	@GetMapping("/{userNum}")
 	public ResponseEntity<?> findByUserNum(@PathVariable("userNum") Long userNum) {
 		try {
-			List<Cart> result = cartService.findByUserNum(userNum);
+			List<CartDTO> result = cartService.findCartListWithProduct(userNum);
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("장바구니 목록 조회에 실패했습니다.");
 		}
 	}
+
+	// 장바구니 화면용 상품 목록 조회
 
 	// 동일 상품 체크
 	@GetMapping("/check")

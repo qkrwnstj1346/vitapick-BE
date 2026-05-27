@@ -6,6 +6,9 @@ public interface CartService {
 
 	// 회원 장바구니 목록 조회
 	List<Cart> findByUserNum(Long userNum);
+	
+	// 장바구니 화면 상품 노출
+	List<CartDTO> findCartListWithProduct(Long userNum);
 
 	// 동일 상품 체크
 	// 같은 커스텀(cus_id) 안에서 같은 상품이면 수량 증가

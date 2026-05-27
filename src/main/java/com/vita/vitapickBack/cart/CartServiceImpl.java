@@ -17,6 +17,12 @@ public class CartServiceImpl implements CartService {
 	public List<Cart> findByUserNum(Long userNum) {
 		return cartRepository.findByUserNum(userNum);
 	}
+	
+	// 장바구니 화면 상품 노출
+	@Override
+	public List<CartDTO> findCartListWithProduct(Long userNum) {
+		return cartRepository.findCartListWithProduct(userNum);
+	}
 
 	// 동일 상품 체크
 	@Override
