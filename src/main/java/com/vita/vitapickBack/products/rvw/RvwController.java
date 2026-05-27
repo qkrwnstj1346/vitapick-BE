@@ -30,5 +30,17 @@ public class RvwController {
     public ResponseEntity<List<Rvw>> findByPrdId(@PathVariable("prdId") Long prdId) {
         return ResponseEntity.ok(rvwService.findByPrdId(prdId));
     }
+    
+    // 회원 ID로 리뷰 조회
+    @GetMapping("/user/{userNum}")
+    public ResponseEntity<List<Rvw>> findByUserNum(@PathVariable("userNum") Long userNum) {
+        return ResponseEntity.ok(rvwService.findByUserNum(userNum));
+    }
+    
+    // 리뷰 단건 조회
+    @GetMapping("/{rvwId}")
+    public ResponseEntity<Rvw> findByRvwId(@PathVariable("rvwId") Long rvwId) {
+        return ResponseEntity.ok(rvwService.findByRvwId(rvwId));
+    }
    
 }
