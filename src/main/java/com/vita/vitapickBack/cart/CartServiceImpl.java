@@ -84,6 +84,13 @@ public class CartServiceImpl implements CartService {
 
 		return cartRepository.save(cart);
 	}
+	
+	// 장바구니 선택 상태 변경
+	// 전체 선택 / 전체 해제
+	@Override
+	public void updateAllSelectedYn(Long userNum, Character selectedYn) {
+	    cartRepository.updateAllSelectedYn(userNum, selectedYn);
+	}
 
 	// 장바구니 선택 상태 변경
 	// 체크박스 선택/해제 시 사용

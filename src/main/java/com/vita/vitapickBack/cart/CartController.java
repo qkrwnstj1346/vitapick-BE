@@ -81,6 +81,22 @@ public class CartController {
 	}
 
 	// 장바구니 선택 상태 변경
+	// 전체 선택 / 전체 해제
+	@PatchMapping("/selected/all/{userNum}")
+	public ResponseEntity<?> updateAllSelectedYn(
+	        @PathVariable("userNum") Long userNum,
+	        @RequestBody CartDTO dto) {
+	    try {
+	        cartService.updateAllSelectedYn(userNum, dto.getSelectedYn());
+	        return ResponseEntity.status(HttpStatus.OK).body("상태 변경되었습니다.");
+	    } catch (Exception e) {
+	        return ResponseEntity
+	                .status(HttpStatus.BAD_GATEWAY)
+	                .body("상태 변경에 실패했습니다.");
+	    }
+	}
+
+	// 장바구니 선택 상태 변경
 	// 체크박스 선택/해제 시 사용
 	@PatchMapping("/{cartId}/selected")
 	public ResponseEntity<?> updateSelectedYn(@PathVariable("cartId") Long cartId, @RequestBody CartDTO dto) {

@@ -3,8 +3,10 @@ package com.vita.vitapickBack.cart;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
@@ -35,6 +37,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 			ORDER BY c.cusId DESC, c.cartId DESC
 			""")
 	List<CartDTO> findCartListWithProduct(@Param("userNum") Long userNum);
+
 	// 동일 상품 체크
 	// 같은 커스텀(cus_id) 안에서 같은 상품이면 수량 증가
 	Cart findByUserNumAndCusIdAndPrdId(Long userNum, Long cusId, Long prdId);
@@ -47,6 +50,16 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 	// 기본 제공 메서드 사용
 	// findById(cartId)
 	// save(cart)
+
+	// 전체 선택 / 전체 해제
+	@Modifying
+	@Transactional
+	@Query("""
+			UPDATE Cart c
+			SET c.selectedYn = :selectedYn
+			WHERE c.userNum = :userNum
+			""")
+	void updateAllSelectedYn(@Param("userNum") Long userNum, @Param("selectedYn") Character selectedYn);
 
 	// 개별 삭제
 	// 기본 제공 메서드 사용
