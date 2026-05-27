@@ -80,6 +80,18 @@ public class CartController {
 		}
 	}
 
+	// 장바구니 선택 상태 변경
+	// 체크박스 선택/해제 시 사용
+	@PatchMapping("/{cartId}/selected")
+	public ResponseEntity<?> updateSelectedYn(@PathVariable("cartId") Long cartId, @RequestBody CartDTO dto) {
+		try {
+			Cart result = cartService.updateSelectedYn(cartId, dto.getSelectedYn());
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("상품 선택 상태 변경에 실패했습니다.");
+		}
+	}
+
 	// 장바구니 개별 삭제
 	@DeleteMapping("/{cartId}")
 	public ResponseEntity<?> deleteCart(@PathVariable("cartId") Long cartId) {
