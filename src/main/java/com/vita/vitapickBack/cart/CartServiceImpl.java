@@ -17,7 +17,7 @@ public class CartServiceImpl implements CartService {
 	public List<Cart> findByUserNum(Long userNum) {
 		return cartRepository.findByUserNum(userNum);
 	}
-	
+
 	// 장바구니 화면 상품 노출
 	@Override
 	public List<CartDTO> findCartListWithProduct(Long userNum) {
@@ -82,6 +82,18 @@ public class CartServiceImpl implements CartService {
 
 		cart.setItQty(itQty);
 
+		return cartRepository.save(cart);
+	}
+
+	// 장바구니 선택 상태 변경
+	// 체크박스 선택/해제 시 사용
+	@Override
+	public Cart updateSelectedYn(Long cartId, Character selectedYn) {
+		Cart cart = cartRepository.findById(cartId).orElse(null);
+		if (cart == null) {
+			throw new RuntimeException("선택한 상품을 찾을 수 없습니다.");
+		}
+		cart.setSelectedYn(selectedYn);
 		return cartRepository.save(cart);
 	}
 

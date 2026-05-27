@@ -23,6 +23,10 @@ public interface CartService {
 
 	// 장바구니 수량 증가/감소/변경
 	Cart updateQty(Long cartId, Integer itQty);
+	
+	// 장바구니 선택 상태 변경
+	// 체크박스 선택/해제 시 사용
+	Cart updateSelectedYn(Long cartId, Character selectedYn);
 
 	// 장바구니 개별 삭제
 	Cart deleteCart(Long cartId);
