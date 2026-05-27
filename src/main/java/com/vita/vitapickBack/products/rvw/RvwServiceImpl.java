@@ -27,10 +27,10 @@ public class RvwServiceImpl implements RvwService {
         return rvwRepository.save(rvw);
     }
     
-    // 상품 ID로 리뷰 조회
+    // 상품 ID로 리뷰 조회 (최신순)
     @Override
     public List<Rvw> findByPrdId(Long prdId) {
-        return rvwRepository.findByPrdId(prdId);
+        return rvwRepository.findByPrdIdOrderByCrtAtDesc(prdId);
     }
 
 }

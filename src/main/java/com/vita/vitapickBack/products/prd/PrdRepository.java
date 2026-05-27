@@ -13,8 +13,10 @@ public interface PrdRepository extends JpaRepository<Prd, Long> {
 	
 	// 카테고리별 상품 조회
 	List<Prd> findByCatCd(int catCd);
+	
 	// useYn 에 따라 조회
 	List<Prd> findByUseYn(String useYn);
+	
 	// 상품명으로 검색
 	@Query("SELECT p FROM Prd p WHERE p.prdNm LIKE %:keyword%")
 	List<Prd> searchByKeyword(@Param("keyword") String keyword);
