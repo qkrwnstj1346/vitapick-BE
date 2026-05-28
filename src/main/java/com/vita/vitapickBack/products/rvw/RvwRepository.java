@@ -10,5 +10,8 @@ public interface RvwRepository extends JpaRepository<Rvw, Long> {
     
 	// 상품 ID로 리뷰 조회 (최신순)
 	List<Rvw> findByPrdIdOrderByCrtAtDesc(Long prdId);
+	
+	// 회원 ID로 리뷰 조회 (최신순)
+	List<Rvw> findByUserNumOrderByCrtAtDesc(Long userNum);
 
 }

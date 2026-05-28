@@ -32,5 +32,18 @@ public class RvwServiceImpl implements RvwService {
     public List<Rvw> findByPrdId(Long prdId) {
         return rvwRepository.findByPrdIdOrderByCrtAtDesc(prdId);
     }
+    
+    // 회원 ID로 리뷰 조회
+    @Override
+    public List<Rvw> findByUserNum(Long userNum) {
+        return rvwRepository.findByUserNumOrderByCrtAtDesc(userNum);
+    }
+    
+    // 리뷰 단건 조회
+    @Override
+    public Rvw findByRvwId(Long rvwId) {
+        return rvwRepository.findById(rvwId)
+                .orElseThrow(() -> new RuntimeException("리뷰를 찾을 수 없습니다."));
+    }
 
 }
