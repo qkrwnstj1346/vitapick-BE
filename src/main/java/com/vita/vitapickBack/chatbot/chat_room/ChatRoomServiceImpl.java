@@ -27,17 +27,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final PrdRepository prdRepository;
 
     @Override
-    public ChatMsg chatMsg(ChatRoomDto dto) {
+    public ChatMsg chatMsg(Long userNum, ChatRoomDto dto) {
 
         // 1. 기존 ACTIVE 채팅방 있으면 재사용, 없으면 새로 생성
-        Optional<ChatRoom> found = chatRoomRepository.findTopByUserNumAndChatStCd(dto.getUserNum(), "ACTIVE");
+        Optional<ChatRoom> found = chatRoomRepository.findTopByUserNumAndChatStCd(userNum, "ACTIVE");
         ChatRoom chatRoom;
         if (found.isPresent()) {
             chatRoom = found.get();
         } else {
             chatRoom = chatRoomRepository.save(
                 ChatRoom.builder()
-                    .userNum(dto.getUserNum())
+                    .userNum(userNum)
                     .chatStCd("ACTIVE")
                     .crtAt(LocalDateTime.now())
                     .updAt(LocalDateTime.now())

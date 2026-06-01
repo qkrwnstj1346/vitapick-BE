@@ -3,6 +3,7 @@ package com.vita.vitapickBack.products.rvw;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,19 +22,19 @@ public class RvwController {
 
     // 리뷰 작성
     @PostMapping
-    public ResponseEntity<Rvw> createRvw(@RequestBody RvwDTO dto) {
-        return ResponseEntity.ok(rvwService.createRvw(dto));
+    public ResponseEntity<Rvw> createRvw(@AuthenticationPrincipal Long userNum, @RequestBody RvwDTO dto) {
+        return ResponseEntity.ok(rvwService.createRvw(userNum, dto));
     }
-    
+
     // 상품 ID로 리뷰 전체 조회
     @GetMapping("/prd/{prdId}")
     public ResponseEntity<List<Rvw>> findByPrdId(@PathVariable("prdId") Long prdId) {
         return ResponseEntity.ok(rvwService.findByPrdId(prdId));
     }
-    
-    // 회원 ID로 리뷰 조회
-    @GetMapping("/user/{userNum}")
-    public ResponseEntity<List<Rvw>> findByUserNum(@PathVariable("userNum") Long userNum) {
+
+    // 내 리뷰조회 (토큰에서 userNum 추출)
+    @GetMapping("/user")
+    public ResponseEntity<List<Rvw>> findByUserNum(@AuthenticationPrincipal Long userNum) {
         return ResponseEntity.ok(rvwService.findByUserNum(userNum));
     }
     

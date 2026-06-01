@@ -14,9 +14,9 @@ public class RvwServiceImpl implements RvwService {
 
     // 리뷰 작성
     @Override
-    public Rvw createRvw(RvwDTO dto) {
+    public Rvw createRvw(Long userNum, RvwDTO dto) {
         Rvw rvw = Rvw.builder()
-                .userNum(dto.getUserNum())
+                .userNum(userNum)
                 .ordItId(dto.getOrdItId())
                 .prdId(dto.getPrdId())
                 .rating(dto.getRating())
