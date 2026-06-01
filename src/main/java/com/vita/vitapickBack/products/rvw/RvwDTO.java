@@ -16,9 +16,6 @@ public class RvwDTO {
     // 주문 상품 ID
     private Long ordItId;
 
-    // 회원 ID
-    private Long userNum;
-    
     // 상품 ID
     private Long prdId;
 

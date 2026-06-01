@@ -1,6 +1,7 @@
 package com.vita.vitapickBack.chatbot.chat_room;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,8 @@ public class ChatRoomController {
 	private final ChatRoomService chatRoomService;
 	
 	@PostMapping("/message")
-    public ResponseEntity<ChatMsg> chatMsg(@RequestBody ChatRoomDto dto) {
-        ChatMsg result = chatRoomService.chatMsg(dto);
+    public ResponseEntity<ChatMsg> chatMsg(@AuthenticationPrincipal Long userNum, @RequestBody ChatRoomDto dto) {
+        ChatMsg result = chatRoomService.chatMsg(userNum, dto);
         return ResponseEntity.ok(result);
     }
 }
