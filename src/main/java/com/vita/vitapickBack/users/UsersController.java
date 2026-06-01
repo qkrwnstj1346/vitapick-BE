@@ -75,14 +75,14 @@ public class UsersController {
     	UsersDTO usersDTO = usersService.login(response, entity);
     	if(usersDTO != null) {
     		return ResponseEntity.ok(usersDTO);
-    	}else return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("id 또는 password 오류");
+    	}else return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("id 없음?");
     }
     
 	// 로그아웃 (Token, Role 적용)
     // GET
 	@GetMapping("/auth/logout")
-	public ResponseEntity<?> logout(HttpServletResponse response, @AuthenticationPrincipal Long usersNum) {
-		usersService.logout(response, usersNum);
+	public ResponseEntity<?> logout(HttpServletResponse response, @AuthenticationPrincipal Long userNum) {
+		usersService.logout(response, userNum);
 		return  ResponseEntity.ok("로그아웃 성공");
 	} //logout
     

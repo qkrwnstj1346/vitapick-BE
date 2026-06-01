@@ -97,7 +97,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				
 				//=> 검증 성공시 claims 에서 id 와 roleList 가져와 시큐리티 인증정보에 저장함.
 				log.info("** Authenticated 결과 JWT claims: " + claims);
-				String usersId = (String)claims.get("usersId");
+				Long userNum = (Long)claims.get("userNum");
+				String loginId = (String)claims.get("loginId");
+				String userNm = (String)claims.get("userNm");
 				String roleCd = (String)claims.get("roleCd");
 				
 				// 3) 인증 완료
@@ -114,7 +116,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				}
 				
 				AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						usersId, // 컨트롤러에서 @AuthenticationPrincipal 로 사용가능 (AuthController userDetail() 확인) 
+						userNum, // 컨트롤러에서 @AuthenticationPrincipal 로 사용가능 (AuthController userDetail() 확인) 
 						null, // Password를 의미하며 보통은 null 로 처리
 						authorities );
 				

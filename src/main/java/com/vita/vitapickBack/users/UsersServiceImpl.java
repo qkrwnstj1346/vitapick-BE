@@ -72,15 +72,15 @@ public class UsersServiceImpl implements UsersService{
     	
     	//1) 요청분석
     	String pwd = entity.getPwd();
+    	String loginId = entity.getLoginId();
         log.info("** login => " + entity.getLoginId());
         log.info("** login pwd => " + entity.getPwd());
         
         //2) 서비스처리 & 결과전송
         try {
-        	entity = usersRepository.findByLoginId(entity.getLoginId()).orElseThrow(()-> new RuntimeException("회원 없음"));
+        	entity = usersRepository.findByLoginId(loginId).orElseThrow(()-> new RuntimeException("회원 없음"));
         	if(entity != null && passwordEncoder.matches(pwd, entity.getPwd())) {
         		final UsersDTO usersDTO = tokenProvider.generateToken(entity.claimList());
-        		usersDTO.setUserNm(entity.getUserNm());
         		
         		log.info("로그인 성공=>" + HttpStatus.OK);
         		
@@ -181,9 +181,9 @@ public class UsersServiceImpl implements UsersService{
     
     // 로그아웃
     @Override
-    public void logout(HttpServletResponse response, Long usersNum) {
+    public void logout(HttpServletResponse response, Long userNum) {
    	 //=> RefreshToken 제거
-        refRepository.deleteById(usersNum);
+        refRepository.deleteById(userNum);
         
         //=> 쿠키의 refreshToken 삭제
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", null)
