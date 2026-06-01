@@ -40,6 +40,7 @@ public class TokenProvider {
 				.refreshToken(generateRefreshToken(claimList, refreshTokenExpiresIn))
 				.refreshTokenExpiresln(refreshTokenExpiresIn.getTime())  
 				.userNum((Long)claimList.get("userNum"))
+				.userNm((String)claimList.get("userNm"))
 				.loginId((String)claimList.get("loginId"))
 				.roleCd((String)claimList.get("roleCd"))
 				.build();
@@ -85,14 +86,6 @@ public class TokenProvider {
 				.parseSignedClaims(token)
 				.getPayload();
 	}//validateToken
-	
-	public Claims parseClaims(String token) {
-		return Jwts.parser()
-				.verifyWith(key)
-				.build()
-				.parseSignedClaims(token)
-				.getPayload();
-	}//parseClaims
 	
 	//로그인 실패 공통 응답 메서드
     private void writeErrorResponse(HttpServletResponse response, String message) throws IOException {
