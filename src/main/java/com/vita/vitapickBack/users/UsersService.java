@@ -1,6 +1,8 @@
 package com.vita.vitapickBack.users;
 
-import java.util.Map;
+import org.springframework.http.ResponseEntity;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface UsersService {
     
@@ -11,10 +13,16 @@ public interface UsersService {
     void signup(UsersDTO usersDTO);
 
     // 로그인
-    Map<String, Object> login(UsersDTO usersDTO);
+    public UsersDTO login(HttpServletResponse response, Users entity);
+    
+    //=> RefreshToken 으로 토큰 재발급
+    public ResponseEntity<?> getRefresh(String refreshToken, HttpServletResponse response);
+    
+    // 로그아웃
+    public void logout(HttpServletResponse response, Long usersNum);
 
     // 회원정보 조회
-    UsersDTO getUser(String loginId);
+    public UsersDTO getUser(String loginId);
 
     // 회원정보 수정
     void updateUser(String loginId, UsersDTO usersDTO);

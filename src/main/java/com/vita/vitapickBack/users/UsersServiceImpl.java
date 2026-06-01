@@ -1,14 +1,26 @@
 package com.vita.vitapickBack.users;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.vita.vitapickBack.jwtToken.RefreshToken;
+import com.vita.vitapickBack.jwtToken.RefreshTokenRepository;
 import com.vita.vitapickBack.jwtToken.TokenProvider;
 
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,7 +32,8 @@ public class UsersServiceImpl implements UsersService{
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-
+    private final RefreshTokenRepository refRepository;
+    
     // 아이디 중복확인
     @Override
     public boolean checkLoginId(String loginId) {
@@ -54,49 +67,136 @@ public class UsersServiceImpl implements UsersService{
 
     // 로그인
     @Override
-    public Map<String, Object> login(UsersDTO usersDTO) {
-        log.info("** login => " + usersDTO.getLoginId());
-
-        // 아이디 확인
-        Users users = usersRepository.findByLoginId(usersDTO.getLoginId())
-            .orElseThrow(() -> new RuntimeException("아이디 또는 비밀번호를 확인해주세요."));
-
-        // 탈퇴회원 확인
-        if ("W".equals(users.getStatusCd())) {
-            throw new RuntimeException("탈퇴한 회원입니다");
-        }
+    @Transactional
+    public UsersDTO login(HttpServletResponse response, Users entity) {
+    	
+    	//1) 요청분석
+    	String pwd = entity.getPwd();
+        log.info("** login => " + entity.getLoginId());
+        log.info("** login pwd => " + entity.getPwd());
         
-        // 비활성회원 확인
-        if ("I".equals(users.getStatusCd())) {
-            throw new RuntimeException("비활성 회원입니다");
+        //2) 서비스처리 & 결과전송
+        try {
+        	entity = usersRepository.findByLoginId(entity.getLoginId()).orElseThrow(()-> new RuntimeException("회원 없음"));
+        	if(entity != null && passwordEncoder.matches(pwd, entity.getPwd())) {
+        		final UsersDTO usersDTO = tokenProvider.generateToken(entity.claimList());
+        		usersDTO.setUserNm(entity.getUserNm());
+        		
+        		log.info("로그인 성공=>" + HttpStatus.OK);
+        		
+        		//=> RefreshToken DB에 저장 & 쿠키에 담아 전송
+        		RefreshToken refreshToken = RefreshToken.builder()
+        				.userNum(entity.getUserNum())
+        				.loginId(entity.getLoginId())
+        				.refreshToken(usersDTO.getRefreshToken())
+        				.expiration(usersDTO.getRefreshTokenExpiresln())
+        				.build();
+        		refRepository.save((refreshToken));
+        		
+                //** Response Header 설정
+                //=> 방법1: Cookie 객체 사용 (권장)
+                //	 Servlet API가 내부적으로 Set-Cookie 헤더를 자동 생성해주는 방식으로
+                //	 브라우저가 받게되는 최종 응답은
+                //	 Set-Cookie: refreshToken=xxxxx; Path=/; Max-Age=604800; HttpOnly
+        		ResponseCookie cookie = ResponseCookie.from("refreshToken", usersDTO.getRefreshToken())
+        				.httpOnly(true)  //JS접근불가: document.cookie 로 읽을수없음 (XSS 공격 방어)
+                        .sameSite("Lax") //또는 None - sameSite : 보안설정, CORS환경_None
+                        .secure(false)	 //HTTP연결 허용
+                        .path("/")		//모든 URL요청에 쿠키 포함
+                        .maxAge(Duration.ofDays(7)) //쿠키유지시간, 단위 초 (7일 설정)
+                        .build();
+        		response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        		
+        		//=> 프론트로 전송하기전 UsersDTO 에서 RefreshToken 정보는 삭제함
+                usersDTO.setRefreshToken(null);
+                usersDTO.setRefreshTokenExpiresln(null);
+        		return usersDTO;
+        	}else {
+        		throw new Exception("Data Not Found");
+        	}
+        	
+        }catch (Exception e){
+			log.error("로그인 실패, Exception => "+e.toString());
+    		return null;
         }
-        
-        // 비밀번호 확인
-        if (!passwordEncoder.matches(usersDTO.getPwd(), users.getPwd())) {
-            throw new RuntimeException("아이디 또는 비밀번호를 확인해주세요.");
+    }//login
+    
+    
+    //=> RefreshToken 으로 토큰 재발급
+    @Override
+    public ResponseEntity<?> getRefresh(String refreshToken, HttpServletResponse response){
+    	//=> RefreshToken 검증 : DB 확인
+        Optional<RefreshToken> rTokenEntity = refRepository.findByRefreshToken(refreshToken);
+    	//=> DB에 RefreshToken이 없으면 유효하지 않음
+        if (rTokenEntity.isEmpty()) {
+        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        						 .body("isEmpty: 유효하지 않는 RefreshToken");
         }
+        log.info("DB조회 성공!!,  존재하는 RefreshToken 입니다.");
+        try {
+            //** RefreshToken 유효시 AccessToken만 재발급
+            //=> RefreshToken 분석 & User id 와 roleList 가져오기
+        	Claims claims = tokenProvider.validateToken(refreshToken);
+        	//=> 분석과정에서 만료시 ExpiredJwtException 발생 -> catch 로 분기 
+        	
+        	String usersNum = (String)claims.get("usersNum");
+        	String loginId = (String)claims.get("loginId"); 
+            String roleCd = (String)claims.get("roleCd");
 
-        // 토큰 생성
-        Map<String, Object> claimList = new HashMap<>();
-        claimList.put("id", users.getLoginId());
-        claimList.put("roleList", List.of(users.getRoleCd()));
+            //=> 새로운 accessToken 생성을 위한 claimList 생성
+            Map<String, Object> claimList = new HashMap<>(); 
+            claimList.put("usersNum", usersNum);
+            claimList.put("loginId", loginId);
+            claimList.put("roleCd", roleCd);
+            
+    		//=> AccessToken 을 담은 UserDTO 객체 생성 & return 
+            //	 response 성공시 프론트에서는 accessToken 값만 교체함	
+            UsersDTO usersDTO = UsersDTO.builder()
+    					.accessToken(tokenProvider.generateAccessToken(claimList))
+    					.build();
+            
+            log.info("New AccessToken 발급, Token="+ usersDTO.getAccessToken());
+            //return usersDTO; 
+            //-> ResponseEntity 사용안하려니 catch 블럭에서 오류 발생 (코드수정필요해서 일단그냥사용) 
+            return ResponseEntity.ok(usersDTO);
+            
+        }catch(Exception e) {
+        	
+            log.info("New AccessToken 발급중 RefreshToken 만료 Exception => "+e.toString());
+            //=> 쿠키 삭제
+            Cookie refreshCookie = new Cookie("refreshToken", null);
+            refreshCookie.setPath("/");             // 쿠키 경로 설정 (생성할 때와 같아야 함)
+            refreshCookie.setMaxAge(0);             // 유효기간 0 → 삭제
+            refreshCookie.setHttpOnly(false);       // 보안 옵션
+            refreshCookie.setSecure(true);          // HTTPS만 전달 (필요시)
+            response.addCookie(refreshCookie);
 
-        String token = tokenProvider.createToken(claimList, 60); // 60분
-
-        // 응답 데이터
-        Map<String, Object> result = new HashMap<>();
-        result.put("token", token);
-        result.put("userNum", users.getUserNum());
-        result.put("loginId", users.getLoginId());
-        result.put("userNm", users.getUserNm());
-        result.put("roleCd", users.getRoleCd());
-        //token → 저장해두고 매 요청마다 헤더에 담아서 보냄
-        //loginId, userNm → 화면에 표시
-        //roleCd → 관리자/일반회원 구분
-
-        return result;
+            //=> DB에서 삭제
+            refRepository.deleteByRefreshToken(refreshToken);
+            //return null; 
+            //-> ResponseEntity 사용안하려니 catch 블럭에서 오류 발생 (코드수정필요해서 일단그냥사용)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("401, 만료되었습니다. 다시 로그인 해주세요.");
+        }//catch
     }
-
+    
+    // 로그아웃
+    @Override
+    public void logout(HttpServletResponse response, Long usersNum) {
+   	 //=> RefreshToken 제거
+        refRepository.deleteById(usersNum);
+        
+        //=> 쿠키의 refreshToken 삭제
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", null)
+                .httpOnly(true) //JS접근불가: document.cookie 로 읽을수없음 (XSS 공격 방어)
+                .sameSite("Lax")//또는 None
+                .secure(false)	//HTTP연결 허용
+                .path("/")		//모든 URL요청에 쿠키 포함
+                .maxAge(0) 		//쿠키유지시간 0 설정=>삭제
+                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+    }
+    
+    
     // 회원정보 조회
     @Override
     public UsersDTO getUser(String loginId) {

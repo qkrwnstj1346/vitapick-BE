@@ -3,8 +3,11 @@ package com.vita.vitapickBack.users;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -66,36 +70,43 @@ public class UsersController {
     
     // 로그인
     // POST
-    @PostMapping(value="/auth/login",
-        consumes=MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody UsersDTO usersDTO) {
-        try {
-            Map<String, Object> result = usersService.login(usersDTO);
-            log.info("** 로그인 성공 => " + usersDTO.getLoginId());
-            return ResponseEntity.status(HttpStatus.OK).body(result);
-        } catch (Exception e) {
-            log.error("** 로그인 실패 => " + e.toString());
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-                .body("로그인 실패 => " + e.getMessage());
-        }
+    @PostMapping(value="/auth/login", consumes=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestBody Users entity, HttpServletResponse response) {
+    	UsersDTO usersDTO = usersService.login(response, entity);
+    	if(usersDTO != null) {
+    		return ResponseEntity.ok(usersDTO);
+    	}else return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("id 또는 password 오류");
     }
-
+    
+	// 로그아웃 (Token, Role 적용)
+    // GET
+	@GetMapping("/auth/logout")
+	public ResponseEntity<?> logout(HttpServletResponse response, @AuthenticationPrincipal Long usersNum) {
+		usersService.logout(response, usersNum);
+		return  ResponseEntity.ok("로그아웃 성공");
+	} //logout
+    
+	//=> 리프레쉬 토큰
+	//	AccessToken 만료시 front에서 요청함
+    @GetMapping("/auth/refresh")
+    public ResponseEntity<?> getRefresh(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        log.info("RefreshToken으로 토큰 재발급을 시도합니다.");
+        return  usersService.getRefresh(refreshToken, response);
+    }
+	
     // 회원정보 조회
     // GET
     @GetMapping("/info")
-    public ResponseEntity<?> getUser(HttpServletRequest request) {
-        try {
-            // 토큰에서 loginId 꺼내기
-            Map<String, Object> claims = (Map<String, Object>) request.getAttribute("claims");
-            String loginId = (String) claims.get("id");
-
-            UsersDTO usersDTO = usersService.getUser(loginId);
-            return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
-        } catch (Exception e) {
-            log.error("** 회원정보 조회 실패 => " + e.toString());
+    public ResponseEntity<?> getUser(@AuthenticationPrincipal String loginId) {
+    	try {
+    		UsersDTO result = usersService.getUser(loginId);
+    		log.info("userdetail, 전달된 loginId 확인 => "+loginId);
+    		return ResponseEntity.status(HttpStatus.OK).body(result);
+    	}catch(Exception e){
+            log.error("** 회원정보조회실패 => " + e.toString());
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-                .body("회원정보 조회 실패 => " + e.getMessage());
-        }
+                .body("회원정보조회 실패 => " + e.getMessage());
+    	}
     }
     
     // 회원정보 수정

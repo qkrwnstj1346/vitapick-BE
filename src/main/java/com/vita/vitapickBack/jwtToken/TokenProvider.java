@@ -1,6 +1,9 @@
 package com.vita.vitapickBack.jwtToken;
 
-import java.time.ZonedDateTime;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -8,63 +11,95 @@ import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.InvalidClaimException;
-import io.jsonwebtoken.JwtException;
+import com.vita.vitapickBack.users.UsersDTO;
+
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
+
 
 @Service
+@Log4j2
 public class TokenProvider {
 
-	private static final String SECRET_KEY=
-			"1234567890123456789012345678901234567890";
-	//토큰발행
-	public String createToken(Map<String, Object> claimList, int min) {
+	private static final String KEY=
+			"12345678901234567890123456789012345678901234567890123456789012345678901234567890";
+	
+	private final SecretKey key = Keys.hmacShaKeyFor(KEY.getBytes(StandardCharsets.UTF_8));
+	
+	//Jwt토큰발행
+	public UsersDTO generateToken(Map<String, Object> claimList) {
+//		Date refreshTokenExpiresIn = new Date(System.currentTimeMillis()+1000*60*5);
+		Date refreshTokenExpiresIn = new Date(System.currentTimeMillis()+1000*60*60*24*10);
+		//-> refreshToken 만료시간: 7일 (실무에서 일반적으로 7~14일 설정) 
 		
-		SecretKey key = null;
-		try {
-			key = Keys.hmacShaKeyFor(
-					TokenProvider.SECRET_KEY.getBytes("UTF-8"));
-		}catch(Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}//try
+		return UsersDTO.builder()
+				.accessToken(generateAccessToken(claimList))
+				.refreshToken(generateRefreshToken(claimList, refreshTokenExpiresIn))
+				.refreshTokenExpiresln(refreshTokenExpiresIn.getTime())  
+				.userNum((Long)claimList.get("userNum"))
+				.loginId((String)claimList.get("loginId"))
+				.roleCd((String)claimList.get("roleCd"))
+				.build();
+	}
+	
+	//AccessToken 생성
+	public String generateAccessToken(Map<String, Object> claimList) {
+		log.info("** AccessToken 발행 **");
+		Date accessTokenExpiresIn = Date.from(Instant.now().plus(Duration.ofMinutes(2)));
+		//-> accessToken 만료시간: 30분 설정 (Test 중에는 2분 설정)
 		
 		return Jwts.builder()
-				.setHeader(Map.of("typ", "JWT"))
-				.setClaims(claimList)
-				.setIssuer("vitepick app")
-				.setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
-				.setExpiration(Date.from(ZonedDateTime.now().plusMinutes(min).toInstant()))
-				.signWith(key)
+				.claims(claimList)
+				.subject((String)claimList.get("loginId"))
+				.issuer("vitapick app")
+				.issuedAt(new Date())
+				.expiration(accessTokenExpiresIn)
+				.signWith(key, Jwts.SIG.HS512)
 				.compact();
-	}//createToken
+	}
 	
-	//토큰검증
-	public Map<String, Object> validateToken(String token){
-		
-	    Map<String, Object> claim = null;
-	    try {
-	        SecretKey key = Keys.hmacShaKeyFor(
-	            TokenProvider.SECRET_KEY.getBytes("UTF-8"));
-	        claim = Jwts.parserBuilder()
-	            .setSigningKey(key)
-	            .build()
-	            .parseClaimsJws(token)
-	            .getBody();
-	    } catch (MalformedJwtException e) {
-	        throw new CustomJWTException("MalFormed");
-	    } catch (ExpiredJwtException e) {
-	        throw new CustomJWTException("Expired");
-	    } catch (InvalidClaimException e) {
-	        throw new CustomJWTException("Invalid");
-	    } catch (JwtException e) {
-	        throw new CustomJWTException("JWTError");
-	    } catch (Exception e) {
-	        throw new CustomJWTException("Error");
-	    }//try
-	    return claim;
+	//=> RefreshToken 생성 : 만료기간 7일
+	public String generateRefreshToken(Map<String, Object> claimList, Date refreshTokenExpiresIn) {
+		log.info("** RefreshToken 발급???? **");
+		return Jwts.builder()
+				.claims(claimList) //추후 accessToken 재발급시 필요함 (id, roleCd)
+				.subject((String)claimList.get("loginId"))
+		        .issuedAt(new Date())
+		        .expiration(refreshTokenExpiresIn) // +7일(generateToken에 정의)
+		        .signWith(key, Jwts.SIG.HS512) 
+		        .compact();
+	}//generateRefreshToken
+	
+	
+	//프론트에서 전달받은 Token 검증 (Role 포함) 
+	//=> Claims 값 분석
+	//	- Claim 정보 (사용자정보, 만료시간 등)을 추출해서 Claims 형식_Map<String,Object> 형태로 반환
+	//	- 아래 메서드 parseClaims(String token) 에 구현 
+	public Claims validateToken(String token) {
+		return Jwts.parser()
+				.verifyWith(key)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload();
 	}//validateToken
 	
+	public Claims parseClaims(String token) {
+		return Jwts.parser()
+				.verifyWith(key)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload();
+	}//parseClaims
+	
+	//로그인 실패 공통 응답 메서드
+    private void writeErrorResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        //=> SC_UNAUTHORIZED = 401 : JWT오류(인증실패), 재로그인 필요한 경우 대부분사용
+        response.setContentType("application/json");
+        response.getWriter().write(message);
+    }
+    
 }//TokenProvider

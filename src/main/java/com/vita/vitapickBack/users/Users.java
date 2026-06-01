@@ -2,6 +2,8 @@ package com.vita.vitapickBack.users;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -27,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class Users {
-// test
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userNum;
@@ -69,5 +71,18 @@ public class Users {
 	
 	@Column(name="wd_dt")
 	private LocalDateTime wdDt;
+	
+	//=> JWT token 발행시 사용됨 
+	//    로그인 성공 후 createToken() 에 인자로 사용됨
+	//	  인증에 필요한 필수 정보만 보관	
+	//=> Map<String, Object> -> roleList 는 List Type 이므로..
+	public Map<String, Object> claimList() {
+		Map<String, Object> dataMap = new HashMap<>();
+		dataMap.put("userNum", this.userNum);
+		dataMap.put("loginId", this.loginId);
+		dataMap.put("roleCd", this.roleCd);
+		return dataMap;
+	}
+	
 	
 }

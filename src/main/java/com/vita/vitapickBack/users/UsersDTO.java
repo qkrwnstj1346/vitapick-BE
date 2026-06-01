@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UsersDTO {
+	//** Users 로그인 정보
     private Long userNum;
     private String loginId;
     private String pwd;
@@ -26,4 +27,10 @@ public class UsersDTO {
     private LocalDateTime crtAt;
     private LocalDateTime updAt;
     private LocalDateTime wdDt;
+    
+    //** Jwt 관련 DTO
+	private String accessToken;
+	private String refreshToken;
+	private Long refreshTokenExpiresln;
+	
 }
