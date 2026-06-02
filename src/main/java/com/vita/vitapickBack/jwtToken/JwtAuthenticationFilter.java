@@ -47,12 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	    //=> 체크하지 않을 경로 설정
 	    //-> 기존 코드 때문 추가함: http://localhost:8080/ 등등 
 	    if(path.startsWith("/v1/auth/")) { return true; }
-	    log.info("check uri => " + path);
-	    //-> "/auth/getrefresh" 호출은 체크하지 않음
-	    //	 refreshToken 검증은 JWTFilter skip & api 메서드내부에서 직접처리 
-	    //	( AuthController, AuthServiceImpl 참고 )	
-	    if(path.startsWith("/v1/auth/getrefresh")) { return true; }
-	    
+	    if(path.startsWith("/v1/checkid")) { return true; }
 	    //-> "/user/" 경로 호출은 체크하지 않음
 	    if(path.startsWith("/user/")) { return true; }
 	    //-> 이미지 조회 경로는 체크하지 않는다면 (예시)
