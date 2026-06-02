@@ -82,7 +82,7 @@ public class UsersServiceImpl implements UsersService{
         	if(entity != null && passwordEncoder.matches(pwd, entity.getPwd())) {
         		final UsersDTO usersDTO = tokenProvider.generateToken(entity.claimList());
         		
-        		log.info("로그인 성공=>" + HttpStatus.OK);
+        		log.info("로그인 성공=>" + HttpStatus.OK+entity.claimList());
         		
         		//=> RefreshToken DB에 저장 & 쿠키에 담아 전송
         		RefreshToken refreshToken = RefreshToken.builder()
@@ -183,7 +183,7 @@ public class UsersServiceImpl implements UsersService{
     @Override
     public void logout(HttpServletResponse response, Long userNum) {
    	 //=> RefreshToken 제거
-        refRepository.deleteById(userNum);
+        refRepository.deleteByUserNum(userNum);
         
         //=> 쿠키의 refreshToken 삭제
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", null)

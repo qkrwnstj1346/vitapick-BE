@@ -80,6 +80,7 @@ public class Users {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put("userNum", this.userNum);
 		dataMap.put("loginId", this.loginId);
+		dataMap.put("userNm", this.userNm);
 		dataMap.put("roleCd", this.roleCd);
 		return dataMap;
 	}
