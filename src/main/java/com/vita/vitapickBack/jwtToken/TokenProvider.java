@@ -49,7 +49,7 @@ public class TokenProvider {
 	//AccessToken 생성
 	public String generateAccessToken(Map<String, Object> claimList) {
 		log.info("** AccessToken 발행 **");
-		Date accessTokenExpiresIn = Date.from(Instant.now().plus(Duration.ofMinutes(2)));
+		Date accessTokenExpiresIn = Date.from(Instant.now().plus(Duration.ofMinutes(5)));
 		//-> accessToken 만료시간: 30분 설정 (Test 중에는 2분 설정)
 		
 		return Jwts.builder()
