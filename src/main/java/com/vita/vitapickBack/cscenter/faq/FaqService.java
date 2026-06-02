@@ -10,15 +10,19 @@ public interface FaqService {
 	List<Faq> findFaqAll();
 
 	// FAQ 상세 조회
+	// = FAQ 번호(faqId) 기준 단건 조회
 	Faq selectOne(Long faqId);
 
-	// FAQ 등록(관리자)
-	Faq createFaq(FaqDto dto);
+	// FAQ 등록
+	// = 관리자만 가능
+	Faq saveFaq(FaqDto dto);
 
-	// FAQ 수정(관리자)
+	// FAQ 수정
+	// = 관리자만 가능
 	Faq updateFaq(Long faqId, FaqDto dto);
 
-	// FAQ 삭제(관리자)
+	// FAQ 삭제
+	// = 관리자만 가능
 	void deleteFaq(Long faqId);
 
 	// FAQ 카테고리별 조회
