@@ -98,7 +98,7 @@ public class NtcController {
                         .body("관리자만 이용할 수 있습니다.");
             }
 
-            Ntc result = ntcService.saveNtc(entity);
+            Ntc result = ntcService.createNtc(entity);
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
 

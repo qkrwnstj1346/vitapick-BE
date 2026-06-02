@@ -14,20 +14,16 @@ public interface NtcService {
 	// = 공개 공지사항만 조회
 	List<Ntc> useYNtcList(Character useYn);
 
-	// 공지사항 번호(ntcId) 기준 단건 조회
-	// = 공지사항 상세 조회
+	//  공지사항 상세 조회
 	Ntc selectOne(Long ntcId);
 
-	// 공지사항 등록
-	// = 관리자만 가능
-	Ntc saveNtc(Ntc ntc);
+	// 공지사항 등록(관리자)
+	Ntc createNtc(Ntc ntc);
 
-	// 공지사항 수정
-	// = 관리자만 가능
+	// 공지사항 수정(관리자)
 	Ntc updateNtc(Long ntcId, Ntc ntc);
 
-	// 공지사항 삭제
-	// = 관리자만 가능
+	// 공지사항 삭제(관리자)
 	void deleteNtc(Long ntcId);
 
 }

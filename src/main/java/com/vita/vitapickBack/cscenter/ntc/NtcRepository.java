@@ -14,8 +14,7 @@ public interface NtcRepository extends JpaRepository<Ntc, Long> {
 	// SELECT * FROM ntc;
 	// findAll()
 
-	// 공지사항 번호(ntcId) 기준 단건 조회
-	// = 공지사항 상세 조회
+	// 공지사항 상세 조회
 	// SELECT * FROM ntc WHERE ntc_id = ?;
 	// findById()
 

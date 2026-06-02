@@ -17,7 +17,7 @@ public interface InqService {
 	Inq selectMyOne(Long inqId, Long userNum);
 
 	// 문의 등록
-	Inq createInq(Inq inq);
+	Inq createInq(Inq inq, Long userNum);
 
 	// 회원 본인 문의 수정
 	Inq updateInq(Long inqId, Long userNum, Inq inq);
