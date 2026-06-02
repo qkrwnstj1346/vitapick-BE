@@ -47,19 +47,14 @@ public class InqController {
 
 	// 전체 1:1 문의 목록 조회
 	@GetMapping("/inquiries")
-	public ResponseEntity<?> getAllInq(Authentication authentication) {
+	public ResponseEntity<?> getAllInq() {
 
 		try {
-			if (authentication == null) {
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용해주세요.");
-			}
-
 			List<Inq> result = inqService.getAllInq();
 
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 
 		} catch (Exception e) {
-
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("1:1 문의 목록 조회에 실패했습니다.");
 		}
 	}
