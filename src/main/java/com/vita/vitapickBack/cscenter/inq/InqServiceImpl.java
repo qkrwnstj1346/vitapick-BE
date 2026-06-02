@@ -14,13 +14,13 @@ public class InqServiceImpl implements InqService {
 
 	private final InqRepository inqRepository;
 
-	// 전체 문의 목록 조회
+	// 전체 1:1 문의 목록 조회
 	@Override
 	public List<Inq> getAllInq() {
 		return inqRepository.findAll();
 	}
 
-	// 회원 본인 문의 목록 조회
+	// 회원 본인 문의 목록 조회 (마이페이지)
 	@Override
 	public List<Inq> getMyInq(Long userNum) {
 		return inqRepository.findByUserNum(userNum);
@@ -48,11 +48,14 @@ public class InqServiceImpl implements InqService {
 
 	// 문의 등록
 	@Override
-	public Inq createInq(Inq inq) {
+	public Inq createInq(Inq inq, Long userNum) {
 		// 제목 또는 내용 미입력 체크
 		if (inq.getTtl() == null || inq.getTtl().isBlank() || inq.getInqTxt() == null || inq.getInqTxt().isBlank()) {
 			throw new RuntimeException("문의 제목과 내용을 입력해주세요.");
 		}
+
+		// 토큰에서 꺼낸 회원번호 강제 세팅
+		inq.setUserNum(userNum);
 
 		// 기본값 세팅
 		inq.setInqStCd("WAITING");

@@ -22,7 +22,6 @@ public class FaqServiceImpl implements FaqService {
 	}
 
 	// FAQ 상세 조회
-	// = FAQ 번호(faqId) 기준 단건 조회
 	@Override
 	public Faq selectOne(Long faqId) {
 
@@ -31,10 +30,9 @@ public class FaqServiceImpl implements FaqService {
 						new RuntimeException("FAQ 상세 정보를 불러오지 못했습니다."));
 	}
 
-	// FAQ 등록
-	// = 관리자만 가능
+	// FAQ 등록(관리자)
 	@Override
-	public Faq saveFaq(FaqDto dto) {
+	public Faq createFaq(FaqDto dto) {
 
 		// 제목 또는 내용 미입력 체크
 		if (dto.getTtl() == null || dto.getTtl().isBlank()
@@ -54,8 +52,7 @@ public class FaqServiceImpl implements FaqService {
 		return faqRepository.save(faq);
 	}
 
-	// FAQ 수정
-	// = 관리자만 가능
+	// FAQ 수정(관리자)
 	@Override
 	public Faq updateFaq(Long faqId, FaqDto dto) {
 
@@ -70,8 +67,7 @@ public class FaqServiceImpl implements FaqService {
 		return faqRepository.save(dbFaq);
 	}
 
-	// FAQ 삭제
-	// = 관리자만 가능
+	// FAQ 삭제(관리자)
 	@Override
 	public void deleteFaq(Long faqId) {
 
