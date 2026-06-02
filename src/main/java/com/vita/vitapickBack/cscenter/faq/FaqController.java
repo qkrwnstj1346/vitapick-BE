@@ -106,7 +106,7 @@ public class FaqController {
 						.body("관리자만 이용할 수 있습니다.");
 			}
 
-			Faq result = faqService.createFaq(dto);
+			Faq result = faqService.saveFaq(dto);
 
 			return ResponseEntity.status(HttpStatus.CREATED).body(result);
 

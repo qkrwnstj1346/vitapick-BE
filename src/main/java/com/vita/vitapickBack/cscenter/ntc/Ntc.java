@@ -37,7 +37,7 @@ public class Ntc{
 	private String ntcTxt;
 	
 	@Column(name="view_cnt", nullable = false)
-	private Integer viewCnt = 0;
+	private Integer viewCnt;
 	
 	@Column(name="use_yn",nullable = false)
 	private Character useYn;
