@@ -51,6 +51,27 @@ public class UsersController {
         }
     }
     
+    // 이메일 중복확인
+    @GetMapping("/checkemail/{email}")
+    public ResponseEntity<?> checkEmail(@PathVariable("email") String email) {
+        try {
+            boolean isDuplicate = usersService.checkEmail(email);
+            if (isDuplicate) {
+                // 중복 - 사용불가
+                return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("emailUse", "F", "message", "이미 사용중인 email입니다"));
+            } else {
+                // 사용가능
+                return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("emailUse", "T", "message", "사용가능한 email입니다"));
+            }
+        } catch (Exception e) {
+            log.error("** 아이디 중복확인 실패 => " + e.toString());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body("email 중복확인 실패");
+        }
+    }
+    
     // 회원가입
     // POST
     @PostMapping(value="/auth/join",

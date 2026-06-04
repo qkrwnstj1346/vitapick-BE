@@ -9,6 +9,9 @@ public interface UsersService {
     // 아이디 중복확인
     boolean checkLoginId(String loginId);
     
+    // 이메일 중복확인
+    boolean checkEmail(String email);
+    
     // 아이디 찾기
     public UsersDTO findId(UsersDTO usersDTO);
     

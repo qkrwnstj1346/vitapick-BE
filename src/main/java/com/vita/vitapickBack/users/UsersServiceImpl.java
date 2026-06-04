@@ -40,7 +40,14 @@ public class UsersServiceImpl implements UsersService{
         log.info("** checkLoginId => " + loginId);
         return usersRepository.existsByLoginId(loginId);
     }
-
+    
+    // 이메일 중복확인
+    @Override
+    public boolean checkEmail(String email) {
+    	log.info("** checkEmail => " + email);
+    	return usersRepository.existsByEmail(email);
+    }
+    
     // 회원가입
     @Override
     public void signup(UsersDTO usersDTO) {
