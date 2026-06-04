@@ -45,17 +45,17 @@ public class OrdController {
 		}
 	}
 
-	// 주문서 배송지 등록
-	// 주문서에서 배송지가 없거나 새 배송지를 추가할 때 사용
-	@PostMapping("/address")
-	public ResponseEntity<?> createOrderAddress(@RequestBody UserAddrDTO dto) {
-		try {
-			UserAddr result = userAddrService.createAddr(dto);
-			return ResponseEntity.status(HttpStatus.OK).body(result);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("주문서 배송지 등록에 실패했습니다.");
-		}
-	}
+	/*
+	 * // 주문서 배송지 등록 // 주문서에서 배송지가 없거나 새 배송지를 추가할 때 사용
+	 * 
+	 * @PostMapping("/address") public ResponseEntity<?>
+	 * createOrderAddress(@RequestBody UserAddrDTO dto) { try { UserAddr result =
+	 * userAddrService.createAddr(dto); return
+	 * ResponseEntity.status(HttpStatus.OK).body(result); } catch (Exception e) {
+	 * return
+	 * ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("주문서 배송지 등록에 실패했습니다."); }
+	 * }
+	 */
 
 	// 주문번호 조회
 	@GetMapping("/{ordNo}")
