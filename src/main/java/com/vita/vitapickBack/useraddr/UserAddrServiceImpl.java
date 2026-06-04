@@ -21,12 +21,12 @@ public class UserAddrServiceImpl implements UserAddrService {
 
 	// 배송지 등록
 	@Override
-	public UserAddr createAddr(UserAddrDTO dto) {
+	public UserAddr createAddr(Long userNum, UserAddrDTO dto) {
 
 		// 첫 배송지면 기본배송지 자동 설정
 		String baseYn = "N";
 
-		if (userAddrRepository.countByUserNum(dto.getUserNum()) == 0) {
+		if (userAddrRepository.countByUserNum(userNum) == 0) {
 
 			baseYn = "Y";
 		}
@@ -34,7 +34,7 @@ public class UserAddrServiceImpl implements UserAddrService {
 		// 기본배송지 등록 시 기존 기본배송지 해제
 		if ("Y".equals(dto.getBaseYn())) {
 
-			UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(dto.getUserNum(), "Y");
+			UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(userNum, "Y");
 
 			if (baseAddr != null) {
 
@@ -46,16 +46,23 @@ public class UserAddrServiceImpl implements UserAddrService {
 			baseYn = "Y";
 		}
 
-		UserAddr addr = UserAddr.builder().userNum(dto.getUserNum()).addrNm(dto.getAddrNm()).rcvNm(dto.getRcvNm())
-				.rcvTel(dto.getRcvTel()).zipCd(dto.getZipCd()).addr1(dto.getAddr1()).addr2(dto.getAddr2())
-				.baseYn(baseYn).build();
+		UserAddr addr = UserAddr.builder()
+				.userNum(userNum)
+				.addrNm(dto.getAddrNm())
+				.rcvNm(dto.getRcvNm())
+				.rcvTel(dto.getRcvTel())
+				.zipCd(dto.getZipCd())
+				.addr1(dto.getAddr1())
+				.addr2(dto.getAddr2())
+				.baseYn(baseYn)
+				.build();
 
 		return userAddrRepository.save(addr);
 	}
 
 	// 배송지 수정
 	@Override
-	public UserAddr updateAddr(Long addrId, UserAddrDTO dto) {
+	public UserAddr updateAddr(Long userNum, Long addrId, UserAddrDTO dto) {
 
 		UserAddr addr = userAddrRepository.findById(addrId).orElse(null);
 
@@ -64,10 +71,16 @@ public class UserAddrServiceImpl implements UserAddrService {
 			throw new RuntimeException("배송지가 존재하지 않습니다.");
 		}
 
+		// 배송지 주인 확인
+		if (!addr.getUserNum().equals(userNum)) {
+
+			throw new RuntimeException("배송지를 수정할 권한이 없습니다.");
+		}
+
 		// 기본배송지 변경
 		if ("Y".equals(dto.getBaseYn())) {
 
-			UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(dto.getUserNum(), "Y");
+			UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(userNum, "Y");
 
 			if (baseAddr != null && !baseAddr.getAddrId().equals(addrId)) {
 
@@ -95,13 +108,19 @@ public class UserAddrServiceImpl implements UserAddrService {
 
 	// 배송지 삭제
 	@Override
-	public void deleteAddr(Long addrId) {
+	public void deleteAddr(Long userNum, Long addrId) {
 
 		UserAddr addr = userAddrRepository.findById(addrId).orElse(null);
 
 		if (addr == null) {
 
 			throw new RuntimeException("배송지가 존재하지 않습니다.");
+		}
+
+		// 배송지 주인 확인
+		if (!addr.getUserNum().equals(userNum)) {
+
+			throw new RuntimeException("배송지를 삭제할 권한이 없습니다.");
 		}
 
 		userAddrRepository.delete(addr);
@@ -111,6 +130,19 @@ public class UserAddrServiceImpl implements UserAddrService {
 	@Override
 	public void updateBaseAddr(Long userNum, Long addrId) {
 
+		UserAddr newBaseAddr = userAddrRepository.findById(addrId).orElse(null);
+
+		if (newBaseAddr == null) {
+
+			throw new RuntimeException("배송지가 존재하지 않습니다.");
+		}
+
+		// 배송지 주인 확인
+		if (!newBaseAddr.getUserNum().equals(userNum)) {
+
+			throw new RuntimeException("기본 배송지를 변경할 권한이 없습니다.");
+		}
+
 		UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(userNum, "Y");
 
 		if (baseAddr != null) {
@@ -118,13 +150,6 @@ public class UserAddrServiceImpl implements UserAddrService {
 			baseAddr.setBaseYn("N");
 
 			userAddrRepository.save(baseAddr);
-		}
-
-		UserAddr newBaseAddr = userAddrRepository.findById(addrId).orElse(null);
-
-		if (newBaseAddr == null) {
-
-			throw new RuntimeException("배송지가 존재하지 않습니다.");
 		}
 
 		newBaseAddr.setBaseYn("Y");

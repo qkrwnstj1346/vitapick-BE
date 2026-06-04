@@ -8,15 +8,14 @@ public interface UserAddrService {
     List<UserAddr> findByUserNum(Long userNum);
 
     // 배송지 등록
-    UserAddr createAddr(UserAddrDTO dto);
+    UserAddr createAddr(Long userNum, UserAddrDTO dto);
 
     // 배송지 수정
-    UserAddr updateAddr(Long addrId, UserAddrDTO dto);
+    UserAddr updateAddr(Long userNum, Long addrId, UserAddrDTO dto);
 
     // 배송지 삭제
-    void deleteAddr(Long addrId);
+    void deleteAddr(Long userNum, Long addrId);
 
     // 기본 배송지 변경
     void updateBaseAddr(Long userNum, Long addrId);
-
 }
