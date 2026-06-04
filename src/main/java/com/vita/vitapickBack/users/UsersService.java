@@ -15,6 +15,9 @@ public interface UsersService {
     // 아이디 찾기
     public UsersDTO findId(UsersDTO usersDTO);
     
+    // 비밀번호 찾기
+    
+    
     // 회원가입
     void signup(UsersDTO usersDTO);
 
