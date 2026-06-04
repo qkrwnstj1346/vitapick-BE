@@ -156,7 +156,8 @@ public class UsersServiceImpl implements UsersService{
         	Claims claims = tokenProvider.validateToken(refreshToken);
         	//=> 분석과정에서 만료시 ExpiredJwtException 발생 -> catch 로 분기 
         	
-        	String userNum = (String)claims.get("userNum");
+			Number userNumNumber = (Number)claims.get("userNum");
+			Long userNum = userNumNumber.longValue();
         	String loginId = (String)claims.get("loginId"); 
             String roleCd = (String)claims.get("roleCd");
 
