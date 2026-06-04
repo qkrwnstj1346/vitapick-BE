@@ -79,7 +79,43 @@ public class UsersServiceImpl implements UsersService {
             .loginId(users.getLoginId())
             .build();
     }
-
+    
+    // 비밀번호찾기(인증번호발송)
+    private Map<String, String> sendOtpCodeStore = new HashMap<>();
+    
+    @Override
+    public String sendOtpCode(UsersDTO usersDTO) {
+    	log.info("** sendOtpCode => " + usersDTO.getLoginId());
+    	Users users = usersRepository.findByLoginIdAndUserNmAndEmail(
+    			usersDTO.getLoginId(),
+    			usersDTO.getUserNm(),
+    			usersDTO.getEmail()
+    			).orElseThrow(()->new RuntimeException("일치하는 회원정보가 없습니다."));
+    	String sendOtpCode = String.valueOf((int)(Math.round(0)*900000)+100000);
+    	sendOtpCodeStore.put(users.getLoginId(), sendOtpCode);
+    	
+    	return sendOtpCode;
+    }
+    
+    // 비밀번호찾기(비밀번호재설정)
+    @Override
+    @Transactional
+    public void resetPwd(UsersDTO usersDTO) {
+    	log.info("** resetPwd => " + usersDTO.getLoginId());
+    	String savedCode = sendOtpCodeStore.get(usersDTO.getLoginId());
+    	if(savedCode==null) {
+    		throw new RuntimeException("인증번호 발급 내역이 없습니다.");
+    	}
+    	if(!savedCode.equals(usersDTO.getOtpCode())) {
+    		throw new RuntimeException("인증번호가 일치하지 않습니다.");
+    	}
+    	Users users = usersRepository.findByLoginId(usersDTO.getLoginId())
+    			.orElseThrow(() -> new RuntimeException("회원정보가 없습니다."));
+    	users.setPwd(passwordEncoder.encode(usersDTO.getPwd()));
+    	usersRepository.save(users);
+    	sendOtpCodeStore.remove(usersDTO.getLoginId());
+    }
+    
     // 로그인
     @Override
     @Transactional

@@ -15,8 +15,11 @@ public interface UsersService {
     // 아이디 찾기
     public UsersDTO findId(UsersDTO usersDTO);
     
-    // 비밀번호 찾기
+    // 비밀번호 찾기(인증코드발송)
+    public String sendOtpCode(UsersDTO usersDTO);
     
+    // 비밀번호 찾기(비밀번호재설정)
+    void resetPwd(UsersDTO usersDTO);
     
     // 회원가입
     void signup(UsersDTO usersDTO);

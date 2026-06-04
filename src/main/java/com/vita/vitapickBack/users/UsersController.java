@@ -118,6 +118,29 @@ public class UsersController {
 	    }
 	}//findId	
 	
+	// 비밀번호찾기(인증번호발송)
+	@PostMapping("/auth/sendotpcode")
+	public ResponseEntity<?>sendOtpCode(@RequestBody UsersDTO usersDTO) {
+		try {
+			String sendOtpCode = usersService.sendOtpCode(usersDTO);
+			return ResponseEntity.status(HttpStatus.OK).body(sendOtpCode);
+		}catch(Exception e){
+			log.error("** 인증번호 발급 실패 =>" + e.toString());
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+		}
+	}
+	// 비밀번호찾기(비밀번호재설정)
+	@PostMapping("/auth/resetpwd")
+	public ResponseEntity<?>resetPwd(@RequestBody UsersDTO usersDTO) {
+		try {
+			usersService.resetPwd(usersDTO);
+			return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 변경되었습니다.");
+		}catch(Exception e) {
+			log.error("** 비밀번호 재설정 실패 =>" + e.toString());
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+		}
+	}
+
 	//=> 리프레쉬 토큰
 	//	AccessToken 만료시 front에서 요청함
     @GetMapping("/auth/getrefresh")
