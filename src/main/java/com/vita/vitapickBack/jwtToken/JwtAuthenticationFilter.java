@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	    //-> 기존 코드 때문 추가함: http://localhost:8080/ 등등 
 	    if(path.startsWith("/v1/auth/")) { return true; }
 	    if(path.startsWith("/v1/checkid")) { return true; }
+	    if(path.startsWith("/v1/checkemail")) { return true; }
 	    if(path.startsWith("/v1/auth/findid")) { return true; }
 	    //-> "/user/" 경로 호출은 체크하지 않음
 	    if(path.startsWith("/user/")) { return true; }

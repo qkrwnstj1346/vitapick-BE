@@ -156,13 +156,13 @@ public class UsersServiceImpl implements UsersService{
         	Claims claims = tokenProvider.validateToken(refreshToken);
         	//=> 분석과정에서 만료시 ExpiredJwtException 발생 -> catch 로 분기 
         	
-        	String usersNum = (String)claims.get("usersNum");
+        	String userNum = (String)claims.get("userNum");
         	String loginId = (String)claims.get("loginId"); 
             String roleCd = (String)claims.get("roleCd");
 
             //=> 새로운 accessToken 생성을 위한 claimList 생성
             Map<String, Object> claimList = new HashMap<>(); 
-            claimList.put("usersNum", usersNum);
+            claimList.put("userNum", userNum);
             claimList.put("loginId", loginId);
             claimList.put("roleCd", roleCd);
             

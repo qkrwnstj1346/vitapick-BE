@@ -66,7 +66,7 @@ public class UsersController {
                     .body(Map.of("emailUse", "T", "message", "사용가능한 email입니다"));
             }
         } catch (Exception e) {
-            log.error("** 아이디 중복확인 실패 => " + e.toString());
+            log.error("** 이메일 중복확인 실패 => " + e.toString());
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                 .body("email 중복확인 실패");
         }
