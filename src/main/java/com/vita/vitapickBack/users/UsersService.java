@@ -25,7 +25,7 @@ public interface UsersService {
     public ResponseEntity<?> getRefresh(String refreshToken, HttpServletResponse response);
     
     // 로그아웃
-    public void logout(HttpServletResponse response, Long usersNum);
+    public void logout(HttpServletResponse response, Long userNum);
 
     // 회원정보 조회
     public UsersDTO getUser(String loginId);

@@ -49,7 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	    if(path.startsWith("/v1/auth/")) { return true; }
 	    if(path.startsWith("/v1/checkid")) { return true; }
 	    if(path.startsWith("/v1/checkemail")) { return true; }
-	    if(path.startsWith("/v1/auth/findid")) { return true; }
 	    //-> "/user/" 경로 호출은 체크하지 않음
 	    if(path.startsWith("/user/")) { return true; }
 	    //-> 이미지 조회 경로는 체크하지 않는다면 (예시)
@@ -96,7 +95,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				
 				//=> 검증 성공시 claims 에서 id 와 roleList 가져와 시큐리티 인증정보에 저장함.
 				log.info("** Authenticated 결과 JWT claims: " + claims);
-				Long userNum = (Long)claims.get("userNum");
+				Number userNumNumber = (Number)claims.get("userNum");
+				Long userNum = userNumNumber.longValue();
 				String loginId = (String)claims.get("loginId");
 				String userNm = (String)claims.get("userNm");
 				String roleCd = (String)claims.get("roleCd");
