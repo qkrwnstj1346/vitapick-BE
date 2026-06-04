@@ -13,5 +13,7 @@ public interface RvwRepository extends JpaRepository<Rvw, Long> {
 	
 	// 회원 ID로 리뷰 조회 (최신순)
 	List<Rvw> findByUserNumOrderByCrtAtDesc(Long userNum);
-
+	
+	// 리뷰 삭제
+	void cancelRvw(Long userNum, Long rvwId);
 }

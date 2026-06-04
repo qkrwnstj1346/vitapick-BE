@@ -45,5 +45,20 @@ public class RvwServiceImpl implements RvwService {
         return rvwRepository.findById(rvwId)
                 .orElseThrow(() -> new RuntimeException("리뷰를 찾을 수 없습니다."));
     }
+    
+    // 리뷰 삭제 (useYn = 'N'으로 변경)
+    @Override
+    public void cancelRvw(Long userNum, Long rvwId) {
+        Rvw rvw = rvwRepository.findById(rvwId)
+                .orElseThrow(() -> new RuntimeException("리뷰를 찾을 수 없습니다."));
+
+        if (!rvw.getUserNum().equals(userNum)) {
+            throw new RuntimeException("본인의 리뷰만 취소할 수 있습니다.");
+        }
+
+        rvw.setUseYn("N");
+        rvw.setUpdAt(LocalDateTime.now());
+        rvwRepository.save(rvw);
+    }
 
 }

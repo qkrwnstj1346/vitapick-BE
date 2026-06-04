@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,6 +43,15 @@ public class RvwController {
     @GetMapping("/{rvwId}")
     public ResponseEntity<Rvw> findByRvwId(@PathVariable("rvwId") Long rvwId) {
         return ResponseEntity.ok(rvwService.findByRvwId(rvwId));
+    }
+    
+    // 리뷰 취소
+    @PatchMapping("/{rvwId}/cancel")
+    public ResponseEntity<Void> cancelRvw(
+            @AuthenticationPrincipal Long userNum,
+            @PathVariable("rvwId") Long rvwId) {
+        rvwService.cancelRvw(userNum, rvwId);
+        return ResponseEntity.ok().build();
     }
    
 }
