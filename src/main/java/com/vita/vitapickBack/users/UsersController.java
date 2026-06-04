@@ -86,6 +86,17 @@ public class UsersController {
 		return  ResponseEntity.ok("로그아웃 성공");
 	} //logout
     
+	// 아이디찾기
+	@PostMapping("/auth/findid")
+	public ResponseEntity<?> findId(@RequestBody UsersDTO usersDTO) {
+	    try {
+	        UsersDTO result = usersService.findId(usersDTO);
+	        return ResponseEntity.ok(result);
+	    } catch (RuntimeException e) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	    }
+	}//findId	
+	
 	//=> 리프레쉬 토큰
 	//	AccessToken 만료시 front에서 요청함
     @GetMapping("/auth/getrefresh")
