@@ -55,6 +55,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	    if(path.startsWith("/resources/uploadImages/")) { return true; }
 	    //-> 상품 조회 경로는 체크하지 않는다면 (예시)
 	    if(path.startsWith("/api/v1/product/")) { return true; }
+	    // 고객센터 공개 조회
+	    if(path.startsWith("/cscenter/notices")) { return true; }
+	    if(path.startsWith("/cscenter/faqs")) { return true; }
 	    
     	return false;
     } //shouldNotFilter
