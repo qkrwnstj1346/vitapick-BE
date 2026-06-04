@@ -8,7 +8,10 @@ public interface UsersService {
     
     // 아이디 중복확인
     boolean checkLoginId(String loginId);
-
+    
+    // 아이디 찾기
+    public UsersDTO findId(UsersDTO usersDTO);
+    
     // 회원가입
     void signup(UsersDTO usersDTO);
 

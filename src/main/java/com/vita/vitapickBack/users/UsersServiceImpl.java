@@ -64,7 +64,17 @@ public class UsersServiceImpl implements UsersService{
 
         usersRepository.save(users);
     }
-
+    
+    // 아이디찾기
+    @Override
+    public UsersDTO findId(UsersDTO usersDTO) {
+    	Users users = usersRepository.findByUserNmAndEmail(usersDTO.getUserNm(), usersDTO.getEmail())
+    									.orElseThrow(() -> new RuntimeException("일치하는 회원 정보가 없습니다."));
+    	return UsersDTO.builder()
+    			.loginId(users.getLoginId())
+    			.build();
+    }
+    
     // 로그인
     @Override
     @Transactional
