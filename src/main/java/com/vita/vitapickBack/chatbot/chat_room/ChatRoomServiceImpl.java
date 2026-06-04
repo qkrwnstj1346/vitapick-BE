@@ -25,12 +25,22 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final OpenAiChatModel openAiChatModel;
     private final ChatPrdService chatPrdService;
     private final PrdRepository prdRepository;
-
+    
     @Override
     public ChatMsg chatMsg(Long userNum, ChatRoomDto dto) {
 
+        // 0. 값 검증
+        if (userNum == null) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
+
+        if (dto == null || dto.getMsgTxt() == null || dto.getMsgTxt().trim().isEmpty()) {
+            throw new RuntimeException("메시지 내용이 없습니다.");
+        }
+
         // 1. 기존 ACTIVE 채팅방 있으면 재사용, 없으면 새로 생성
         Optional<ChatRoom> found = chatRoomRepository.findTopByUserNumAndChatStCd(userNum, "ACTIVE");
+
         ChatRoom chatRoom;
         if (found.isPresent()) {
             chatRoom = found.get();
