@@ -23,41 +23,23 @@ public class UserAddrServiceImpl implements UserAddrService {
 	@Override
 	public UserAddr createAddr(Long userNum, UserAddrDTO dto) {
 
-		// 첫 배송지면 기본배송지 자동 설정
+		int addrCount = userAddrRepository.countByUserNum(userNum);
+
+		if (addrCount >= 10) {
+			throw new RuntimeException("배송지는 최대 10개까지 등록할 수 있습니다.");
+		}
+
 		String baseYn = "N";
 
-		if (userAddrRepository.countByUserNum(userNum) == 0) {
-
+		if (addrCount == 0) {
 			baseYn = "Y";
 		}
 
-		// 기본배송지 등록 시 기존 기본배송지 해제
-		if ("Y".equals(dto.getBaseYn())) {
+	UserAddr addr = UserAddr.builder().userNum(userNum).addrNm(dto.getAddrNm()).rcvNm(dto.getRcvNm())
+				.rcvTel(dto.getRcvTel()).zipCd(dto.getZipCd()).addr1(dto.getAddr1()).addr2(dto.getAddr2())
+				.baseYn(baseYn).build();
 
-			UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(userNum, "Y");
-
-			if (baseAddr != null) {
-
-				baseAddr.setBaseYn("N");
-
-				userAddrRepository.save(baseAddr);
-			}
-
-			baseYn = "Y";
-		}
-
-		UserAddr addr = UserAddr.builder()
-				.userNum(userNum)
-				.addrNm(dto.getAddrNm())
-				.rcvNm(dto.getRcvNm())
-				.rcvTel(dto.getRcvTel())
-				.zipCd(dto.getZipCd())
-				.addr1(dto.getAddr1())
-				.addr2(dto.getAddr2())
-				.baseYn(baseYn)
-				.build();
-
-		return userAddrRepository.save(addr);
+	return userAddrRepository.save(addr);
 	}
 
 	// 배송지 수정

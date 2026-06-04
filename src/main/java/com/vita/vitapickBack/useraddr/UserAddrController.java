@@ -25,18 +25,42 @@ public class UserAddrController {
 
     private final UserAddrService userAddrService;
 
+    // 로그인 확인
+    private ResponseEntity<?> checkLogin(Long userNum) {
+
+        if (userNum == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("로그인 후 이용해주세요.");
+        }
+
+        return null;
+    }
+
     // 회원 배송지 목록 조회
     // 마이페이지 배송지 관리 / 주문서 배송지 선택 둘 다 사용
     @GetMapping
     public ResponseEntity<?> findByUserNum(@AuthenticationPrincipal Long userNum) {
+
+        ResponseEntity<?> loginCheck = checkLogin(userNum);
+
+        if (loginCheck != null) {
+            return loginCheck;
+        }
+
         try {
-        	
-        	 log.info("배송지 조회 userNum => " + userNum);
+            log.info("배송지 조회 userNum => " + userNum);
+
             List<UserAddr> result = userAddrService.findByUserNum(userNum);
+
             return ResponseEntity.status(HttpStatus.OK).body(result);
+
         } catch (Exception e) {
-            log.error("배송지 목록 조회 실패" + e.toString());
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("배송지 목록 조회에 실패했습니다.");
+            log.error("배송지 목록 조회 실패 => " + e.toString());
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_GATEWAY)
+                    .body("배송지 목록 조회에 실패했습니다.");
         }
     }
 
@@ -46,12 +70,24 @@ public class UserAddrController {
     public ResponseEntity<?> createAddr(
             @AuthenticationPrincipal Long userNum,
             @RequestBody UserAddrDTO dto) {
+
+        ResponseEntity<?> loginCheck = checkLogin(userNum);
+
+        if (loginCheck != null) {
+            return loginCheck;
+        }
+
         try {
             UserAddr result = userAddrService.createAddr(userNum, dto);
+
             return ResponseEntity.status(HttpStatus.OK).body(result);
+
         } catch (Exception e) {
-            log.error("배송지 등록 실패" + e.toString());
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("배송지 등록에 실패했습니다.");
+            log.error("배송지 등록 실패 => " + e.toString());
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
     }
 
@@ -62,12 +98,24 @@ public class UserAddrController {
             @AuthenticationPrincipal Long userNum,
             @PathVariable("addrId") Long addrId,
             @RequestBody UserAddrDTO dto) {
+
+        ResponseEntity<?> loginCheck = checkLogin(userNum);
+
+        if (loginCheck != null) {
+            return loginCheck;
+        }
+
         try {
             UserAddr result = userAddrService.updateAddr(userNum, addrId, dto);
+
             return ResponseEntity.status(HttpStatus.OK).body(result);
+
         } catch (Exception e) {
-            log.error("배송지 수정 실패" + e.toString());
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("배송지 수정에 실패했습니다.");
+            log.error("배송지 수정 실패 => " + e.toString());
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_GATEWAY)
+                    .body("배송지 수정에 실패했습니다.");
         }
     }
 
@@ -77,12 +125,26 @@ public class UserAddrController {
     public ResponseEntity<?> deleteAddr(
             @AuthenticationPrincipal Long userNum,
             @PathVariable("addrId") Long addrId) {
+
+        ResponseEntity<?> loginCheck = checkLogin(userNum);
+
+        if (loginCheck != null) {
+            return loginCheck;
+        }
+
         try {
             userAddrService.deleteAddr(userNum, addrId);
-            return ResponseEntity.status(HttpStatus.OK).body("배송지가 삭제되었습니다.");
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("배송지가 삭제되었습니다.");
+
         } catch (Exception e) {
-            log.error("배송지 삭제 실패" + e.toString());
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("배송지 삭제에 실패했습니다.");
+            log.error("배송지 삭제 실패 => " + e.toString());
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_GATEWAY)
+                    .body("배송지 삭제에 실패했습니다.");
         }
     }
 
@@ -92,12 +154,26 @@ public class UserAddrController {
     public ResponseEntity<?> updateBaseAddr(
             @AuthenticationPrincipal Long userNum,
             @PathVariable("addrId") Long addrId) {
+
+        ResponseEntity<?> loginCheck = checkLogin(userNum);
+
+        if (loginCheck != null) {
+            return loginCheck;
+        }
+
         try {
             userAddrService.updateBaseAddr(userNum, addrId);
-            return ResponseEntity.status(HttpStatus.OK).body("기본 배송지가 변경되었습니다.");
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("기본 배송지가 변경되었습니다.");
+
         } catch (Exception e) {
-            log.error("기본 배송지 변경 실패" + e.toString());
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("기본 배송지 변경에 실패했습니다.");
+            log.error("기본 배송지 변경 실패 => " + e.toString());
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_GATEWAY)
+                    .body("기본 배송지 변경에 실패했습니다.");
         }
     }
 }

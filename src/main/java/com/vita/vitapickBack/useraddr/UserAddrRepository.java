@@ -14,6 +14,8 @@ public interface UserAddrRepository extends JpaRepository<UserAddr, Long> {
 
 	// 회원 배송지 개수 조회
 	int countByUserNum(Long userNum);
+	
+	
 
 	// 배송지 등록
 	// 기본 제공 메서드 사용
