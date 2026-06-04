@@ -82,4 +82,35 @@ public class RvwServiceImpl implements RvwService {
         // 변경 내용 저장
         rvwRepository.save(rvw);
     }
+    
+    // 리뷰 수정
+    @Override
+    public Rvw updateRvw(Long userNum, Long rvwId, RvwDTO dto) {
+
+        // 수정할 리뷰 조회
+        Rvw rvw = rvwRepository.findById(rvwId)
+                .orElseThrow(() -> new RuntimeException("리뷰를 찾을 수 없습니다."));
+
+        // 본인이 작성한 리뷰인지 확인
+        if (!rvw.getUserNum().equals(userNum)) {
+            throw new RuntimeException("본인의 리뷰만 수정할 수 있습니다.");
+        }
+
+        // 삭제된 리뷰는 수정 못 하게 막기
+        if (!"Y".equals(rvw.getUseYn())) {
+            throw new RuntimeException("삭제된 리뷰는 수정할 수 없습니다.");
+        }
+
+        // 별점 수정
+        rvw.setRating(dto.getRating());
+
+        // 리뷰 내용 수정
+        rvw.setCmt(dto.getCmt());
+
+        // 수정 시간 저장
+        rvw.setUpdAt(LocalDateTime.now());
+
+        // DB 저장
+        return rvwRepository.save(rvw);
+    }
 }

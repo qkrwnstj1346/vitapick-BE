@@ -18,5 +18,8 @@ public interface RvwService {
     
     // 리뷰 취소
     void cancelRvw(Long userNum, Long rvwId);
+    
+    // 리뷰 수정
+    Rvw updateRvw(Long userNum, Long rvwId, RvwDTO dto);
 
 }

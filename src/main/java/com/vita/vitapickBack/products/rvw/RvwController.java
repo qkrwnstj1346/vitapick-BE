@@ -66,4 +66,14 @@ public class RvwController {
         rvwService.cancelRvw(userNum, rvwId);
         return ResponseEntity.ok().build();
     }
+    
+    // 리뷰 수정
+    @PatchMapping("/{rvwId}")
+    public ResponseEntity<Rvw> updateRvw(
+            @AuthenticationPrincipal Long userNum,
+            @PathVariable("rvwId") Long rvwId,
+            @RequestBody RvwDTO dto) {
+
+        return ResponseEntity.ok(rvwService.updateRvw(userNum, rvwId, dto));
+    }
 }
