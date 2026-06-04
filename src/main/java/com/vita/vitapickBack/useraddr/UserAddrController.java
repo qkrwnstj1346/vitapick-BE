@@ -59,8 +59,35 @@ public class UserAddrController {
             log.error("배송지 목록 조회 실패 => " + e.toString());
 
             return ResponseEntity
-                    .status(HttpStatus.BAD_GATEWAY)
-                    .body("배송지 목록 조회에 실패했습니다.");
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    // 기본 배송지 조회
+    // 주문서 진입 시 기본 배송지 자동 표시
+    @GetMapping("/base")
+    public ResponseEntity<?> getBaseAddr(@AuthenticationPrincipal Long userNum) {
+
+        ResponseEntity<?> loginCheck = checkLogin(userNum);
+
+        if (loginCheck != null) {
+            return loginCheck;
+        }
+
+        try {
+            log.info("기본 배송지 조회 userNum => " + userNum);
+
+            UserAddr result = userAddrService.getBaseAddr(userNum);
+
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (Exception e) {
+            log.error("기본 배송지 조회 실패 => " + e.toString());
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
     }
 
@@ -114,8 +141,8 @@ public class UserAddrController {
             log.error("배송지 수정 실패 => " + e.toString());
 
             return ResponseEntity
-                    .status(HttpStatus.BAD_GATEWAY)
-                    .body("배송지 수정에 실패했습니다.");
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
     }
 
@@ -143,8 +170,8 @@ public class UserAddrController {
             log.error("배송지 삭제 실패 => " + e.toString());
 
             return ResponseEntity
-                    .status(HttpStatus.BAD_GATEWAY)
-                    .body("배송지 삭제에 실패했습니다.");
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
     }
 
@@ -172,8 +199,8 @@ public class UserAddrController {
             log.error("기본 배송지 변경 실패 => " + e.toString());
 
             return ResponseEntity
-                    .status(HttpStatus.BAD_GATEWAY)
-                    .body("기본 배송지 변경에 실패했습니다.");
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
     }
 }

@@ -3,7 +3,9 @@ package com.vita.vitapickBack.order;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface OrdItRepository extends JpaRepository<OrdIt, Long> {
 
     // 주문별 주문상품 목록 조회

@@ -3,139 +3,116 @@ package com.vita.vitapickBack.useraddr;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserAddrServiceImpl implements UserAddrService {
 
-	private final UserAddrRepository userAddrRepository;
+    private final UserAddrRepository userAddrRepository;
 
-	// 회원 배송지 목록 조회
-	@Override
-	public List<UserAddr> findByUserNum(Long userNum) {
+    // 회원 배송지 목록 조회
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserAddr> findByUserNum(Long userNum) {
+        return userAddrRepository.findByUserNum(userNum);
+    }
 
-		return userAddrRepository.findByUserNum(userNum);
-	}
+    // 기본 배송지 조회
+    @Override
+    @Transactional(readOnly = true)
+    public UserAddr getBaseAddr(Long userNum) {
+        return userAddrRepository.findByUserNumAndBaseYn(userNum, "Y")
+                .orElse(null);
+    }
 
-	// 배송지 등록
-	@Override
-	public UserAddr createAddr(Long userNum, UserAddrDTO dto) {
+    // 배송지 등록
+    @Override
+    public UserAddr createAddr(Long userNum, UserAddrDTO dto) {
 
-		int addrCount = userAddrRepository.countByUserNum(userNum);
+        int addrCount = userAddrRepository.countByUserNum(userNum);
 
-		if (addrCount >= 10) {
-			throw new RuntimeException("배송지는 최대 10개까지 등록할 수 있습니다.");
-		}
+        if (addrCount >= 10) {
+            throw new RuntimeException("배송지는 최대 10개까지 등록할 수 있습니다.");
+        }
 
-		String baseYn = "N";
+        String baseYn = "N";
 
-		if (addrCount == 0) {
-			baseYn = "Y";
-		}
+        if (addrCount == 0) {
+            baseYn = "Y";
+        }
 
-	UserAddr addr = UserAddr.builder().userNum(userNum).addrNm(dto.getAddrNm()).rcvNm(dto.getRcvNm())
-				.rcvTel(dto.getRcvTel()).zipCd(dto.getZipCd()).addr1(dto.getAddr1()).addr2(dto.getAddr2())
-				.baseYn(baseYn).build();
+        UserAddr addr = UserAddr.builder()
+                .userNum(userNum)
+                .addrNm(dto.getAddrNm())
+                .rcvNm(dto.getRcvNm())
+                .rcvTel(dto.getRcvTel())
+                .zipCd(dto.getZipCd())
+                .addr1(dto.getAddr1())
+                .addr2(dto.getAddr2())
+                .baseYn(baseYn)
+                .build();
 
-	return userAddrRepository.save(addr);
-	}
+        return userAddrRepository.save(addr);
+    }
 
-	// 배송지 수정
-	@Override
-	public UserAddr updateAddr(Long userNum, Long addrId, UserAddrDTO dto) {
+    // 배송지 수정
+    @Override
+    public UserAddr updateAddr(Long userNum, Long addrId, UserAddrDTO dto) {
 
-		UserAddr addr = userAddrRepository.findById(addrId).orElse(null);
+        UserAddr addr = userAddrRepository.findByAddrIdAndUserNum(addrId, userNum)
+                .orElseThrow(() -> new RuntimeException("배송지가 존재하지 않습니다."));
 
-		if (addr == null) {
+        // 기본 배송지 변경
+        if ("Y".equals(dto.getBaseYn())) {
 
-			throw new RuntimeException("배송지가 존재하지 않습니다.");
-		}
+            UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(userNum, "Y")
+                    .orElse(null);
 
-		// 배송지 주인 확인
-		if (!addr.getUserNum().equals(userNum)) {
+            if (baseAddr != null && !baseAddr.getAddrId().equals(addrId)) {
+                baseAddr.setBaseYn("N");
+            }
 
-			throw new RuntimeException("배송지를 수정할 권한이 없습니다.");
-		}
+            addr.setBaseYn("Y");
+        }
 
-		// 기본배송지 변경
-		if ("Y".equals(dto.getBaseYn())) {
+        addr.setAddrNm(dto.getAddrNm());
+        addr.setRcvNm(dto.getRcvNm());
+        addr.setRcvTel(dto.getRcvTel());
+        addr.setZipCd(dto.getZipCd());
+        addr.setAddr1(dto.getAddr1());
+        addr.setAddr2(dto.getAddr2());
 
-			UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(userNum, "Y");
+        return addr;
+    }
 
-			if (baseAddr != null && !baseAddr.getAddrId().equals(addrId)) {
+    // 배송지 삭제
+    @Override
+    public void deleteAddr(Long userNum, Long addrId) {
 
-				baseAddr.setBaseYn("N");
+        UserAddr addr = userAddrRepository.findByAddrIdAndUserNum(addrId, userNum)
+                .orElseThrow(() -> new RuntimeException("배송지가 존재하지 않습니다."));
 
-				userAddrRepository.save(baseAddr);
-			}
+        userAddrRepository.delete(addr);
+    }
 
-			addr.setBaseYn("Y");
+    // 기본 배송지 변경
+    @Override
+    public void updateBaseAddr(Long userNum, Long addrId) {
 
-		} else {
+        UserAddr newBaseAddr = userAddrRepository.findByAddrIdAndUserNum(addrId, userNum)
+                .orElseThrow(() -> new RuntimeException("배송지가 존재하지 않습니다."));
 
-			addr.setBaseYn("N");
-		}
+        UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(userNum, "Y")
+                .orElse(null);
 
-		addr.setAddrNm(dto.getAddrNm());
-		addr.setRcvNm(dto.getRcvNm());
-		addr.setRcvTel(dto.getRcvTel());
-		addr.setZipCd(dto.getZipCd());
-		addr.setAddr1(dto.getAddr1());
-		addr.setAddr2(dto.getAddr2());
+        if (baseAddr != null) {
+            baseAddr.setBaseYn("N");
+        }
 
-		return userAddrRepository.save(addr);
-	}
-
-	// 배송지 삭제
-	@Override
-	public void deleteAddr(Long userNum, Long addrId) {
-
-		UserAddr addr = userAddrRepository.findById(addrId).orElse(null);
-
-		if (addr == null) {
-
-			throw new RuntimeException("배송지가 존재하지 않습니다.");
-		}
-
-		// 배송지 주인 확인
-		if (!addr.getUserNum().equals(userNum)) {
-
-			throw new RuntimeException("배송지를 삭제할 권한이 없습니다.");
-		}
-
-		userAddrRepository.delete(addr);
-	}
-
-	// 기본 배송지 변경
-	@Override
-	public void updateBaseAddr(Long userNum, Long addrId) {
-
-		UserAddr newBaseAddr = userAddrRepository.findById(addrId).orElse(null);
-
-		if (newBaseAddr == null) {
-
-			throw new RuntimeException("배송지가 존재하지 않습니다.");
-		}
-
-		// 배송지 주인 확인
-		if (!newBaseAddr.getUserNum().equals(userNum)) {
-
-			throw new RuntimeException("기본 배송지를 변경할 권한이 없습니다.");
-		}
-
-		UserAddr baseAddr = userAddrRepository.findByUserNumAndBaseYn(userNum, "Y");
-
-		if (baseAddr != null) {
-
-			baseAddr.setBaseYn("N");
-
-			userAddrRepository.save(baseAddr);
-		}
-
-		newBaseAddr.setBaseYn("Y");
-
-		userAddrRepository.save(newBaseAddr);
-	}
+        newBaseAddr.setBaseYn("Y");
+    }
 }

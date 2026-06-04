@@ -3,7 +3,9 @@ package com.vita.vitapickBack.cscenter.ntc;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface NtcRepository extends JpaRepository<Ntc, Long> {
 
 	// JpaRepository 기본 제공 메서드
