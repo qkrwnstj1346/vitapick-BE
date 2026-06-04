@@ -19,8 +19,11 @@ public class ChatRoomController {
 	private final ChatRoomService chatRoomService;
 	
 	@PostMapping("/message")
-    public ResponseEntity<ChatMsg> chatMsg(@AuthenticationPrincipal Long userNum, @RequestBody ChatRoomDto dto) {
-        ChatMsg result = chatRoomService.chatMsg(userNum, dto);
-        return ResponseEntity.ok(result);
-    }
+	public ResponseEntity<ChatMsg> chatMsg(
+	        @AuthenticationPrincipal Long userNum,
+	        @RequestBody ChatRoomDto dto) {
+
+	    ChatMsg result = chatRoomService.chatMsg(userNum, dto);
+	    return ResponseEntity.ok(result);
+	}
 }
