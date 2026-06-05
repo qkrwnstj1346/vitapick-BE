@@ -37,7 +37,7 @@ public class Users {
 	@Column(name="login_id", nullable = false)
 	private String loginId;
 	
-	@Column(name="pwd", nullable = false, updatable=false)
+	@Column(name="pwd", nullable = false)
 	private String pwd;
 	
 	@Column(name="user_nm", nullable = false)
