@@ -24,5 +24,8 @@ public class RvwDTO {
 
     // 리뷰 내용
     private String cmt;
+    
+    // 관리자 답글 내용
+    private String replyTxt;
 
 }
