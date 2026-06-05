@@ -31,5 +31,7 @@ public class CartDTO {
     
     // 장바구니 커스텀 상품 추천 사유 
     private String cusReason;
+    // 장바구니 커스텀 상품 커스텀 타이틀
+    private String surTitle;
 
 }

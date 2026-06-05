@@ -28,8 +28,8 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 				p.price,
 				p.brand,
 				pi.imgUrl,
-				cu.cusReason
-
+				cu.cusReason,
+				cu.surTitle
 			)
 			FROM Cart c
 			JOIN Prd p ON c.prdId = p.prdId
