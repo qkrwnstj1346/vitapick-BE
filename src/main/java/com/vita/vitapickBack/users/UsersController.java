@@ -152,10 +152,10 @@ public class UsersController {
     // 회원정보 조회
     // GET
     @GetMapping("/info")
-    public ResponseEntity<?> getUser(@AuthenticationPrincipal String loginId) {
+    public ResponseEntity<?> getUser(@AuthenticationPrincipal Long userNum) {
     	try {
-    		UsersDTO result = usersService.getUser(loginId);
-    		log.info("userdetail, 전달된 loginId 확인 => "+loginId);
+    		UsersDTO result = usersService.getUser(userNum);
+    		log.info("userdetail, 전달된 loginId 확인 => "+result.getLoginId());
     		return ResponseEntity.status(HttpStatus.OK).body(result);
     	}catch(Exception e){
             log.error("** 회원정보조회실패 => " + e.toString());
@@ -166,18 +166,13 @@ public class UsersController {
     
     // 회원정보 수정
     // PUT
-    @PutMapping(value="/update",
-        consumes=MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value="/update", consumes=MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateUser(
-    		HttpServletRequest request,
+    		@AuthenticationPrincipal Long userNum,
             @RequestBody UsersDTO usersDTO) {
         try {
-        	// 토큰에서 loginId 꺼내기
-        	Map<String, Object> claims = (Map<String, Object>) request.getAttribute("claims");
-        	String loginId = (String) claims.get("id");
-        	
-            usersService.updateUser(loginId, usersDTO);
-            log.info("** 회원정보 수정 성공 => " + loginId);
+            usersService.updateUser(userNum, usersDTO);
+            log.info("** 회원정보 수정 성공 => userNum" + userNum);
             return ResponseEntity.status(HttpStatus.OK)
                 .body("회원정보 수정 성공");
         } catch (Exception e) {
@@ -190,14 +185,10 @@ public class UsersController {
     // 회원탈퇴
     // DELETE
     @DeleteMapping("/withdraw")
-    public ResponseEntity<?> withdraw(HttpServletRequest request) {
+    public ResponseEntity<?> withdraw(@AuthenticationPrincipal Long userNum) {
         try {
-        	// 토큰에서 loginId 꺼내기
-        	Map<String, Object> claims = (Map<String, Object>) request.getAttribute("claims");
-        	String loginId = (String) claims.get("id");
-        	
-            usersService.withdraw(loginId);
-            log.info("** 회원탈퇴 성공 => " + loginId);
+            usersService.withdraw(userNum);
+            log.info("** 회원탈퇴 성공 => userNum" + userNum);
             return ResponseEntity.status(HttpStatus.OK)
                 .body("회원탈퇴 성공");
         } catch (Exception e) {
