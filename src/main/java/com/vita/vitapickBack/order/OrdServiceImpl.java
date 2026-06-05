@@ -109,6 +109,7 @@ public class OrdServiceImpl implements OrdService {
                 .ordNo(ordNo)
                 .addrId(orddto.getAddrId())
                 .totalAmt(orddto.getTotalAmt())
+                .reqMsg(orddto.getReqMsg())
                 .ordStCd("PAID")
                 .build();
 

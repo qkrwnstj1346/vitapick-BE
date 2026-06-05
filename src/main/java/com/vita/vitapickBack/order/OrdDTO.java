@@ -21,6 +21,7 @@ public class OrdDTO {
     private Long addrId;
     private String ordStCd;
     private Integer totalAmt;
+    private String reqMsg;
     private LocalDateTime crtAt;
     private LocalDateTime updAt;
     

@@ -46,6 +46,9 @@ public class Ord {
     @Column(name = "total_amt", nullable = false)
     @Builder.Default
     private Integer totalAmt = 0;
+    
+    @Column(name = "req_msg", length = 255)
+    private String reqMsg;
 
     @CreationTimestamp
     @Column(name = "crt_at", updatable = false)
