@@ -29,6 +29,9 @@ public class Cus {
 	@Column(name = "sur_id", unique = true)
 	private Long surId;
 
+	@Column(name = "sur_title", unique = true)
+	private String surTitle;
+	
 	@Column(name = "user_num")
 	private Long userNum;
 

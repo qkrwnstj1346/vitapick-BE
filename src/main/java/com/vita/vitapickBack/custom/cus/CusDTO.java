@@ -18,6 +18,7 @@ public class CusDTO {
 
 	private Long cusId;
 	private Long surId;
+	private String surTitle;
 	private Long userNum;
 	private String aiModel;
 	private String cusSum;        // 커스텀 요약
