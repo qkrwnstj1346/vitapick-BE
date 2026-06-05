@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vita.vitapickBack.users.UsersRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,15 +26,22 @@ public class RvwController {
 
     private final RvwService rvwService;
 
+    private final UsersRepository usersRepository;
+
     // 관리자 권한 확인
+    // JwtAuthenticationFilter에서 authorities 가 비어 있으므로
+    // authentication principal 의 userNum 으로 users 테이블을 조회해서 roleCd 확인
     private boolean isAdmin(Authentication authentication) {
 
         if (authentication == null) {
             return false;
         }
 
-        return authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        Long userNum = Long.valueOf(authentication.getPrincipal().toString());
+
+        return usersRepository.findById(userNum)
+                .map(user -> "ROLE_ADMIN".equals(user.getRoleCd()) || "ADMIN".equals(user.getRoleCd()))
+                .orElse(false);
     }
 
     // 리뷰 작성
