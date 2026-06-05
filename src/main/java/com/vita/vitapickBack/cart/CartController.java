@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,9 +26,9 @@ public class CartController {
 
 	private final CartService cartService;
 
-	// 회원 장바구니 목록 조회(상품 노출)
-	@GetMapping("/{userNum}")
-	public ResponseEntity<?> findByUserNum(@PathVariable("userNum") Long userNum) {
+	// 회원 장바구니 목록 조회
+	@GetMapping
+	public ResponseEntity<?> findByUserNum(@AuthenticationPrincipal Long userNum) {
 		try {
 			List<CartDTO> result = cartService.findCartListWithProduct(userNum);
 			return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -36,22 +37,21 @@ public class CartController {
 		}
 	}
 
-	// 장바구니 화면용 상품 목록 조회
-
 	// 동일 상품 체크
 	@GetMapping("/check")
-	public ResponseEntity<?> checkCart(@RequestParam("userNum") Long userNum, @RequestParam("prdId") Long prdId,
+	public ResponseEntity<?> checkCart(
+			@AuthenticationPrincipal Long userNum,
+			@RequestParam("prdId") Long prdId,
 			@RequestParam(value = "cusId", required = false) Long cusId) {
 		try {
 			Cart result;
-			// 일반 상품
+
 			if (cusId == null) {
 				result = cartService.findByUserNumAndCusIdIsNullAndPrdId(userNum, prdId);
-			}
-			// 커스텀 상품
-			else {
+			} else {
 				result = cartService.findByUserNumAndCusIdAndPrdId(userNum, cusId, prdId);
 			}
+
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("동일 상품 확인에 실패했습니다.");
@@ -60,18 +60,22 @@ public class CartController {
 
 	// 장바구니 담기
 	@PostMapping
-	public ResponseEntity<?> addCart(@RequestBody CartDTO dto) {
+	public ResponseEntity<?> addCart(
+			@AuthenticationPrincipal Long userNum,
+			@RequestBody CartDTO dto) {
 		try {
-			Cart result = cartService.addCart(dto);
+			Cart result = cartService.addCart(userNum, dto);
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
 		}
 	}
 
-	// 장바구니 수량 증가/감소/변경
+	// 장바구니 수량 변경
 	@PatchMapping("/{cartId}/qty")
-	public ResponseEntity<?> updateQty(@PathVariable("cartId") Long cartId, @RequestBody CartDTO dto) {
+	public ResponseEntity<?> updateQty(
+			@PathVariable("cartId") Long cartId,
+			@RequestBody CartDTO dto) {
 		try {
 			Cart result = cartService.updateQty(cartId, dto.getItQty());
 			return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -80,26 +84,24 @@ public class CartController {
 		}
 	}
 
-	// 장바구니 선택 상태 변경
 	// 전체 선택 / 전체 해제
-	@PatchMapping("/selected/all/{userNum}")
+	@PatchMapping("/selected/all")
 	public ResponseEntity<?> updateAllSelectedYn(
-	        @PathVariable("userNum") Long userNum,
-	        @RequestBody CartDTO dto) {
-	    try {
-	        cartService.updateAllSelectedYn(userNum, dto.getSelectedYn());
-	        return ResponseEntity.status(HttpStatus.OK).body("상태 변경되었습니다.");
-	    } catch (Exception e) {
-	        return ResponseEntity
-	                .status(HttpStatus.BAD_GATEWAY)
-	                .body("상태 변경에 실패했습니다.");
-	    }
+			@AuthenticationPrincipal Long userNum,
+			@RequestBody CartDTO dto) {
+		try {
+			cartService.updateAllSelectedYn(userNum, dto.getSelectedYn());
+			return ResponseEntity.status(HttpStatus.OK).body("상태 변경되었습니다.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("상태 변경에 실패했습니다.");
+		}
 	}
 
 	// 장바구니 선택 상태 변경
-	// 체크박스 선택/해제 시 사용
 	@PatchMapping("/{cartId}/selected")
-	public ResponseEntity<?> updateSelectedYn(@PathVariable("cartId") Long cartId, @RequestBody CartDTO dto) {
+	public ResponseEntity<?> updateSelectedYn(
+			@PathVariable("cartId") Long cartId,
+			@RequestBody CartDTO dto) {
 		try {
 			Cart result = cartService.updateSelectedYn(cartId, dto.getSelectedYn());
 			return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -110,9 +112,11 @@ public class CartController {
 
 	// 장바구니 개별 삭제
 	@DeleteMapping("/{cartId}")
-	public ResponseEntity<?> deleteCart(@PathVariable("cartId") Long cartId) {
+	public ResponseEntity<?> deleteCart(
+			@AuthenticationPrincipal Long userNum,
+			@PathVariable("cartId") Long cartId) {
 		try {
-			Cart result = cartService.deleteCart(cartId);
+			Cart result = cartService.deleteCart(userNum, cartId);
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
@@ -120,8 +124,8 @@ public class CartController {
 	}
 
 	// 선택된 장바구니 상품 조회
-	@GetMapping("/selected/{userNum}")
-	public ResponseEntity<?> findByUserNumAndSelectedYn(@PathVariable("userNum") Long userNum) {
+	@GetMapping("/selected")
+	public ResponseEntity<?> findByUserNumAndSelectedYn(@AuthenticationPrincipal Long userNum) {
 		try {
 			List<Cart> result = cartService.findByUserNumAndSelectedYn(userNum, 'Y');
 			return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -131,8 +135,8 @@ public class CartController {
 	}
 
 	// 선택 상품 삭제
-	@DeleteMapping("/selected/{userNum}")
-	public ResponseEntity<?> deleteByUserNumAndSelectedYn(@PathVariable("userNum") Long userNum) {
+	@DeleteMapping("/selected")
+	public ResponseEntity<?> deleteByUserNumAndSelectedYn(@AuthenticationPrincipal Long userNum) {
 		try {
 			cartService.deleteByUserNumAndSelectedYn(userNum, 'Y');
 			return ResponseEntity.status(HttpStatus.OK).build();
@@ -142,8 +146,8 @@ public class CartController {
 	}
 
 	// 전체 삭제
-	@DeleteMapping("/all/{userNum}")
-	public ResponseEntity<?> deleteByUserNum(@PathVariable("userNum") Long userNum) {
+	@DeleteMapping("/all")
+	public ResponseEntity<?> deleteByUserNum(@AuthenticationPrincipal Long userNum) {
 		try {
 			cartService.deleteByUserNum(userNum);
 			return ResponseEntity.status(HttpStatus.OK).build();
@@ -164,8 +168,9 @@ public class CartController {
 	}
 
 	// 장바구니 전체 수량 99개 체크
-	@GetMapping("/check/total/{userNum}/{itQty}")
-	public ResponseEntity<?> totalCheckQty(@PathVariable("userNum") Long userNum,
+	@GetMapping("/check/total/{itQty}")
+	public ResponseEntity<?> totalCheckQty(
+			@AuthenticationPrincipal Long userNum,
 			@PathVariable("itQty") Integer itQty) {
 		try {
 			cartService.totalCheckQty(userNum, itQty);

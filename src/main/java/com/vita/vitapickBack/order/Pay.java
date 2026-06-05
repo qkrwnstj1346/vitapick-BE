@@ -47,7 +47,8 @@ public class Pay {
     @Builder.Default
     private Integer payAmt = 0;
 
-    @Column(name = "paid_at")
+    @CreationTimestamp
+    @Column(name = "paid_at", updatable = false)
     private LocalDateTime paidAt;
 
     @CreationTimestamp

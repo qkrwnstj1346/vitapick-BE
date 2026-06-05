@@ -19,7 +19,7 @@ public interface CartService {
 	Cart findByUserNumAndCusIdIsNullAndPrdId(Long userNum, Long prdId);
 
 	// 장바구니 담기
-	Cart addCart(CartDTO dto);
+	Cart addCart(Long userNum, CartDTO dto);
 
 	// 장바구니 수량 증가/감소/변경
 	Cart updateQty(Long cartId, Integer itQty);
@@ -32,7 +32,7 @@ public interface CartService {
 	Cart updateSelectedYn(Long cartId, Character selectedYn);
 
 	// 장바구니 개별 삭제
-	Cart deleteCart(Long cartId);
+	Cart deleteCart(Long userNum, Long cartId);
 
 	// 선택된 장바구니 상품 조회
 	List<Cart> findByUserNumAndSelectedYn(Long userNum, Character selectedYn);

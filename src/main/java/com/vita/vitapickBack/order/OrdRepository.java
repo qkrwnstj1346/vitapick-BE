@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface OrdRepository extends JpaRepository<Ord, Long> {
 
     // 회원 주문 목록 조회
-    List<Ord> findByUserNum(Long userNum);
+    List<Ord> findByUserNumOrderByOrdIdDesc(Long userNum);
 
     // 주문번호 조회
     Ord findByOrdNo(String ordNo);

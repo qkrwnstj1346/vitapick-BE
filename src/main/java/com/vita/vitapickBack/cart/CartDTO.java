@@ -28,5 +28,8 @@ public class CartDTO {
     private Integer price;
     private String brand;
     private String thumbImgUrl;
+    
+    // 장바구니 커스텀 상품 추천 사유 
+    private String cusReason;
 
 }

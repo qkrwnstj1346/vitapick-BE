@@ -38,24 +38,37 @@ public class CartServiceImpl implements CartService {
 
 	// 장바구니 담기
 	@Override
-	public Cart addCart(CartDTO dto) {
+	public Cart addCart(Long userNum, CartDTO dto) {
+
 		Cart existCart;
+
 		if (dto.getCusId() == null) {
-			existCart = cartRepository.findByUserNumAndCusIdIsNullAndPrdId(dto.getUserNum(), dto.getPrdId());
+			existCart = cartRepository.findByUserNumAndCusIdIsNullAndPrdId(userNum, dto.getPrdId());
 		} else {
-			existCart = findByUserNumAndCusIdAndPrdId(dto.getUserNum(), dto.getCusId(), dto.getPrdId());
+			existCart = cartRepository.findByUserNumAndCusIdAndPrdId(userNum, dto.getCusId(), dto.getPrdId());
 		}
+
 		if (existCart != null) {
 			Integer newQty = existCart.getItQty() + dto.getItQty();
+
 			checkQty(newQty);
-			totalCheckQty(dto.getUserNum(), dto.getItQty());
+			totalCheckQty(userNum, dto.getItQty());
+
 			existCart.setItQty(newQty);
+
 			return cartRepository.save(existCart);
 		}
-		Cart cart = Cart.builder().userNum(dto.getUserNum()).prdId(dto.getPrdId()).cusId(dto.getCusId())
-				.itQty(dto.getItQty()).selectedYn('Y').build();
+
 		checkQty(dto.getItQty());
-		totalCheckQty(dto.getUserNum(), dto.getItQty());
+		totalCheckQty(userNum, dto.getItQty());
+
+		Cart cart = Cart.builder()
+				.userNum(userNum)
+				.prdId(dto.getPrdId())
+				.cusId(dto.getCusId())
+				.itQty(dto.getItQty())
+				.selectedYn('Y')
+				.build();
 
 		return cartRepository.save(cart);
 	}
@@ -63,19 +76,27 @@ public class CartServiceImpl implements CartService {
 	// 장바구니 수량 증가/감소/변경
 	@Override
 	public Cart updateQty(Long cartId, Integer itQty) {
+
 		Cart cart = cartRepository.findById(cartId).orElse(null);
+
 		if (cart == null) {
 			throw new RuntimeException("장바구니에 담긴 상품이 없습니다.");
 		}
+
 		checkQty(itQty);
+
 		List<Cart> cartList = cartRepository.findByUserNum(cart.getUserNum());
+
 		int totalQty = 0;
+
 		for (Cart item : cartList) {
 			if (!item.getCartId().equals(cartId)) {
 				totalQty += item.getItQty();
 			}
 		}
+
 		totalQty += itQty;
+
 		if (totalQty > 99) {
 			throw new RuntimeException("장바구니에는 상품을 최대 99개까지 담을 수 있습니다.");
 		}
@@ -84,34 +105,40 @@ public class CartServiceImpl implements CartService {
 
 		return cartRepository.save(cart);
 	}
-	
-	// 장바구니 선택 상태 변경
+
 	// 전체 선택 / 전체 해제
 	@Override
 	public void updateAllSelectedYn(Long userNum, Character selectedYn) {
-	    cartRepository.updateAllSelectedYn(userNum, selectedYn);
+		cartRepository.updateAllSelectedYn(userNum, selectedYn);
 	}
 
 	// 장바구니 선택 상태 변경
-	// 체크박스 선택/해제 시 사용
 	@Override
 	public Cart updateSelectedYn(Long cartId, Character selectedYn) {
+
 		Cart cart = cartRepository.findById(cartId).orElse(null);
+
 		if (cart == null) {
 			throw new RuntimeException("선택한 상품을 찾을 수 없습니다.");
 		}
+
 		cart.setSelectedYn(selectedYn);
+
 		return cartRepository.save(cart);
 	}
 
 	// 장바구니 개별 삭제
 	@Override
-	public Cart deleteCart(Long cartId) {
+	public Cart deleteCart(Long userNum, Long cartId) {
 
 		Cart cart = cartRepository.findById(cartId).orElse(null);
 
 		if (cart == null) {
 			throw new RuntimeException("장바구니에 담긴 상품이 없습니다.");
+		}
+
+		if (!cart.getUserNum().equals(userNum)) {
+			throw new RuntimeException("본인의 장바구니 상품만 삭제할 수 있습니다.");
 		}
 
 		cartRepository.delete(cart);
@@ -168,5 +195,4 @@ public class CartServiceImpl implements CartService {
 			throw new RuntimeException("장바구니에는 상품을 최대 99개까지 담을 수 있습니다.");
 		}
 	}
-
 }

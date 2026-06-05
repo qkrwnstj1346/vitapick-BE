@@ -5,7 +5,7 @@ import java.util.List;
 public interface OrdService {
 
     // 회원 주문 목록 조회
-    List<Ord> findByUserNum(Long userNum);
+    List<Ord> findByUserNumOrderByOrdIdDesc(Long userNum);
 
     // 주문번호 조회
     Ord findByOrdNo(String ordNo);
@@ -22,8 +22,6 @@ public interface OrdService {
     // 결제번호 조회
     Pay findByPayNo(String payNo);
 
-    // 주문 생성 + 결제 
-    Ord createOrder(OrdDTO orddto);
-    
-    
+    // 주문 생성 + 결제
+    Ord createOrder(Long userNum, OrdDTO orddto);
 }

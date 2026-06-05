@@ -27,12 +27,14 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 				p.prdNm,
 				p.price,
 				p.brand,
-				pi.imgUrl
+				pi.imgUrl,
+				cu.cusReason
 			)
-			FROM Cart c, Prd p, PrdImg pi
-			WHERE c.prdId = p.prdId
-			AND p.prdId = pi.prdId
-			AND pi.imgTypeCd = 'THUMB'
+			FROM Cart c
+			JOIN Prd p ON c.prdId = p.prdId
+			JOIN PrdImg pi ON p.prdId = pi.prdId
+			LEFT JOIN Cus cu ON c.cusId = cu.cusId
+			WHERE pi.imgTypeCd = 'THUMB'
 			AND c.userNum = :userNum
 			ORDER BY c.cusId DESC, c.cartId DESC
 			""")
@@ -71,7 +73,6 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
 	// 선택 상품 삭제
 	void deleteByUserNumAndSelectedYn(Long userNum, Character selectedYn);
-
 	// 전체 삭제
 	void deleteByUserNum(Long userNum);
 
