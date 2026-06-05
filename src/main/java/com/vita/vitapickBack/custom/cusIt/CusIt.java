@@ -26,6 +26,9 @@ public class CusIt {
 
 	@Column(name = "cus_id")
 	private Long cusId;
+	
+	@Column(name = "sur_title")
+	private String surTitle;
 
 	@Column(name = "prd_id")
 	private Long prdId;

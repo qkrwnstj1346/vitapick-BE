@@ -60,6 +60,7 @@ public class CusServiceImpl implements CusService {
 		// 1-5) cus 저장
 		Cus cus = Cus.builder()
 				.surId(surId)
+				.surTitle(sur.getSurTitle())
 				.userNum(userNum)
 				.aiModel("gpt-4o-mini")
 				.cusSum(gptResult.summary)
@@ -79,12 +80,13 @@ public class CusServiceImpl implements CusService {
 
 			CusIt cusIt = CusIt.builder()
 					.cusId(savedCus.getCusId())
+					.surTitle(savedCus.getSurTitle())
 					.prdId(item.prdId)
 					.sortNum(sortNum)
 					.build();
 			CusIt savedItem = cusItRepository.save(cusIt);
 
-			itemDTOList.add(fetchPrdDetail(savedItem.getCusItId(), item.prdId, sortNum));
+			itemDTOList.add(fetchPrdDetail(savedItem.getCusItId(), item.prdId, sortNum, savedItem.getSurTitle()));
 			sortNum++;
 		}
 		log.info("** [CUS] cus_it 저장 완료 {}건 cusId={}", itemDTOList.size(), savedCus.getCusId());
@@ -92,6 +94,7 @@ public class CusServiceImpl implements CusService {
 		return CusDTO.builder()
 				.cusId(savedCus.getCusId())
 				.surId(surId)
+				.surTitle(savedCus.getSurTitle())
 				.userNum(userNum)
 				.aiModel("gpt-4o-mini")
 				.cusSum(gptResult.summary)
@@ -114,12 +117,13 @@ public class CusServiceImpl implements CusService {
 		List<CusIt> cusItList = cusItRepository.findByCusIdOrderBySortNumAsc(cusId);
 
 		List<CusItDTO> itemDTOList = cusItList.stream()
-				.map(it -> fetchPrdDetail(it.getCusItId(), it.getPrdId(), it.getSortNum()))
+				.map(it -> fetchPrdDetail(it.getCusItId(), it.getPrdId(), it.getSortNum(), it.getSurTitle()))
 				.collect(Collectors.toList());
 
 		return CusDTO.builder()
 				.cusId(cus.getCusId())
 				.surId(cus.getSurId())
+				.surTitle(cus.getSurTitle())
 				.userNum(cus.getUserNum())
 				.aiModel(cus.getAiModel())
 				.cusSum(cus.getCusSum())
@@ -142,6 +146,7 @@ public class CusServiceImpl implements CusService {
 			CusDTO dto = CusDTO.builder()
 					.cusId(cus.getCusId())
 					.surId(cus.getSurId())
+					.surTitle(cus.getSurTitle())
 					.userNum(cus.getUserNum())
 					.cusSum(cus.getCusSum())
 					.crtAt(cus.getCrtAt())
@@ -266,12 +271,13 @@ public class CusServiceImpl implements CusService {
 	}
 
 	// [내부] prd + prd_img 조회 후 CusItDTO 빌드
-	private CusItDTO fetchPrdDetail(Long cusItId, Long prdId, int sortNum) {
+	private CusItDTO fetchPrdDetail(Long cusItId, Long prdId, int sortNum, String surTtile) {
 
 		CusItDTO dto = new CusItDTO();
 		dto.setCusItId(cusItId);
 		dto.setPrdId(prdId);
 		dto.setSortNum(sortNum);
+		dto.setSurTitle(surTtile);
 
 		try {
 			// prd 기본 정보
