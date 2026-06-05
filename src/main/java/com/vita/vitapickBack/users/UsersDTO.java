@@ -34,6 +34,6 @@ public class UsersDTO {
 	private Long refreshTokenExpiresln;
 	
 	//** 비밀번호 찾기 인증번호
-	private String otpCode;
+	private String OtpCode;
 	
 }

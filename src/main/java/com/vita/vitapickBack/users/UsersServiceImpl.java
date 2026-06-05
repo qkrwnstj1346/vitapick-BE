@@ -85,13 +85,14 @@ public class UsersServiceImpl implements UsersService {
     
     @Override
     public String sendOtpCode(UsersDTO usersDTO) {
-    	log.info("** sendOtpCode => " + usersDTO.getLoginId());
+    	log.info("** sendOtpCode ID => " + usersDTO.getLoginId());
     	Users users = usersRepository.findByLoginIdAndUserNmAndEmail(
     			usersDTO.getLoginId(),
     			usersDTO.getUserNm(),
     			usersDTO.getEmail()
     			).orElseThrow(()->new RuntimeException("일치하는 회원정보가 없습니다."));
-    	String sendOtpCode = String.valueOf((int)(Math.round(0)*900000)+100000);
+    	String sendOtpCode = String.valueOf((int)(Math.random() * 900000) + 100000);
+    	log.info("** sendOtpCode => " + sendOtpCode);
     	sendOtpCodeStore.put(users.getLoginId(), sendOtpCode);
     	
     	return sendOtpCode;
@@ -101,8 +102,10 @@ public class UsersServiceImpl implements UsersService {
     @Override
     @Transactional
     public void resetPwd(UsersDTO usersDTO) {
-    	log.info("** resetPwd => " + usersDTO.getLoginId());
+    	log.info("** resetPwdId => " + usersDTO.getLoginId());
     	String savedCode = sendOtpCodeStore.get(usersDTO.getLoginId());
+    	log.info("** savedCode => " + savedCode);
+    	log.info("** inputOtpCode =>" + usersDTO.getOtpCode());
     	if(savedCode==null) {
     		throw new RuntimeException("인증번호 발급 내역이 없습니다.");
     	}
