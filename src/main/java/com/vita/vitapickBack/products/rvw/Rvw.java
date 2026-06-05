@@ -36,7 +36,7 @@ public class Rvw {
     // 주문 상품 ID
     @Column(name = "ord_it_id", nullable = false)
     private Long ordItId;
-    
+
     // 상품 ID
     @Column(name = "prd_id", nullable = false)
     private Long prdId;
@@ -49,6 +49,14 @@ public class Rvw {
     @Column(name = "cmt", columnDefinition = "TEXT")
     private String cmt;
 
+    // 관리자 답글 내용
+    @Column(name = "reply_txt", columnDefinition = "TEXT")
+    private String replyTxt;
+
+    // 관리자 답글 작성일시
+    @Column(name = "reply_at")
+    private LocalDateTime replyAt;
+
     // 게시 여부
     @Column(name = "use_yn", nullable = false)
     private String useYn;
@@ -60,5 +68,4 @@ public class Rvw {
     // 수정일시
     @Column(name = "upd_at")
     private LocalDateTime updAt;
-
 }
