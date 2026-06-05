@@ -158,11 +158,6 @@ public class CartServiceImpl implements CartService {
 		cartRepository.deleteByUserNumAndSelectedYn(userNum, selectedYn);
 	}
 
-	// 전체 삭제
-	@Override
-	public void deleteByUserNum(Long userNum) {
-		cartRepository.deleteByUserNum(userNum);
-	}
 
 	// 개별 수량 최대 10개 체크
 	@Override

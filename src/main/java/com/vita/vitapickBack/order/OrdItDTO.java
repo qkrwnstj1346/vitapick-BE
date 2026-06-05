@@ -21,4 +21,8 @@ public class OrdItDTO {
 	private Integer itQty;
 	private Integer price;
 	private Integer itAmt;
+	
+	// 주문 상품 이미지
+	private String thumbImgUrl;
+	
 }

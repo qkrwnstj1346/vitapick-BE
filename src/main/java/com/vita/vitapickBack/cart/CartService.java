@@ -40,9 +40,6 @@ public interface CartService {
 	// 선택 상품 삭제
 	void deleteByUserNumAndSelectedYn(Long userNum, Character selectedYn);
 
-	// 전체 삭제
-	void deleteByUserNum(Long userNum);
-
 	// 개별 수량 최대 10개 체크
 	void checkQty(Integer itQty);
 

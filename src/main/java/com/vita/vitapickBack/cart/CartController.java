@@ -145,16 +145,6 @@ public class CartController {
 		}
 	}
 
-	// 전체 삭제
-	@DeleteMapping("/all")
-	public ResponseEntity<?> deleteByUserNum(@AuthenticationPrincipal Long userNum) {
-		try {
-			cartService.deleteByUserNum(userNum);
-			return ResponseEntity.status(HttpStatus.OK).build();
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("장바구니 전체 삭제에 실패했습니다.");
-		}
-	}
 
 	// 개별 수량 최대 10개 체크
 	@GetMapping("/check/qty/{itQty}")

@@ -29,6 +29,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 				p.brand,
 				pi.imgUrl,
 				cu.cusReason
+
 			)
 			FROM Cart c
 			JOIN Prd p ON c.prdId = p.prdId
@@ -72,14 +73,17 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 	List<Cart> findByUserNumAndSelectedYn(Long userNum, Character selectedYn);
 
 	// 선택 상품 삭제
+	@Modifying
+	@Transactional
 	void deleteByUserNumAndSelectedYn(Long userNum, Character selectedYn);
-	// 전체 삭제
-	void deleteByUserNum(Long userNum);
+	
 
 	// 개별 수량 최대 10개 체크
 	// Service에서 itQty 값 체크
 
 	// 장바구니 전체 수량 99개 체크
 	// Service에서 장바구니 전체 수량 합계 계산
+	
+	// 설문 제목 
 
 }

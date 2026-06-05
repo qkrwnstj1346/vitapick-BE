@@ -1,9 +1,12 @@
 package com.vita.vitapickBack.order;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.vita.vitapickBack.products.prd_img.PrdImg;
 
 @Repository
 public interface OrdItRepository extends JpaRepository<OrdIt, Long> {

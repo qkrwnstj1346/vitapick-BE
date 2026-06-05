@@ -10,8 +10,8 @@ public interface OrdService {
     // 주문번호 조회
     Ord findByOrdNo(String ordNo);
 
-    // 주문별 주문상품 목록 조회
-    List<OrdIt> findOrdItByOrdId(Long ordId);
+    // 주문상품 목록 조회
+    List<OrdItDTO> findOrdItByOrdId(Long ordId);
 
     // 상품별 주문 조회
     List<OrdIt> findByPrdId(Long prdId);
