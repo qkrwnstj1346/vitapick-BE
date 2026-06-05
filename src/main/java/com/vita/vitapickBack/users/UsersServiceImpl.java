@@ -243,10 +243,10 @@ public class UsersServiceImpl implements UsersService {
 
     // 회원정보 조회
     @Override
-    public UsersDTO getUser(String loginId) {
-        log.info("** getUser => " + loginId);
+    public UsersDTO getUser(Long userNum) {
+        log.info("** getUser => " + userNum);
 
-        Users users = usersRepository.findByLoginId(loginId)
+        Users users = usersRepository.findById(userNum)
             .orElseThrow(() -> new RuntimeException("회원정보가 없습니다"));
 
         return UsersDTO.builder()
@@ -265,10 +265,10 @@ public class UsersServiceImpl implements UsersService {
 
     // 회원정보 수정
     @Override
-    public void updateUser(String loginId, UsersDTO usersDTO) {
-        log.info("** updateUser => " + loginId);
+    public void updateUser(Long userNum, UsersDTO usersDTO) {
+        log.info("** updateUser => userNum" + userNum);
 
-        Users users = usersRepository.findByLoginId(loginId)
+        Users users = usersRepository.findById(userNum)
             .orElseThrow(() -> new RuntimeException("회원정보가 없습니다"));
 
         if (usersDTO.getPwd() != null && !usersDTO.getPwd().isEmpty()) {
@@ -286,10 +286,10 @@ public class UsersServiceImpl implements UsersService {
 
     // 회원탈퇴
     @Override
-    public void withdraw(String loginId) {
-        log.info("** withdraw => " + loginId);
+    public void withdraw(Long userNum) {
+        log.info("** withdraw => userNum" + userNum);
 
-        Users users = usersRepository.findByLoginId(loginId)
+        Users users = usersRepository.findById(userNum)
             .orElseThrow(() -> new RuntimeException("회원정보가 없습니다"));
 
         users.setStatusCd("W");

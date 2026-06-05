@@ -34,12 +34,12 @@ public interface UsersService {
     public void logout(HttpServletResponse response, Long userNum);
 
     // 회원정보 조회
-    public UsersDTO getUser(String loginId);
+    public UsersDTO getUser(Long userNum);
 
     // 회원정보 수정
-    void updateUser(String loginId, UsersDTO usersDTO);
+    void updateUser(Long userNum, UsersDTO usersDTO);
 
     // 회원탈퇴
-    void withdraw(String loginId);
+    void withdraw(Long userNum);
 
 }
