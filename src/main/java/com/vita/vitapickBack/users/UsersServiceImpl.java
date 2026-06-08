@@ -193,10 +193,12 @@ public class UsersServiceImpl implements UsersService {
 
             String loginId = (String) claims.get("loginId");
             String roleCd = (String) claims.get("roleCd");
+            String userNm = (String) claims.get("userNm");
 
             Map<String, Object> claimList = new HashMap<>();
             claimList.put("userNum", userNum);
             claimList.put("loginId", loginId);
+            claimList.put("userNm", userNm);
             claimList.put("roleCd", roleCd);
 
             UsersDTO usersDTO = UsersDTO.builder()
