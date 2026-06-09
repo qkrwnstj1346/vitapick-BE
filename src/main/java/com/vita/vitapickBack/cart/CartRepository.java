@@ -15,30 +15,30 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
 	// 장바구니 화면 상품 노출
 	@Query("""
-			SELECT new com.vita.vitapickBack.cart.CartDTO(
-				c.cartId,
-				c.userNum,
-				c.prdId,
-				c.cusId,
-				c.itQty,
-				c.selectedYn,
-				c.crtAt,
-				c.updAt,
-				p.prdNm,
-				p.price,
-				p.brand,
-				pi.imgUrl,
-				cu.cusReason,
-				cu.surTitle
-			)
-			FROM Cart c
-			JOIN Prd p ON c.prdId = p.prdId
-			JOIN PrdImg pi ON p.prdId = pi.prdId
-			LEFT JOIN Cus cu ON c.cusId = cu.cusId
-			WHERE pi.imgTypeCd = 'THUMB'
-			AND c.userNum = :userNum
-			ORDER BY c.cusId DESC, c.cartId DESC
-			""")
+	        SELECT new com.vita.vitapickBack.cart.CartDTO(
+	            c.cartId,
+	            c.userNum,
+	            c.prdId,
+	            c.cusId,
+	            c.itQty,
+	            c.selectedYn,
+	            c.crtAt,
+	            c.updAt,
+	            p.prdNm,
+	            p.price,
+	            p.brand,
+	            pi.imgUrl,
+	            cu.cusReason,
+	            cu.surTitle
+	        )
+	        FROM Cart c
+	        JOIN Prd p ON c.prdId = p.prdId
+	        JOIN PrdImg pi ON p.prdId = pi.prdId
+	        LEFT JOIN Cus cu ON c.cusId = cu.cusId
+	        WHERE pi.imgTypeCd = 'THUMB'
+	        AND c.userNum = :userNum
+	        ORDER BY COALESCE(c.updAt, c.crtAt) DESC, c.cartId DESC
+	        """)
 	List<CartDTO> findCartListWithProduct(@Param("userNum") Long userNum);
 
 	// 동일 상품 체크
