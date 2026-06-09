@@ -56,8 +56,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	    //-> 상품 조회 경로는 체크하지 않는다면 (예시)
 	    if(path.startsWith("/api/v1/product/")) { return true; }
 	    // 고객센터 공개 조회
-	    if(path.startsWith("/cscenter/notices")) { return true; }
-	    if(path.startsWith("/cscenter/faqs")) { return true; }
+	    if (request.getMethod().equals("GET") && path.startsWith("/cscenter/notices")) {
+	        return true;
+	    }
+
+	    if (request.getMethod().equals("GET") && path.startsWith("/cscenter/faqs")) {
+	        return true;
+	    }
 	    
     	return false;
     } //shouldNotFilter
@@ -123,6 +128,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						authorities );
 				
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
 				// => details 필드에 인증 소스인 request 값 set 
 				
 				// => SecurityContextHolder에 인증된 user등록.
