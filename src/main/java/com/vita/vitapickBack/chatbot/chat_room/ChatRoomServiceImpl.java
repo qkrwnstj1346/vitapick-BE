@@ -15,6 +15,8 @@ import com.vita.vitapickBack.products.prd.Prd;
 import com.vita.vitapickBack.products.prd.PrdRepository;
 
 import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final OpenAiChatModel openAiChatModel;
     private final ChatPrdService chatPrdService;
     private final PrdRepository prdRepository;
+    private final ObjectMapper objectMapper;
     
     @Override
     public ChatMsg chatMsg(Long userNum, ChatRoomDto dto) {
@@ -84,14 +87,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 + "규칙2. 같은 성분(예: 비타민D)이 포함된 상품을 2개 이상 추천하지 마세요. 성분이 겹치면 과다복용이 됩니다.\n"
                 + "규칙3. 사용자의 증상이나 요청에 맞는 다양한 영양소를 조합해서 추천하세요.\n"
                 + "규칙4. 추천 상품들의 주의사항 컬럼을 확인해서 성분 충돌이나 과다복용 위험이 있으면 제외하세요.\n"
-                + "규칙5. 아래 형식으로만 대답하고 다른 말은 절대 하지 마세요.\n\n"
-                + "(사용자 증상에 맞는 추천 이유 한 줄)\n"
-                + "추천상품:\n"
-                + "상품ID: X / XXX\n"
-                + "상품ID: X / XXX\n"
-                + "상품ID: X / XXX\n\n"
-                + "조합이유: (각 상품이 서로 다른 역할을 하며 함께 섭취했을 때 시너지 효과를 2-3줄로 설명)\n\n"
-                + "주의사항: (성분 과다섭취, 알레르기 등 한 줄로 간단히)\n";
+                + "규칙5. 반드시 아래 JSON 형식으로만 대답하세요. 다른 말은 절대 하지 마세요.\n\n"
+                + "{\n"
+                + "  \"reason\": \"사용자 증상에 맞는 추천 이유 한 줄\",\n"
+                + "  \"products\": [\n"
+                + "    {\"prd_id\": 숫자, \"sort_num\": 1},\n"
+                + "    {\"prd_id\": 숫자, \"sort_num\": 2},\n"
+                + "    {\"prd_id\": 숫자, \"sort_num\": 3}\n"
+                + "  ],\n"
+                + "  \"comboReason\": \"조합이유 2-3줄\",\n"
+                + "  \"caution\": \"주의사항 한 줄\"\n"
+                + "}\n";
         String gptResponse = openAiChatModel.call(prompt);
 
         // 5. 봇 응답 저장
@@ -104,9 +110,35 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .build();
         botMsg = chatMsgRepository.save(botMsg);
 
-        // 6. 추천상품 저장
-        ChatPrdDto chatPrdDto = new ChatPrdDto(botMsg.getMsgId(), null, 1, gptResponse);
-        chatPrdService.saveChatPrd(chatPrdDto);
+        // 6. GPT 응답 JSON 파싱
+        JsonNode root;
+
+        try {
+            root = objectMapper.readTree(gptResponse);
+        } catch (Exception e) {
+            throw new RuntimeException("GPT 응답 JSON 파싱 실패");
+        }
+
+        // 7. products 배열 꺼내기
+        JsonNode products = root.path("products");
+
+        // 8. 추천상품 저장
+        if (products.isArray()) {
+            for (JsonNode item : products) {
+
+                Long prdId = item.path("prd_id").asLong();
+                Integer sortNum = item.path("sort_num").asInt();
+
+                ChatPrdDto chatPrdDto = ChatPrdDto.builder()
+                        .msgId(botMsg.getMsgId())
+                        .prdId(prdId)
+                        .sortNum(sortNum)
+                        .chatRecReason(gptResponse)
+                        .build();
+  
+                chatPrdService.saveChatPrd(chatPrdDto);
+            }
+        }
 
         return botMsg;
     }
