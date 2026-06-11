@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 public class ChatMsgServiceImpl implements ChatMsgService {
 
     private final ChatMsgRepository chatMsgRepository;
-
+    
+    // 채팅 메시지 저장
     @Override
     public List<ChatMsg> findByChatId(Long chatId) {
         return chatMsgRepository.findByChatId(chatId);
