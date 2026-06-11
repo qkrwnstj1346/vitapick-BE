@@ -28,16 +28,15 @@ public class FaqController {
 	private final FaqService faqService;
 
 	// 관리자 권한 확인
-	private boolean isAdmin(Authentication authentication) {
+		private boolean isAdmin(Authentication authentication) {
 
-		if (authentication == null) {
-			return false;
+			if (authentication == null) {
+				return false;
+			}
+
+			return authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
 		}
-
-		return authentication.getAuthorities().stream()
-				.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-	}
-
+		
 	// FAQ 목록 조회
 	// = 관리자: use_yn Y/N 전체 조회
 	// = 일반회원 / 비로그인: use_yn = 'Y'만 조회

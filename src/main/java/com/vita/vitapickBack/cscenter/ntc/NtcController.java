@@ -40,6 +40,9 @@ public class NtcController {
 	// 공지사항 목록 조회
 	// = 관리자: use_yn Y/N 전체 조회
 	// = 일반회원 / 비로그인: use_yn = 'Y'만 조회
+	// 공지사항 목록 조회
+	// = 관리자: use_yn Y/N 전체 조회
+	// = 일반회원 / 비로그인: use_yn = 'Y'만 조회
 	@GetMapping("/notices")
 	public ResponseEntity<?> ntcList(Authentication authentication) {
 
