@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,8 +57,8 @@ public class CusController {
 
 	// 내 추천 목록 조회
 	// GET /v1/cus/list/{userNum}
-	@GetMapping("/list/{userNum}")
-	public ResponseEntity<?> getCusList(@PathVariable("userNum") Long userNum) {
+	@GetMapping("/list/")
+	public ResponseEntity<?> getCusList(@AuthenticationPrincipal Long userNum) {
 		try {
 			List<CusDTO> result = cusService.getCusList(userNum);
 			log.info("** 추천 목록 조회 성공 userNum={}", userNum);
