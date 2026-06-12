@@ -70,7 +70,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                 .monthSalesAmt(monthSalesAmt)
                 .todayPaidOrderCount(todayPaidOrderCount)
                 .popularCategory(getPopularCategory(monthStart, nextMonthStart))
-                .productSalesTop5(getProductSalesTop5())
+                .productSalesTop5(getProductSalesTop5(monthStart, nextMonthStart))
                 .inquiryStats(getInquiryStats(todayStart, tomorrowStart))
                 .memberStats(getMemberStats())
                 .build();
@@ -97,8 +97,8 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                 .build();
     }
 
-    private List<ProductSalesTopDTO> getProductSalesTop5() {
-        return ordItRepository.findProductSalesTop5().stream()
+    private List<ProductSalesTopDTO> getProductSalesTop5(LocalDateTime monthStart, LocalDateTime nextMonthStart) {
+        return ordItRepository.findMonthlyProductSalesTop5(monthStart, nextMonthStart).stream()
                 .map(row -> {
                     Integer catCd = toInteger(row[2]);
                     return ProductSalesTopDTO.builder()

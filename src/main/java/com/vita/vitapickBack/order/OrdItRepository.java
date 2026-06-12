@@ -70,4 +70,27 @@ public interface OrdItRepository extends JpaRepository<OrdIt, Long> {
 			""", nativeQuery = true)
 	List<Object[]> findProductSalesTop5();
 
+	@Query(value = """
+			SELECT
+			    oi.prd_id,
+			    COALESCE(oi.prd_nm, p.prd_nm) AS prd_nm,
+			    p.cat_cd,
+			    COALESCE(SUM(oi.it_qty), 0) AS paid_qty,
+			    COALESCE(SUM(oi.it_amt), 0) AS sales_amt
+			FROM ord o
+			JOIN ord_it oi
+			    ON o.ord_id = oi.ord_id
+			JOIN prd p
+			    ON oi.prd_id = p.prd_id
+			WHERE o.ord_st_cd = 'PAID'
+			    AND o.crt_at >= :startAt
+			    AND o.crt_at < :endAt
+			GROUP BY oi.prd_id, COALESCE(oi.prd_nm, p.prd_nm), p.cat_cd
+			ORDER BY sales_amt DESC, paid_qty DESC, oi.prd_id ASC
+			LIMIT 5
+			""", nativeQuery = true)
+	List<Object[]> findMonthlyProductSalesTop5(
+			@Param("startAt") java.time.LocalDateTime startAt,
+			@Param("endAt") java.time.LocalDateTime endAt);
+
 }
