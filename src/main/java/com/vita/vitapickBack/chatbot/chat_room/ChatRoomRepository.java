@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
-	
+	// 유저 번호와 챗봇 상태 코드로 챗봇방 조회
 	Optional<ChatRoom> findTopByUserNumAndChatStCd(Long userNum, String chatStCd);
 }
