@@ -181,4 +181,10 @@ public class OrdServiceImpl implements OrdService {
 
         return savedOrd;
     }
+    
+    // 상품별 판매량 TOP5 조회
+    @Override
+    public List<Object[]> findTopProducts() {
+    	return ordItRepository.findTopProducts();
+    }
 }

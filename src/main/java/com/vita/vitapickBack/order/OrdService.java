@@ -24,4 +24,7 @@ public interface OrdService {
 
     // 주문 생성 + 결제
     Ord createOrder(Long userNum, OrdDTO orddto);
+    
+    // 상품별 판매량 TOP5 조회
+    List<Object[]> findTopProducts();
 }

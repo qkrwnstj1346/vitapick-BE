@@ -133,4 +133,15 @@ public class OrdController {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("주문 완료 정보 조회에 실패했습니다.");
 		}
 	}
+
+	// 상품별 판매량 TOP5 조회
+	@GetMapping("/top-products")
+	public ResponseEntity<?> findTopProducts() {
+		try {
+			List<Object[]> result = ordService.findTopProducts();
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("상품별 판매량 조회에 실패했습니다.");
+		}
+	}
 }

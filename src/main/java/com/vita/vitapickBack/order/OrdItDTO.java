@@ -25,4 +25,7 @@ public class OrdItDTO {
 	// 주문 상품 이미지
 	private String thumbImgUrl;
 	
+	// 상품별 판매량 집계
+	private Long totalQty;
+	
 }
