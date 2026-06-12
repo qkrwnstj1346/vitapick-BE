@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin.dashboard;
+package com.vita.vitapickBack.admin;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

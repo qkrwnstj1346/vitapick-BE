@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin.dashboard;
+package com.vita.vitapickBack.admin;
 
 import java.util.List;
 
