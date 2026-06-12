@@ -1,5 +1,6 @@
 package com.vita.vitapickBack.cscenter.inq;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,5 +41,9 @@ public interface InqRepository extends JpaRepository<Inq, Long> {
 	// = 회원 본인 글 수정 / 삭제 권한 체크
 	// SELECT * FROM inq WHERE inq_id = ? AND user_num = ?;
 	Optional<Inq> findByInqIdAndUserNum(Long inqId, Long userNum);
+
+	Long countByInqStCd(String inqStCd);
+
+	Long countByCrtAtGreaterThanEqualAndCrtAtLessThan(LocalDateTime startAt, LocalDateTime endAt);
 
 }
