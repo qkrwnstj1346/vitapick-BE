@@ -55,6 +55,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	    if(path.startsWith("/resources/uploadImages/")) { return true; }
 	    //-> 상품 조회 경로는 체크하지 않는다면 (예시)
 	    if(path.startsWith("/api/v1/product/")) { return true; }
+	    //-> 인기상품 TOP5 조회는 비회원도 허용
+	    if(path.equals("/order/top-products")) { return true; }
 	    
     	return false;
     } //shouldNotFilter

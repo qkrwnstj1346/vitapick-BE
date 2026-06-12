@@ -84,6 +84,5 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 	// 장바구니 전체 수량 99개 체크
 	// Service에서 장바구니 전체 수량 합계 계산
 	
-	// 설문 제목 
 
 }
