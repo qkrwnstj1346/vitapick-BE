@@ -29,7 +29,7 @@ public class Cus {
 	@Column(name = "sur_id", unique = true)
 	private Long surId;
 
-	@Column(name = "sur_title", unique = true)
+	@Column(name = "sur_title")
 	private String surTitle;
 	
 	@Column(name = "user_num")
