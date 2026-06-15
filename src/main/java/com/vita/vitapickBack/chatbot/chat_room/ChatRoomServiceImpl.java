@@ -142,4 +142,46 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         return botMsg;
     }
+    
+    @Override
+    public List<ChatRoomMPDto> getMyChatRooms(Long userNum) {
+    	
+    	 // 1. 내 채팅방 목록 가져오기
+        List<ChatRoom> roomList = chatRoomRepository.findByUserNumOrderByUpdAtDesc(userNum);
+
+        // 2. 프론트로 보낼 DTO 리스트 만들기
+        List<ChatRoomMPDto> dtoList = new java.util.ArrayList<>();
+
+        // 3. 채팅방 하나씩 꺼내서 DTO로 바꾸기
+        for (ChatRoom room : roomList) {
+
+            // 4. 이 채팅방의 첫 번째 USER 메시지 가져오기
+            Optional<ChatMsg> firstMsg =
+                    chatMsgRepository.findTopByChatIdAndSenderCdOrderByCrtAtAsc(
+                            room.getChatId(),
+                            "USER"
+                    );
+
+            // 5. 제목 정하기
+            String title = "제목 없는 상담";
+
+            if (firstMsg.isPresent()) {
+                title = firstMsg.get().getMsgTxt();
+            }
+
+            // 6. DTO 만들기
+            ChatRoomMPDto dto = ChatRoomMPDto.builder()
+                    .chatId(room.getChatId())
+                    .title(title)
+                    .crtAt(room.getCrtAt())
+                    .updAt(room.getUpdAt())
+                    .build();
+
+            // 7. 리스트에 담기
+            dtoList.add(dto);
+        }
+
+        // 8. 완성된 목록 반환
+        return dtoList;
+    }
 }
