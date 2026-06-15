@@ -15,4 +15,7 @@ public interface ChatRoomService {
 	
 	// 챗봇방 닫기
 	void closeChatRoom(Long userNum, Long chatId);
+	
+	// 챗봇방 삭제
+	void deleteChatRoom(Long userNum, Long chatId);
 }

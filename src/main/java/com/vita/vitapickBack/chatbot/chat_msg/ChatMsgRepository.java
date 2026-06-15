@@ -15,4 +15,7 @@ public interface ChatMsgRepository extends JpaRepository<ChatMsg, Long> {
     
     // 채팅방 ID와 발신자 코드로 첫 메시지 조회 (목록 페이지 제목)
     Optional<ChatMsg> findTopByChatIdAndSenderCdOrderByCrtAtAsc(Long chatId, String senderCd);
+    
+    // 채팅방 ID로 메시지 삭제
+    void deleteByChatId(Long chatId);
 }

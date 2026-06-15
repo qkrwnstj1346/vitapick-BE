@@ -11,4 +11,6 @@ public interface ChatPrdRepository extends JpaRepository<ChatPrd, Long> {
 	// msgId로 추천상품 목록 조회
     List<ChatPrd> findByMsgId(Long msgId);
    
+    // msgId로 추천상품 삭제
+    void deleteByMsgId(Long msgId);
 }

@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 import com.vita.vitapickBack.chatbot.chat_msg.ChatMsg;
 import com.vita.vitapickBack.chatbot.chat_msg.ChatMsgRepository;
 import com.vita.vitapickBack.chatbot.chat_prd.ChatPrdDto;
+import com.vita.vitapickBack.chatbot.chat_prd.ChatPrdRepository;
 import com.vita.vitapickBack.chatbot.chat_prd.ChatPrdService;
 import com.vita.vitapickBack.products.prd.Prd;
 import com.vita.vitapickBack.products.prd.PrdRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +27,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMsgRepository chatMsgRepository;
     private final OpenAiChatModel openAiChatModel;
+    private final ChatPrdRepository chatPrdRepository;
     private final ChatPrdService chatPrdService;
     private final PrdRepository prdRepository;
     private final ObjectMapper objectMapper;
@@ -214,5 +217,34 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoom.setUpdAt(LocalDateTime.now());
 
         chatRoomRepository.save(chatRoom);
+    }
+    
+    // 마이페이지 - 챗봇 상담방 삭제
+    @Transactional // 트랜잭션 처리로 메시지와 추천상품이 함께 삭제되도록 보장
+    @Override
+    public void deleteChatRoom(Long userNum, Long chatId) {
+
+        // 1. 채팅방 조회
+        ChatRoom chatRoom = chatRoomRepository.findById(chatId)
+                .orElseThrow(() -> new RuntimeException("채팅방이 없습니다."));
+
+        // 2. 본인 채팅방인지 확인
+        if (!chatRoom.getUserNum().equals(userNum)) {
+            throw new RuntimeException("본인 채팅방만 삭제할 수 있습니다.");
+        }
+
+        // 3. 해당 채팅방의 메시지 목록 조회
+        List<ChatMsg> msgList = chatMsgRepository.findByChatId(chatId);
+
+        // 4. 각 메시지에 연결된 추천상품 삭제
+        for (ChatMsg msg : msgList) {
+            chatPrdRepository.deleteByMsgId(msg.getMsgId());
+        }
+
+        // 5. 메시지 삭제
+        chatMsgRepository.deleteByChatId(chatId);
+
+        // 6. 채팅방 삭제
+        chatRoomRepository.delete(chatRoom);
     }
 }
