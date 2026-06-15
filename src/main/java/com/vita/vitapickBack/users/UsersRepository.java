@@ -2,7 +2,11 @@ package com.vita.vitapickBack.users;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -24,5 +28,20 @@ public interface UsersRepository extends JpaRepository<Users, Long>{
     Optional<Users> findByLoginIdAndUserNmAndEmail(String loginId, String userNm, String email);
 
     Long countByStatusCd(String statusCd);
+
+    @Query("""
+            SELECT u
+            FROM Users u
+            WHERE (:keyword IS NULL OR :keyword = ''
+                   OR LOWER(u.loginId) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(u.userNm) LIKE LOWER(CONCAT('%', :keyword, '%')))
+              AND (:statusCd IS NULL OR :statusCd = '' OR u.statusCd = :statusCd)
+              AND (:roleCd IS NULL OR :roleCd = '' OR u.roleCd = :roleCd)
+            """)
+    Page<Users> findAdminUsers(
+            @Param("keyword") String keyword,
+            @Param("statusCd") String statusCd,
+            @Param("roleCd") String roleCd,
+            Pageable pageable);
      
 }

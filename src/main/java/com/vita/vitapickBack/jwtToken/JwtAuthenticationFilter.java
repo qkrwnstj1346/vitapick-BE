@@ -86,6 +86,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			
 			log.info("** JwtAuthenticationFilter, doFilterInternal(), accessToken 확인=> "+accessToken);
 			
+			if (!StringUtils.hasText(accessToken) || accessToken.equalsIgnoreCase("null")) {
+				filterChain.doFilter(request, response);
+				return;
+			}
+
 			if (accessToken != null && !accessToken.equalsIgnoreCase("null")) {
 				//=> 토큰 없다고 예외 던지지 말 것
 				//	 Token값 null 인경우에도 return 되어야 다음 체인으로 넘어감.
