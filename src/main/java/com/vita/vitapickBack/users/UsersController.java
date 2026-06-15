@@ -143,7 +143,7 @@ public class UsersController {
 
 	//=> 리프레쉬 토큰
 	//	AccessToken 만료시 front에서 요청함
-    @GetMapping("/auth/getrefresh")
+    @GetMapping("/getrefresh")
     public ResponseEntity<?> getRefresh(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
         log.info("RefreshToken으로 토큰 재발급을 시도합니다.");
         return  usersService.getRefresh(refreshToken, response);
