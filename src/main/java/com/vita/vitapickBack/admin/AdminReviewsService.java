@@ -1,0 +1,77 @@
+package com.vita.vitapickBack.admin;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.vita.vitapickBack.admin.AdminReviewsResponseDTO.AdminReviewDTO;
+import com.vita.vitapickBack.products.prd.Prd;
+import com.vita.vitapickBack.products.prd.PrdRepository;
+import com.vita.vitapickBack.products.rvw.Rvw;
+import com.vita.vitapickBack.products.rvw.RvwRepository;
+import com.vita.vitapickBack.users.Users;
+import com.vita.vitapickBack.users.UsersRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class AdminReviewsService {
+
+    private final RvwRepository rvwRepository;
+    private final UsersRepository usersRepository;
+    private final PrdRepository prdRepository;
+
+    public AdminReviewsResponseDTO getReviews(
+            int page,
+            int size,
+            String keyword,
+            Integer rating,
+            LocalDate startDate,
+            LocalDate endDate) {
+
+        int safePage = Math.max(page, 0);
+        int safeSize = size <= 0 ? 10 : Math.min(size, 100);
+        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "rvwId"));
+
+        LocalDateTime startAt = startDate == null ? null : startDate.atStartOfDay();
+        LocalDateTime endAt = endDate == null ? null : endDate.plusDays(1).atStartOfDay();
+
+        Page<Rvw> reviewsPage = rvwRepository.findAdminReviews(keyword, rating, startAt, endAt, pageable);
+
+        return AdminReviewsResponseDTO.builder()
+                .content(reviewsPage.getContent().stream()
+                        .map(this::toAdminReviewDTO)
+                        .toList())
+                .page(reviewsPage.getNumber())
+                .size(reviewsPage.getSize())
+                .totalElements(reviewsPage.getTotalElements())
+                .totalPages(reviewsPage.getTotalPages())
+                .build();
+    }
+
+    private AdminReviewDTO toAdminReviewDTO(Rvw rvw) {
+        Users writer = usersRepository.findById(rvw.getUserNum()).orElse(null);
+        Prd product = prdRepository.findById(rvw.getPrdId()).orElse(null);
+
+        return AdminReviewDTO.builder()
+                .reviewId(rvw.getRvwId())
+                .productId(rvw.getPrdId())
+                .productName(product == null ? null : product.getPrdNm())
+                .writerId(writer == null ? null : writer.getLoginId())
+                .writerName(writer == null ? null : writer.getUserNm())
+                .rating(rvw.getRating())
+                .content(rvw.getCmt())
+                .useYn(rvw.getUseYn())
+                .createdAt(rvw.getCrtAt())
+                .updatedAt(rvw.getUpdAt())
+                .build();
+    }
+}
