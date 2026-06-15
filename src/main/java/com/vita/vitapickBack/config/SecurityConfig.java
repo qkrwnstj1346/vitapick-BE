@@ -63,9 +63,10 @@ public class SecurityConfig {
 
 		        .authorizeHttpRequests(auth -> auth
 		        	//=> Role 적용이후 정확한 요청명으로 수정  
+		        	.requestMatchers(HttpMethod.OPTIONS ,"/**").permitAll()
+		        	.requestMatchers("/api/admin/**").hasRole("ADMIN")
 		        	.requestMatchers("/user/memberlist").hasRole("ADMIN")
 		        	.requestMatchers("/v1/info","/user/logout").authenticated()
-		        	.requestMatchers(HttpMethod.OPTIONS ,"/**").permitAll()
 		            //.anyRequest().authenticated()) // 모든 요청 인증 필요
 		        	.anyRequest().permitAll())
 		        .build();
