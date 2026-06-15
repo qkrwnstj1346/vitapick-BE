@@ -11,5 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatRoomDto {
+	
 	private String msgTxt;
+	private Long chatId;
 }

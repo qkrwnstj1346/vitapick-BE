@@ -12,4 +12,7 @@ public interface ChatRoomService {
 	
 	// 유저 번호로 챗봇방 목록 조회
 	List<ChatRoomMPDto> getMyChatRooms(Long userNum);
+	
+	// 챗봇방 닫기
+	void closeChatRoom(Long userNum, Long chatId);
 }

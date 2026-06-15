@@ -18,7 +18,9 @@ public class ChatPrdController {
 
     // GET /api/v1/chatbot/messages/{msgId}/products - msgId로 추천상품+이미지 조회
     @GetMapping("/messages/{msgId}/products")
-    public ResponseEntity<List<ChatPrdResDto>> getRecommendedPrds(@PathVariable Long msgId) {
+    public ResponseEntity<List<ChatPrdResDto>> getRecommendedPrds(
+            @PathVariable("msgId") Long msgId) {
+
         return ResponseEntity.ok(chatPrdService.getRecommendedPrds(msgId));
     }
 }

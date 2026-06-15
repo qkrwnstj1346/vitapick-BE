@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.vita.vitapickBack.chatbot.chat_msg.ChatMsg;
 
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatRoomController {
 	private final ChatRoomService chatRoomService;
 	
+	// 챗봇 상담방 생성 및 첫 메시지 요청
 	@PostMapping("/message")
 	public ResponseEntity<ChatMsg> chatMsg(
 	        @AuthenticationPrincipal Long userNum,
@@ -28,6 +31,17 @@ public class ChatRoomController {
 
 	    ChatMsg result = chatRoomService.chatMsg(userNum, dto);
 	    return ResponseEntity.ok(result);
+	}
+	
+	// 챗봇방 닫기
+	@PatchMapping("/rooms/{chatId}/close")
+	public ResponseEntity<Void> closeChatRoom(
+	        @AuthenticationPrincipal Long userNum,
+	        @PathVariable("chatId") Long chatId) {
+
+	    chatRoomService.closeChatRoom(userNum, chatId);
+
+	    return ResponseEntity.ok().build();
 	}
 	
 	// 마이페이지 - 내 챗봇 상담방 목록 조회

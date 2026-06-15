@@ -33,6 +33,8 @@ public class ChatPrdServiceImpl implements ChatPrdService {
     // 챗봇이 추천한 상품 목록 반환
     @Override
     public List<ChatPrdResDto> getRecommendedPrds(Long msgId) {
+    	
+    	// msgId로 챗봇이 추천한 상품 목록 조회
         List<ChatPrd> chatPrds = chatPrdRepository.findByMsgId(msgId);
         List<ChatPrdResDto> result = new ArrayList<>();
         

@@ -41,21 +41,35 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             throw new RuntimeException("메시지 내용이 없습니다.");
         }
 
-        // 1. 기존 ACTIVE 채팅방 있으면 재사용, 없으면 새로 생성
-        Optional<ChatRoom> found = chatRoomRepository.findTopByUserNumAndChatStCd(userNum, "ACTIVE");
-
+        // 1. chatId가 있으면 기존 방 사용, 없으면 ACTIVE 방 찾고 없을 때 새로 생성
         ChatRoom chatRoom;
-        if (found.isPresent()) {
-            chatRoom = found.get();
+
+        if (dto.getChatId() != null) {
+
+            chatRoom = chatRoomRepository.findById(dto.getChatId())
+                    .orElseThrow(() -> new RuntimeException("채팅방이 없습니다."));
+
+            if (!chatRoom.getUserNum().equals(userNum)) {
+                throw new RuntimeException("본인 채팅방만 사용할 수 있습니다.");
+            }
+
         } else {
-            chatRoom = chatRoomRepository.save(
-                ChatRoom.builder()
-                    .userNum(userNum)
-                    .chatStCd("ACTIVE")
-                    .crtAt(LocalDateTime.now())
-                    .updAt(LocalDateTime.now())
-                    .build()
-            );
+
+            Optional<ChatRoom> found =
+                    chatRoomRepository.findTopByUserNumAndChatStCd(userNum, "ACTIVE");
+
+            if (found.isPresent()) {
+                chatRoom = found.get();
+            } else {
+                chatRoom = chatRoomRepository.save(
+                        ChatRoom.builder()
+                                .userNum(userNum)
+                                .chatStCd("ACTIVE")
+                                .crtAt(LocalDateTime.now())
+                                .updAt(LocalDateTime.now())
+                                .build()
+                );
+            }
         }
 
         // 2. 사용자 메시지 저장
@@ -77,7 +91,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                     + " 주의사항:" + p.getWarnTxt() + "\n";
         }
 
-     // 4. GPT 호출
+        // 4. GPT 호출
         String prompt = "당신은 비타민 및 건강기능식품 전문가입니다.\n"
                 + "아래는 우리 쇼핑몰 상품 목록입니다:\n"
                 + prdInfo + "\n\n"
@@ -183,5 +197,22 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         // 8. 완성된 목록 반환
         return dtoList;
+    }
+    
+    // 챗봇방 닫기
+    @Override
+    public void closeChatRoom(Long userNum, Long chatId) {
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatId)
+                .orElseThrow(() -> new RuntimeException("채팅방이 없습니다."));
+
+        if (!chatRoom.getUserNum().equals(userNum)) {
+            throw new RuntimeException("본인 채팅방만 닫을 수 있습니다.");
+        }
+
+        chatRoom.setChatStCd("CLOSED");
+        chatRoom.setUpdAt(LocalDateTime.now());
+
+        chatRoomRepository.save(chatRoom);
     }
 }
