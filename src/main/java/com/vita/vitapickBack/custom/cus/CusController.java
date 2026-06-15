@@ -43,9 +43,9 @@ public class CusController {
 	// 추천 결과 상세 조회
 	// GET /v1/cus/detail/{cusId}
 	@GetMapping("/detail/{cusId}")
-	public ResponseEntity<?> getCusDetail(@PathVariable("cusId") Long cusId) {
+	public ResponseEntity<?> getCusDetail(@PathVariable("cusId") Long cusId, @AuthenticationPrincipal Long userNum) {
 		try {
-			CusDTO result = cusService.getCusDetail(cusId);
+			CusDTO result = cusService.getCusDetail(cusId, userNum);
 			log.info("** 추천 상세 조회 성공 cusId={}", cusId);
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} catch (Exception e) {

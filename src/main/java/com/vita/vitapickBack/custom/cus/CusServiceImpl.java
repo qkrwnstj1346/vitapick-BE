@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,11 +111,14 @@ public class CusServiceImpl implements CusService {
 
 	// 2. 추천 결과 상세 조회
 	@Override
-	public CusDTO getCusDetail(Long cusId) {
+	public CusDTO getCusDetail(Long cusId, Long userNum) {
 
 		Cus cus = cusRepository.findById(cusId)
 				.orElseThrow(() -> new RuntimeException("추천 결과를 찾을 수 없습니다. cusId=" + cusId));
-
+		
+		if(!cus.getUserNum().equals(userNum)) {
+			throw new RuntimeException("접근 권한이 없습니다.");
+		}
 		List<CusIt> cusItList = cusItRepository.findByCusIdOrderBySortNumAsc(cusId);
 
 		List<CusItDTO> itemDTOList = cusItList.stream()
