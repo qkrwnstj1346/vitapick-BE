@@ -13,4 +13,10 @@ public interface PrdService {
     
     // 상품 검색
     List<PrdDTO> searchPrd(String keyword);
+    
+    // 신상품 조회
+    List<PrdDTO> getNewProducts();
+    
+    // 베스트 상품 조회
+    List<PrdDTO> getBestProducts();
 }

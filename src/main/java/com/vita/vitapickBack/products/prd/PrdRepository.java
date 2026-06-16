@@ -19,10 +19,14 @@ public interface PrdRepository extends JpaRepository<Prd, Long> {
 	// useYn 에 따라 조회
 	List<Prd> findByUseYn(String useYn);
 	
+	// 카테고리별 최신 상품 조회 (예: 최신 2개)
+	List<Prd> findTop2ByCatCdOrderByPrdIdDesc(Long catCd);
+	
 	// 상품명으로 검색
 	@Query("SELECT p FROM Prd p WHERE p.prdNm LIKE %:keyword%")
 	List<Prd> searchByKeyword(@Param("keyword") String keyword);
-
+	
+	// 관리자 페이지에서 상품 조회 (상품명, 상태, 카테고리로 검색)
 	@Query("""
 			SELECT p
 			FROM Prd p

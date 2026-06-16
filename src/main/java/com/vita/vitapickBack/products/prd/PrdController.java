@@ -33,4 +33,16 @@ public class PrdController {
     public ResponseEntity<List<PrdDTO>> searchPrd(@RequestParam("keyword") String keyword) {
         return ResponseEntity.ok(prdService.searchPrd(keyword));
     }
+    
+    // 신상품 조회
+    @GetMapping("/latest")
+    public ResponseEntity<List<PrdDTO>> getNewProducts() {
+        return ResponseEntity.ok(prdService.getNewProducts());
+    }
+    
+    // 베스트 상품 조회
+    @GetMapping("/best")
+    public ResponseEntity<List<PrdDTO>> getBestProducts() {
+        return ResponseEntity.ok(prdService.getBestProducts());
+    }
 }

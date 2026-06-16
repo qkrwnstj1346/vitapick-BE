@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import com.vita.vitapickBack.products.prd_img.PrdImg;
 import com.vita.vitapickBack.products.prd_img.PrdImgRepository;
+import com.vita.vitapickBack.order.OrdItRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -17,6 +18,9 @@ public class PrdServiceImpl implements PrdService {
 
     // 이미지 DB 접근하는 애
     private final PrdImgRepository prdImgRepository;
+    
+    // 주문상품 DB 접근하는 애 (상품별 주문 조회할 때 필요)
+    private final OrdItRepository ordItRepository;
 
     // 카테고리별 상품 목록 + 썸네일 이미지 반환
     @Override
@@ -88,6 +92,7 @@ public class PrdServiceImpl implements PrdService {
                 .detailImgUrl(detailUrl)
                 .build();
     }
+    
     // 상품 검색
     @Override
     	public List<PrdDTO> searchPrd(String keyword) {
@@ -106,6 +111,7 @@ public class PrdServiceImpl implements PrdService {
                     break; 
                 }
             }
+            
             // Builder 패턴으로 DTO 생성
             PrdDTO dto = PrdDTO.builder()
                     .prdId(prd.getPrdId())
@@ -118,6 +124,86 @@ public class PrdServiceImpl implements PrdService {
                     .build();
             result.add(dto);
         }
+        return result;
+    }
+    
+    @Override
+    public List<PrdDTO> getNewProducts() {
+    	
+        List<PrdDTO> result = new ArrayList<>(); // 최종 결과 담을 리스트
+        List<Long> catList = List.of(1L, 2L, 3L, 4L, 5L); // 카테고리 코드 리스트 (예시로 1~5번 카테고리)
+        
+        for (Long catCd : catList) { // 각 카테고리별로 최신 상품 2개씩 조회
+            List<Prd> prdList = prdRepository.findTop2ByCatCdOrderByPrdIdDesc(catCd); // 최신 2개 상품 조회
+           
+            for (Prd prd : prdList) { // 각 상품마다 썸네일 이미지 찾아서 DTO에 담기
+
+                String thumbUrl = null; // 썸네일 이미지 URL 담을 변수
+
+                List<PrdImg> imgList = prdImgRepository.findByPrdId(prd.getPrdId()); // 해당 상품의 이미지 목록 조회
+
+                for (PrdImg img : imgList) { // 썸네일 이미지 찾기
+                    if ("THUMB".equals(img.getImgTypeCd())) { // 이미지 타입이 "THUMB"인 경우
+                        thumbUrl = img.getImgUrl(); // 썸네일 이미지 URL 저장
+                        break; // 썸네일 이미지는 하나만 필요하므로 찾으면 반복 종료
+                    }
+                }
+
+                PrdDTO dto = PrdDTO.builder()
+                        .prdId(prd.getPrdId())
+                        .prdNm(prd.getPrdNm())
+                        .brand(prd.getBrand())
+                        .price(prd.getPrice())
+                        .thumbImgUrl(thumbUrl)
+                        .build();
+
+                result.add(dto); // 최종 결과 리스트에 DTO 추가
+            }
+        }
+
+        return result;
+    }
+    
+    @Override
+    public List<PrdDTO> getBestProducts() {
+
+        List<PrdDTO> result = new ArrayList<>();
+
+        // 많이 팔린 상품 ID 10개 조회
+        List<Long> prdIdList = ordItRepository.findBestProductIdsTop10();
+
+        for (Long prdId : prdIdList) { // 각 상품 ID로 상품 정보 조회
+
+            Optional<Prd> prdResult = prdRepository.findById(prdId); //	상품 ID로 상품 정보 조회
+
+            if (!prdResult.isPresent()) { // 상품 정보가 없는 경우는 넘어가기
+                continue;
+            }
+
+            Prd prd = prdResult.get(); // 상품 정보 가져오기
+
+            String thumbUrl = null; // 썸네일 이미지 URL 담을 변수
+
+            List<PrdImg> imgList = prdImgRepository.findByPrdId(prd.getPrdId()); // 해당 상품의 이미지 목록 조회
+
+            for (PrdImg img : imgList) { // 썸네일 이미지 찾기
+                if ("THUMB".equals(img.getImgTypeCd())) { // 이미지 타입이 "THUMB"인 경우
+                    thumbUrl = img.getImgUrl(); // 썸네일 이미지 URL 저장
+                    break; // 썸네일 이미지는 하나만 필요하므로 찾으면 반복 종료
+                }
+            }
+            // Builder 패턴으로 DTO 생성
+            PrdDTO dto = PrdDTO.builder()
+                    .prdId(prd.getPrdId())
+                    .prdNm(prd.getPrdNm())
+                    .brand(prd.getBrand())
+                    .price(prd.getPrice())
+                    .thumbImgUrl(thumbUrl)
+                    .build();
+
+            result.add(dto);
+        }
+
         return result;
     }
 }
