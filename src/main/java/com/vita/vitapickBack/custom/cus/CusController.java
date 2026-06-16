@@ -3,9 +3,11 @@ package com.vita.vitapickBack.custom.cus;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +43,7 @@ public class CusController {
 		}
 	}
 
-	// 추천 결과 상세 조회
+	// 추천 결과 조회(cusresult)
 	// GET /v1/cus/detail/{cusId}
 	@GetMapping("/detail/{cusId}")
 	public ResponseEntity<?> getCusDetail(@PathVariable("cusId") Long cusId, @AuthenticationPrincipal Long userNum) {
@@ -56,7 +58,7 @@ public class CusController {
 		}
 	}
 
-	// 내 추천 목록 조회
+	// 내 추천 목록 조회(mypage)
 	// GET /v1/cus/list/{userNum}
 	@GetMapping("/list/")
 	public ResponseEntity<?> getCusList(@AuthenticationPrincipal Long userNum) {
@@ -70,4 +72,19 @@ public class CusController {
 					.body("추천 목록 조회 실패 => " + e.getMessage());
 		}
 	}
+	
+	// 추천 삭제
+	// delete v1/cus/delete/{cusId}
+	@DeleteMapping("delete/{cusId}")
+	public ResponseEntity<?> deleteCus(@PathVariable("cusId") Long cusId, @AuthenticationPrincipal Long userNum){
+		try {
+			cusService.deleteCus(cusId, userNum);
+			log.info("추천삭제성공 cusId=", cusId);
+			return ResponseEntity.status(HttpStatus.OK).body("삭제완료");
+		}catch(Exception e) {
+			log.error("추천삭제실패", e.toString());
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("삭제실패"+e.toString());
+		}
+	}
+	
 }

@@ -158,7 +158,24 @@ public class CusServiceImpl implements CusService {
 		}
 		return dtoList;
 	}
-
+	
+	// 4. 내 추천 삭제
+	@Override
+	@Transactional
+	public void deleteCus(Long cusId, Long userNum) {
+		// 추천조회
+		Cus cus = cusRepository.findById(cusId)
+				.orElseThrow(()->new RuntimeException("추천결과를 찾을 수 없습니다. cusId"+cusId));
+		// 유저번호 매칭확인
+		if(!cus.getUserNum().equals(userNum)) {
+			throw new RuntimeException("접근권한이 없습니다.");
+		}
+		// 추천아이템내역 삭제
+		cusItRepository.deleteById(cusId);
+		// 추천 삭제
+		cusRepository.deleteByCusId(cusId);
+	}
+	
 	// [내부] ansJson -> GPT 프롬프트 변환
 	private String buildPrompt(String ansJson) {
 		try {

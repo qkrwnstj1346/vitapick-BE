@@ -12,4 +12,7 @@ public interface CusRepository extends JpaRepository<Cus, Long> {
 
 	// userNum으로 내 추천 목록 조회 (최신순)
 	List<Cus> findByUserNumOrderByCusIdDesc(Long userNum);
+	
+	// cus 삭제
+	void deleteByCusId(Long cusId);
 }
