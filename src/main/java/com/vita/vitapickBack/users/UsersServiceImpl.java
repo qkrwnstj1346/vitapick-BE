@@ -1,6 +1,7 @@
 package com.vita.vitapickBack.users;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -139,14 +140,14 @@ public class UsersServiceImpl implements UsersService {
 
                 log.info("로그인 성공 => " + HttpStatus.OK + entity.claimList());
 
-                RefreshToken refreshToken = RefreshToken.builder()
+                RefreshToken refreshTokenEntity = RefreshToken.builder()
                     .userNum(entity.getUserNum())
                     .loginId(entity.getLoginId())
                     .refreshToken(usersDTO.getRefreshToken())
                     .expiration(usersDTO.getRefreshTokenExpiresln())
                     .build();
 
-                refRepository.save(refreshToken);
+                refRepository.save(refreshTokenEntity);
 
                 ResponseCookie cookie = ResponseCookie.from("refreshToken", usersDTO.getRefreshToken())
                     .httpOnly(true)
@@ -288,14 +289,28 @@ public class UsersServiceImpl implements UsersService {
 
     // 회원탈퇴
     @Override
-    public void withdraw(Long userNum) {
+    public void withdraw(Long userNum, UsersDTO usersDTO, HttpServletResponse response) {
         log.info("** withdraw => userNum" + userNum);
-
+        //회원번호로 엔티티 생성
         Users users = usersRepository.findById(userNum)
             .orElseThrow(() -> new RuntimeException("회원정보가 없습니다"));
-
-        users.setStatusCd("W");
-        usersRepository.save(users);
+        //비밀번호 확인
+        if(!passwordEncoder.matches(usersDTO.getPwd(), users.getPwd())) {
+        	throw new RuntimeException("비밀번호가 일치하지 않습니다.");}
+        //유저엔티티 DB삭제
+        usersRepository.delete(users);
+        //리프레시토큰 DB삭제
+        refRepository.deleteByUserNum(userNum);
+        //리프레시토큰 쿠키만료처리
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", null)
+        		.httpOnly(true)
+        		.sameSite("Lax")
+        		.secure(false)
+        		.path("/")
+        		.maxAge(0)
+        		.build();
+        response.setHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 
+    
 }
