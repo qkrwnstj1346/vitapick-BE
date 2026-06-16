@@ -2,6 +2,10 @@ package com.vita.vitapickBack.cscenter.faq;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -90,6 +94,20 @@ public class FaqServiceImpl implements FaqService {
 	public List<Faq> findByUseYn(String useYn) {
 
 		return faqRepository.findByUseYn(useYn);
+	}
+
+	@Override
+	public Page<Faq> findAdminFaqPage(int page, int size, String useYn, String sort) {
+		int safePage = Math.max(page, 0);
+		int safeSize = size <= 0 ? 10 : Math.min(size, 100);
+		Sort.Direction direction = "oldest".equalsIgnoreCase(sort) ? Sort.Direction.ASC : Sort.Direction.DESC;
+		Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, "crtAt"));
+
+		if (useYn == null || useYn.isBlank()) {
+			return faqRepository.findAll(pageable);
+		}
+
+		return faqRepository.findByUseYn(useYn, pageable);
 	}
 
 	// FAQ 카테고리 + use_yn 조회

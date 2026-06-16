@@ -31,6 +31,7 @@ public class AdminCsInquiriesService {
             int size,
             String keyword,
             String status,
+            String type,
             LocalDate startDate,
             LocalDate endDate) {
 
@@ -41,7 +42,7 @@ public class AdminCsInquiriesService {
         LocalDateTime startAt = startDate == null ? null : startDate.atStartOfDay();
         LocalDateTime endAt = endDate == null ? null : endDate.plusDays(1).atStartOfDay();
 
-        Page<Inq> inquiriesPage = inqRepository.findAdminInquiries(keyword, status, startAt, endAt, pageable);
+        Page<Inq> inquiriesPage = inqRepository.findAdminInquiries(keyword, status, type, startAt, endAt, pageable);
 
         return AdminCsInquiriesResponseDTO.builder()
                 .content(inquiriesPage.getContent().stream()

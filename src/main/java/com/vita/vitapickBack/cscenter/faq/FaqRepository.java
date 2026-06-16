@@ -2,6 +2,8 @@ package com.vita.vitapickBack.cscenter.faq;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -39,6 +41,8 @@ public interface FaqRepository extends JpaRepository<Faq, Long> {
 	// = 공개 FAQ만 조회
 	// SELECT * FROM faq WHERE use_yn = 'Y';
 	List<Faq> findByUseYn(String useYn);
+
+	Page<Faq> findByUseYn(String useYn, Pageable pageable);
 
 	// FAQ 카테고리 + use_yn 조회
 	// = 일반회원 카테고리별 FAQ 조회
