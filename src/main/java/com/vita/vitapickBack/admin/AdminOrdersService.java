@@ -15,7 +15,6 @@ import com.vita.vitapickBack.admin.AdminOrdersResponseDTO.AdminOrderDTO;
 import com.vita.vitapickBack.order.Ord;
 import com.vita.vitapickBack.order.OrdIt;
 import com.vita.vitapickBack.order.OrdItRepository;
-import com.vita.vitapickBack.order.OrdRepository;
 import com.vita.vitapickBack.users.Users;
 import com.vita.vitapickBack.users.UsersRepository;
 
@@ -26,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class AdminOrdersService {
 
-    private final OrdRepository ordRepository;
+    private final AdminOrdRepository adminOrdRepository;
     private final OrdItRepository ordItRepository;
     private final UsersRepository usersRepository;
 
@@ -34,18 +33,18 @@ public class AdminOrdersService {
             int page,
             int size,
             String keyword,
-            String status,
+            Integer categoryId,
             LocalDate startDate,
             LocalDate endDate) {
 
         int safePage = Math.max(page, 0);
         int safeSize = size <= 0 ? 10 : Math.min(size, 100);
-        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "ordId"));
+        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "crtAt"));
 
         LocalDateTime startAt = startDate == null ? null : startDate.atStartOfDay();
         LocalDateTime endAt = endDate == null ? null : endDate.plusDays(1).atStartOfDay();
 
-        Page<Ord> ordersPage = ordRepository.findAdminOrders(keyword, status, startAt, endAt, pageable);
+        Page<Ord> ordersPage = adminOrdRepository.findAdminOrders(keyword, categoryId, startAt, endAt, pageable);
 
         return AdminOrdersResponseDTO.builder()
                 .content(ordersPage.getContent().stream()

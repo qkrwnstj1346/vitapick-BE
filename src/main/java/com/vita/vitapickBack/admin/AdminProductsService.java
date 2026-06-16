@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vita.vitapickBack.admin.AdminProductsResponseDTO.AdminProductDTO;
 import com.vita.vitapickBack.products.prd.Prd;
-import com.vita.vitapickBack.products.prd.PrdRepository;
 import com.vita.vitapickBack.products.prd_img.PrdImgRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class AdminProductsService {
 
     private static final String THUMB = "THUMB";
 
-    private final PrdRepository prdRepository;
+    private final AdminPrdRepository adminPrdRepository;
     private final PrdImgRepository prdImgRepository;
 
     public AdminProductsResponseDTO getProducts(
@@ -33,9 +32,9 @@ public class AdminProductsService {
 
         int safePage = Math.max(page, 0);
         int safeSize = size <= 0 ? 10 : Math.min(size, 100);
-        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "prdId"));
+        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "crtAt"));
 
-        Page<Prd> productsPage = prdRepository.findAdminProducts(keyword, status, categoryId, pageable);
+        Page<Prd> productsPage = adminPrdRepository.findAdminProducts(keyword, status, categoryId, pageable);
 
         return AdminProductsResponseDTO.builder()
                 .content(productsPage.getContent().stream()
