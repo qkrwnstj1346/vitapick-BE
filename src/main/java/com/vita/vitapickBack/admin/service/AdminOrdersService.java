@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,7 +11,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.vita.vitapickBack.admin.AdminOrdersResponseDTO.AdminOrderDTO;
+import com.vita.vitapickBack.admin.dto.AdminOrdersResponseDTO;
+import com.vita.vitapickBack.admin.dto.AdminOrdersResponseDTO.AdminOrderDTO;
+import com.vita.vitapickBack.admin.repository.AdminOrdRepository;
 import com.vita.vitapickBack.order.Ord;
 import com.vita.vitapickBack.order.OrdIt;
 import com.vita.vitapickBack.order.OrdItRepository;

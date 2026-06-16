@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -7,7 +7,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.vita.vitapickBack.admin.AdminProductsResponseDTO.AdminProductDTO;
+import com.vita.vitapickBack.admin.dto.AdminProductsResponseDTO;
+import com.vita.vitapickBack.admin.dto.AdminProductsResponseDTO.AdminProductDTO;
+import com.vita.vitapickBack.admin.repository.AdminPrdRepository;
 import com.vita.vitapickBack.products.prd.Prd;
 import com.vita.vitapickBack.products.prd_img.PrdImgRepository;
 

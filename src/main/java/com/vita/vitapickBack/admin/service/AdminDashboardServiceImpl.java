@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -11,10 +11,11 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.vita.vitapickBack.admin.DashboardSummaryDTO.InquiryStatsDTO;
-import com.vita.vitapickBack.admin.DashboardSummaryDTO.MemberStatsDTO;
-import com.vita.vitapickBack.admin.DashboardSummaryDTO.PopularCategoryDTO;
-import com.vita.vitapickBack.admin.DashboardSummaryDTO.ProductSalesTopDTO;
+import com.vita.vitapickBack.admin.dto.DashboardSummaryDTO;
+import com.vita.vitapickBack.admin.dto.DashboardSummaryDTO.InquiryStatsDTO;
+import com.vita.vitapickBack.admin.dto.DashboardSummaryDTO.MemberStatsDTO;
+import com.vita.vitapickBack.admin.dto.DashboardSummaryDTO.PopularCategoryDTO;
+import com.vita.vitapickBack.admin.dto.DashboardSummaryDTO.ProductSalesTopDTO;
 import com.vita.vitapickBack.cscenter.inq.InqRepository;
 import com.vita.vitapickBack.order.OrdItRepository;
 import com.vita.vitapickBack.order.OrdRepository;

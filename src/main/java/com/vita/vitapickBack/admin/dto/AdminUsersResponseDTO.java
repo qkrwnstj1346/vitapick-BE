@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminProductsResponseDTO {
+public class AdminUsersResponseDTO {
 
-    private List<AdminProductDTO> content;
+    private List<AdminUserDTO> content;
     private int page;
     private int size;
     private long totalElements;
@@ -24,17 +24,15 @@ public class AdminProductsResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class AdminProductDTO {
-        private Long prdId;
-        private String prdNm;
-        private String brand;
-        private Integer catCd;
-        private String categoryName;
-        private Integer price;
-        private String useYn;
-        private String thumbImgUrl;
+    public static class AdminUserDTO {
+        private Long userNum;
+        private String loginId;
+        private String userNm;
+        private String tel;
+        private String statusCd;
+        private String roleCd;
         private LocalDateTime crtAt;
         private LocalDateTime updAt;
-        private LocalDateTime wdAt;
+        private LocalDateTime wdDt;
     }
 }

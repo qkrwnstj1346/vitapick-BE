@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.repository;
 
 import java.time.LocalDateTime;
 
@@ -9,36 +9,33 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.vita.vitapickBack.products.rvw.Rvw;
+import com.vita.vitapickBack.cscenter.inq.Inq;
 
 @Repository
-public interface AdminRvwRepository extends JpaRepository<Rvw, Long> {
+public interface AdminInqRepository extends JpaRepository<Inq, Long> {
 
     @Query("""
-            SELECT r
-            FROM Rvw r
+            SELECT i
+            FROM Inq i
             WHERE (:keyword IS NULL OR :keyword = ''
-                   OR LOWER(r.cmt) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(i.ttl) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(i.inqTxt) LIKE LOWER(CONCAT('%', :keyword, '%'))
                    OR EXISTS (
                        SELECT 1
                        FROM Users u
-                       WHERE u.userNum = r.userNum
+                       WHERE u.userNum = i.userNum
                          AND (LOWER(u.loginId) LIKE LOWER(CONCAT('%', :keyword, '%'))
                               OR LOWER(u.userNm) LIKE LOWER(CONCAT('%', :keyword, '%')))
-                   )
-                   OR EXISTS (
-                       SELECT 1
-                       FROM Prd p
-                       WHERE p.prdId = r.prdId
-                         AND LOWER(p.prdNm) LIKE LOWER(CONCAT('%', :keyword, '%'))
                    ))
-              AND (:rating IS NULL OR r.rating = :rating)
-              AND (:startAt IS NULL OR r.crtAt >= :startAt)
-              AND (:endAt IS NULL OR r.crtAt < :endAt)
+              AND (:status IS NULL OR :status = '' OR i.inqStCd = :status)
+              AND (:type IS NULL OR :type = '' OR i.inqTpCd = :type)
+              AND (:startAt IS NULL OR i.crtAt >= :startAt)
+              AND (:endAt IS NULL OR i.crtAt < :endAt)
             """)
-    Page<Rvw> findAdminReviews(
+    Page<Inq> findAdminInquiries(
             @Param("keyword") String keyword,
-            @Param("rating") Integer rating,
+            @Param("status") String status,
+            @Param("type") String type,
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt,
             Pageable pageable);

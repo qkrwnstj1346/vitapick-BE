@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.controller;
 
 import java.time.LocalDate;
 
@@ -9,25 +9,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vita.vitapickBack.admin.dto.AdminCsInquiriesResponseDTO;
+import com.vita.vitapickBack.admin.service.AdminCsInquiriesService;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin/users")
-public class AdminUsersController {
+@RequestMapping("/api/admin/cs/inquiries")
+public class AdminCsInquiriesController {
 
-    private final AdminUsersService adminUsersService;
+    private final AdminCsInquiriesService adminCsInquiriesService;
 
     @GetMapping
-    public ResponseEntity<AdminUsersResponseDTO> getUsers(
+    public ResponseEntity<AdminCsInquiriesResponseDTO> getInquiries(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String statusCd,
-            @RequestParam(required = false) String roleCd,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        return ResponseEntity.ok(adminUsersService.getUsers(page, size, keyword, statusCd, startDate, endDate));
+        return ResponseEntity.ok(adminCsInquiriesService.getInquiries(page, size, keyword, status, type, startDate, endDate));
     }
 }

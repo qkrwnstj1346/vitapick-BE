@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,7 +10,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.vita.vitapickBack.admin.AdminCsInquiriesResponseDTO.AdminCsInquiryDTO;
+import com.vita.vitapickBack.admin.dto.AdminCsInquiriesResponseDTO;
+import com.vita.vitapickBack.admin.dto.AdminCsInquiriesResponseDTO.AdminCsInquiryDTO;
+import com.vita.vitapickBack.admin.repository.AdminInqRepository;
 import com.vita.vitapickBack.cscenter.inq.Inq;
 import com.vita.vitapickBack.users.Users;
 import com.vita.vitapickBack.users.UsersRepository;

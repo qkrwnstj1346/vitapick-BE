@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

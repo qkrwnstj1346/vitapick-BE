@@ -1,4 +1,4 @@
-package com.vita.vitapickBack.admin;
+package com.vita.vitapickBack.admin.controller;
 
 import java.time.LocalDate;
 
@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vita.vitapickBack.admin.dto.AdminCsInquiriesResponseDTO;
+import com.vita.vitapickBack.admin.service.AdminCsInquiriesService;
 import com.vita.vitapickBack.cscenter.faq.Faq;
 import com.vita.vitapickBack.cscenter.faq.FaqService;
 import com.vita.vitapickBack.cscenter.ntc.Ntc;
