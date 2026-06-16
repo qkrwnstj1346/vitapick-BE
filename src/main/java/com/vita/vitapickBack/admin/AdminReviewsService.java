@@ -14,7 +14,6 @@ import com.vita.vitapickBack.admin.AdminReviewsResponseDTO.AdminReviewDTO;
 import com.vita.vitapickBack.products.prd.Prd;
 import com.vita.vitapickBack.products.prd.PrdRepository;
 import com.vita.vitapickBack.products.rvw.Rvw;
-import com.vita.vitapickBack.products.rvw.RvwRepository;
 import com.vita.vitapickBack.users.Users;
 import com.vita.vitapickBack.users.UsersRepository;
 
@@ -25,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class AdminReviewsService {
 
-    private final RvwRepository rvwRepository;
+    private final AdminRvwRepository adminRvwRepository;
     private final UsersRepository usersRepository;
     private final PrdRepository prdRepository;
 
@@ -39,12 +38,12 @@ public class AdminReviewsService {
 
         int safePage = Math.max(page, 0);
         int safeSize = size <= 0 ? 10 : Math.min(size, 100);
-        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "rvwId"));
+        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "crtAt"));
 
         LocalDateTime startAt = startDate == null ? null : startDate.atStartOfDay();
         LocalDateTime endAt = endDate == null ? null : endDate.plusDays(1).atStartOfDay();
 
-        Page<Rvw> reviewsPage = rvwRepository.findAdminReviews(keyword, rating, startAt, endAt, pageable);
+        Page<Rvw> reviewsPage = adminRvwRepository.findAdminReviews(keyword, rating, startAt, endAt, pageable);
 
         return AdminReviewsResponseDTO.builder()
                 .content(reviewsPage.getContent().stream()

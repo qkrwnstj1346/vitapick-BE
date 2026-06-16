@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vita.vitapickBack.admin.AdminCsInquiriesResponseDTO.AdminCsInquiryDTO;
 import com.vita.vitapickBack.cscenter.inq.Inq;
-import com.vita.vitapickBack.cscenter.inq.InqRepository;
 import com.vita.vitapickBack.users.Users;
 import com.vita.vitapickBack.users.UsersRepository;
 
@@ -23,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class AdminCsInquiriesService {
 
-    private final InqRepository inqRepository;
+    private final AdminInqRepository adminInqRepository;
     private final UsersRepository usersRepository;
 
     public AdminCsInquiriesResponseDTO getInquiries(
@@ -42,7 +41,7 @@ public class AdminCsInquiriesService {
         LocalDateTime startAt = startDate == null ? null : startDate.atStartOfDay();
         LocalDateTime endAt = endDate == null ? null : endDate.plusDays(1).atStartOfDay();
 
-        Page<Inq> inquiriesPage = inqRepository.findAdminInquiries(keyword, status, type, startAt, endAt, pageable);
+        Page<Inq> inquiriesPage = adminInqRepository.findAdminInquiries(keyword, status, type, startAt, endAt, pageable);
 
         return AdminCsInquiriesResponseDTO.builder()
                 .content(inquiriesPage.getContent().stream()

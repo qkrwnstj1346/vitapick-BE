@@ -1,5 +1,8 @@
 package com.vita.vitapickBack.admin;
 
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +24,10 @@ public class AdminUsersController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String statusCd,
-            @RequestParam(required = false) String roleCd) {
+            @RequestParam(required = false) String roleCd,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        return ResponseEntity.ok(adminUsersService.getUsers(page, size, keyword, statusCd, roleCd));
+        return ResponseEntity.ok(adminUsersService.getUsers(page, size, keyword, statusCd, startDate, endDate));
     }
 }

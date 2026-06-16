@@ -2,8 +2,6 @@ package com.vita.vitapickBack.products.prd;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,18 +24,4 @@ public interface PrdRepository extends JpaRepository<Prd, Long> {
 	@Query("SELECT p FROM Prd p WHERE p.prdNm LIKE %:keyword%")
 	List<Prd> searchByKeyword(@Param("keyword") String keyword);
 	
-	// 관리자 페이지에서 상품 조회 (상품명, 상태, 카테고리로 검색)
-	@Query("""
-			SELECT p
-			FROM Prd p
-			WHERE (:keyword IS NULL OR :keyword = ''
-				   OR LOWER(p.prdNm) LIKE LOWER(CONCAT('%', :keyword, '%')))
-			  AND (:status IS NULL OR :status = '' OR p.useYn = :status)
-			  AND (:categoryId IS NULL OR p.catCd = :categoryId)
-			""")
-	Page<Prd> findAdminProducts(
-			@Param("keyword") String keyword,
-			@Param("status") String status,
-			@Param("categoryId") Integer categoryId,
-			Pageable pageable);
 }

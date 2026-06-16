@@ -24,9 +24,10 @@ public class AdminOrdersController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        return ResponseEntity.ok(adminOrdersService.getOrders(page, size, keyword, status, startDate, endDate));
+        return ResponseEntity.ok(adminOrdersService.getOrders(page, size, keyword, categoryId, startDate, endDate));
     }
 }
