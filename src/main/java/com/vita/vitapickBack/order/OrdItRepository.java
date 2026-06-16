@@ -1,6 +1,7 @@
 package com.vita.vitapickBack.order;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,23 @@ public interface OrdItRepository extends JpaRepository<OrdIt, Long> {
 	List<OrdIt> findByOrdId(Long ordId);
 
 	List<OrdIt> findByPrdId(Long prdId);
+	
+	// 특정 회원이 특정 상품에 대해 리뷰 작성 가능한 주문 항목 ID 조회
+	@Query(value = """
+	        SELECT oi.ord_it_id
+	        FROM ord o
+	        JOIN ord_it oi
+	            ON o.ord_id = oi.ord_id
+	        WHERE o.user_num = :userNum
+	          AND oi.prd_id = :prdId
+	          AND o.ord_st_cd = 'PAID'
+	        ORDER BY o.crt_at DESC
+	        LIMIT 1
+	        """, nativeQuery = true)
+	Optional<Long> findWritableOrdItId(
+	        @Param("userNum") Long userNum,
+	        @Param("prdId") Long prdId
+	);
 	
 	// 상품별 판매량 기준 상위 5개 상품 ID, 상품명, 썸네일 이미지 URL, 판매량 조회
 	@Query(value = """

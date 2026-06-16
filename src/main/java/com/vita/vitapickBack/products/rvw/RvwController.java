@@ -52,10 +52,19 @@ public class RvwController {
 
         return ResponseEntity.ok(rvwService.createRvw(userNum, dto));
     }
+    
+    // 리뷰 작성 가능 여부 확인
+    @GetMapping("/can-write/{prdId}")
+    public ResponseEntity<RvwCanWriteDTO> canWriteReview(
+            @AuthenticationPrincipal Long userNum,
+            @PathVariable("prdId") Long prdId
+    ) {
+        return ResponseEntity.ok(rvwService.canWriteReview(userNum, prdId));
+    }
 
     // 상품 ID로 리뷰 목록 조회
     @GetMapping("/prd/{prdId}")
-    public ResponseEntity<List<Rvw>> findByPrdId(
+    public ResponseEntity<List<RvwDTO>> findByPrdId(
             @PathVariable("prdId") Long prdId) {
 
         return ResponseEntity.ok(rvwService.findByPrdId(prdId));

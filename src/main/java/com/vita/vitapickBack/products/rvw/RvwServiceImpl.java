@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.vita.vitapickBack.order.OrdItRepository;
+import com.vita.vitapickBack.users.UsersRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -12,10 +15,19 @@ import lombok.RequiredArgsConstructor;
 public class RvwServiceImpl implements RvwService {
 
     private final RvwRepository rvwRepository;
+    private final OrdItRepository ordItRepository;
+    private final UsersRepository usersRepository;
 
     // 리뷰 작성
     @Override
     public Rvw createRvw(Long userNum, RvwDTO dto) {
+
+        Long writableOrdItId = ordItRepository.findWritableOrdItId(userNum, dto.getPrdId())
+                .orElseThrow(() -> new RuntimeException("구매한 상품만 리뷰를 작성할 수 있습니다."));
+
+        if (!writableOrdItId.equals(dto.getOrdItId())) {
+            throw new RuntimeException("구매한 상품만 리뷰를 작성할 수 있습니다.");
+        }
 
         Rvw rvw = Rvw.builder()
                 .userNum(userNum)
@@ -30,11 +42,51 @@ public class RvwServiceImpl implements RvwService {
         return rvwRepository.save(rvw);
     }
 
+    // 리뷰 작성 가능 여부 확인
+    @Override
+    public RvwCanWriteDTO canWriteReview(Long userNum, Long prdId) {
+
+        return ordItRepository.findWritableOrdItId(userNum, prdId)
+                .map(ordItId -> RvwCanWriteDTO.builder()
+                        .canWrite(true)
+                        .ordItId(ordItId)
+                        .build())
+                .orElse(
+                        RvwCanWriteDTO.builder()
+                                .canWrite(false)
+                                .ordItId(null)
+                                .build()
+                );
+    }
+
     // 상품 ID로 리뷰 조회
     @Override
-    public List<Rvw> findByPrdId(Long prdId) {
+    public List<RvwDTO> findByPrdId(Long prdId) {
 
-        return rvwRepository.findByPrdIdOrderByCrtAtDesc(prdId);
+        List<Rvw> rvwList = rvwRepository.findByPrdIdOrderByCrtAtDesc(prdId);
+
+        return rvwList.stream()
+                .map(rvw -> {
+
+                    String loginId = usersRepository.findById(rvw.getUserNum())
+                            .map(user -> user.getLoginId())
+                            .orElse("회원");
+
+                    return RvwDTO.builder()
+                            .rvwId(rvw.getRvwId())
+                            .ordItId(rvw.getOrdItId())
+                            .prdId(rvw.getPrdId())
+                            .userNum(rvw.getUserNum())
+                            .loginId(loginId)
+                            .rating(rvw.getRating())
+                            .cmt(rvw.getCmt())
+                            .replyTxt(rvw.getReplyTxt())
+                            .replyAt(rvw.getReplyAt())
+                            .crtAt(rvw.getCrtAt())
+                            .updAt(rvw.getUpdAt())
+                            .build();
+                })
+                .toList();
     }
 
     // 회원 번호로 리뷰 조회

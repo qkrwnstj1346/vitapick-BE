@@ -7,10 +7,13 @@ public interface RvwService {
     // 리뷰 작성
     Rvw createRvw(Long userNum, RvwDTO dto);
 
-    // 상품 ID로 리뷰 목록 조회
-    List<Rvw> findByPrdId(Long prdId);
+    // 리뷰 작성 가능 여부 확인
+    RvwCanWriteDTO canWriteReview(Long userNum, Long prdId);
 
-    // 로그인한 사용자의 리뷰 목록 조회
+    // 상품 ID로 리뷰 조회
+    List<RvwDTO> findByPrdId(Long prdId);
+
+    // 회원 번호로 리뷰 조회
     List<Rvw> findByUserNum(Long userNum);
 
     // 리뷰 단건 조회
