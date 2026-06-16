@@ -40,6 +40,6 @@ public interface UsersService {
     void updateUser(Long userNum, UsersDTO usersDTO);
 
     // 회원탈퇴
-    void withdraw(Long userNum);
+    void withdraw(Long userNum, UsersDTO usersDTO, HttpServletResponse response);
 
 }

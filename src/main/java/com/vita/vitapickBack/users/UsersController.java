@@ -183,14 +183,16 @@ public class UsersController {
     }
     
     // 회원탈퇴
-    // DELETE
-    @DeleteMapping("/withdraw")
-    public ResponseEntity<?> withdraw(@AuthenticationPrincipal Long userNum) {
+    // POST: 비번확인 후 탈퇴
+    @PostMapping(value="/withdraw", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> withdraw(
+    		@AuthenticationPrincipal Long userNum,
+    		@RequestBody UsersDTO usersDTO,
+    		HttpServletResponse response) {
         try {
-            usersService.withdraw(userNum);
+            usersService.withdraw(userNum, usersDTO, response);
             log.info("** 회원탈퇴 성공 => userNum" + userNum);
-            return ResponseEntity.status(HttpStatus.OK)
-                .body("회원탈퇴 성공");
+            return ResponseEntity.status(HttpStatus.OK).body("회원탈퇴 성공");
         } catch (Exception e) {
             log.error("** 회원탈퇴 실패 => " + e.toString());
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
