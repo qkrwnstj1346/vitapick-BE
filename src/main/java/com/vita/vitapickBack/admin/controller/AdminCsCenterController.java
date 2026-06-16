@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vita.vitapickBack.admin.dto.AdminCsInquiriesResponseDTO;
+import com.vita.vitapickBack.admin.service.AdminCsCenterService;
 import com.vita.vitapickBack.admin.service.AdminCsInquiriesService;
 import com.vita.vitapickBack.cscenter.faq.Faq;
-import com.vita.vitapickBack.cscenter.faq.FaqService;
 import com.vita.vitapickBack.cscenter.ntc.Ntc;
 import com.vita.vitapickBack.cscenter.ntc.NtcService;
 
@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminCsCenterController {
 
     private final NtcService ntcService;
-    private final FaqService faqService;
+    private final AdminCsCenterService adminCsCenterService;
     private final AdminCsInquiriesService adminCsInquiriesService;
 
     @GetMapping("/notices")
@@ -42,8 +42,9 @@ public class AdminCsCenterController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String useYn,
+            @RequestParam(required = false) String faqCtgCd,
             @RequestParam(defaultValue = "latest") String sort) {
-        return ResponseEntity.ok(faqService.findAdminFaqPage(page, size, useYn, sort));
+        return ResponseEntity.ok(adminCsCenterService.getFaqs(page, size, useYn, faqCtgCd, sort));
     }
 
     @GetMapping("/inquiries")

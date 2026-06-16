@@ -65,6 +65,7 @@ public class SecurityConfig {
 		        	//=> Role 적용이후 정확한 요청명으로 수정  
 		        	.requestMatchers(HttpMethod.OPTIONS ,"/**").permitAll()
 		        	.requestMatchers("/api/admin/**").hasRole("ADMIN")
+		        	.requestMatchers("/admin/**").hasRole("ADMIN")
 		        	.requestMatchers("/user/memberlist").hasRole("ADMIN")
 		        	.requestMatchers("/v1/info","/user/logout").authenticated()
 		            //.anyRequest().authenticated()) // 모든 요청 인증 필요
