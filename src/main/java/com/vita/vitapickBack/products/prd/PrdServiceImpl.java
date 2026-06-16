@@ -21,6 +21,40 @@ public class PrdServiceImpl implements PrdService {
     
     // 주문상품 DB 접근하는 애 (상품별 주문 조회할 때 필요)
     private final OrdItRepository ordItRepository;
+    
+    @Override
+    public List<PrdDTO> getAllProducts() {
+
+        List<Prd> prdList = prdRepository.findAll(); // DB에서 전체 상품 조회
+        List<PrdDTO> result = new ArrayList<>(); // 최종 결과 담을 리스트
+
+        for (Prd prd : prdList) { // 각 상품마다 썸네일 이미지 찾아서 DTO에 담기
+
+            String thumbUrl = null; // 썸네일 이미지 URL 담을 변수
+            List<PrdImg> imgList = prdImgRepository.findByPrdId(prd.getPrdId()); // 해당 상품의 이미지 목록 조회
+
+            for (PrdImg img : imgList) { // 썸네일 이미지 찾기
+                if ("THUMB".equals(img.getImgTypeCd())) { // 이미지 타입이 "THUMB"인 경우
+                    thumbUrl = img.getImgUrl(); // 썸네일 이미지 URL 저장
+                    break;
+                }
+            }
+            // Builder 패턴으로 DTO 생성
+            PrdDTO dto = PrdDTO.builder()
+                    .prdId(prd.getPrdId())
+                    .prdNm(prd.getPrdNm())
+                    .price(prd.getPrice())
+                    .brand(prd.getBrand())
+                    .descTxt(prd.getDescTxt())
+                    .ingr(prd.getIngr())
+                    .thumbImgUrl(thumbUrl)
+                    .build();
+
+            result.add(dto); // 최종 결과 리스트에 DTO 추가
+        }
+
+        return result;
+    }
 
     // 카테고리별 상품 목록 + 썸네일 이미지 반환
     @Override

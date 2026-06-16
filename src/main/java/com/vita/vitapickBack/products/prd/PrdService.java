@@ -4,7 +4,9 @@ import java.util.List;
 
 public interface PrdService {
 	
-   
+	// 전체 상품 조회
+	List<PrdDTO> getAllProducts();
+	
     // 카테고리별 상품 조회 
     List<PrdDTO> getPrdByCategory(int catCd);
     

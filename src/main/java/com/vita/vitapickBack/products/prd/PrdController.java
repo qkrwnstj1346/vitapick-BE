@@ -15,6 +15,12 @@ import lombok.RequiredArgsConstructor;
 public class PrdController {
 
     private final PrdService prdService;
+    
+    // 전체 상품 조회
+    @GetMapping("/list")
+    public ResponseEntity<List<PrdDTO>> getAllProducts() {
+        return ResponseEntity.ok(prdService.getAllProducts());
+    }
 
     // 카테고리별 상품 조회
     @GetMapping("/list/category/{catCd}")
