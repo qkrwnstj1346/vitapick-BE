@@ -2,6 +2,8 @@ package com.vita.vitapickBack.cscenter.ntc;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 public interface NtcService {
 
 	// 전체 공지사항 목록 조회
@@ -13,6 +15,8 @@ public interface NtcService {
 	// = 일반회원 공지사항 목록 조회
 	// = 공개 공지사항만 조회
 	List<Ntc> useYNtcList(Character useYn);
+
+	Page<Ntc> findAdminNtcPage(int page, int size, String useYn, String sort);
 
 	//  공지사항 상세 조회
 	Ntc selectOne(Long ntcId);

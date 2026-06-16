@@ -2,6 +2,8 @@ package com.vita.vitapickBack.cscenter.ntc;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -33,5 +35,7 @@ public interface NtcRepository extends JpaRepository<Ntc, Long> {
 	// = 공개 공지사항만 조회
 	// SELECT * FROM ntc WHERE use_yn = 'Y';
 	List<Ntc> findByUseYn(Character useYn);
+
+	Page<Ntc> findByUseYn(Character useYn, Pageable pageable);
 
 }

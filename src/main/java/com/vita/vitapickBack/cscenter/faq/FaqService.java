@@ -2,6 +2,8 @@ package com.vita.vitapickBack.cscenter.faq;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 public interface FaqService {
 
 	// FAQ 전체 목록 조회
@@ -29,6 +31,8 @@ public interface FaqService {
 	// = 일반회원 FAQ 목록 조회
 	// = 공개 FAQ만 조회
 	List<Faq> findByUseYn(String useYn);
+
+	Page<Faq> findAdminFaqPage(int page, int size, String useYn, String sort);
 
 	// FAQ 카테고리 + use_yn 조회
 	// = 일반회원 카테고리별 FAQ 조회

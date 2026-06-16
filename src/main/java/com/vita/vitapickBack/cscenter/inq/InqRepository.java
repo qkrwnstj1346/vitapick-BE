@@ -64,12 +64,14 @@ public interface InqRepository extends JpaRepository<Inq, Long> {
 					          OR LOWER(u.userNm) LIKE LOWER(CONCAT('%', :keyword, '%')))
 				   ))
 			  AND (:status IS NULL OR :status = '' OR i.inqStCd = :status)
+			  AND (:type IS NULL OR :type = '' OR i.inqTpCd = :type)
 			  AND (:startAt IS NULL OR i.crtAt >= :startAt)
 			  AND (:endAt IS NULL OR i.crtAt < :endAt)
 			""")
 	Page<Inq> findAdminInquiries(
 			@Param("keyword") String keyword,
 			@Param("status") String status,
+			@Param("type") String type,
 			@Param("startAt") LocalDateTime startAt,
 			@Param("endAt") LocalDateTime endAt,
 			Pageable pageable);
