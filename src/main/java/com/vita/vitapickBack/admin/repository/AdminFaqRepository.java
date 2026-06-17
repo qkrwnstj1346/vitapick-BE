@@ -1,5 +1,7 @@
 package com.vita.vitapickBack.admin.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,10 +18,19 @@ public interface AdminFaqRepository extends JpaRepository<Faq, Long> {
             SELECT f
             FROM Faq f
             WHERE (:useYn IS NULL OR :useYn = '' OR f.useYn = :useYn)
-              AND (:faqCtgCd IS NULL OR :faqCtgCd = '' OR f.faqCtgCd = :faqCtgCd)
             """)
     Page<Faq> findAdminFaqs(
             @Param("useYn") String useYn,
-            @Param("faqCtgCd") String faqCtgCd,
+            Pageable pageable);
+
+    @Query("""
+            SELECT f
+            FROM Faq f
+            WHERE (:useYn IS NULL OR :useYn = '' OR f.useYn = :useYn)
+              AND f.faqCtgCd IN :faqCtgCds
+            """)
+    Page<Faq> findAdminFaqsByCategoryCodes(
+            @Param("useYn") String useYn,
+            @Param("faqCtgCds") List<String> faqCtgCds,
             Pageable pageable);
 }
