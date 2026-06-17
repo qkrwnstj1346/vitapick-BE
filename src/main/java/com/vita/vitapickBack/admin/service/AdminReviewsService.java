@@ -69,6 +69,7 @@ public class AdminReviewsService {
     public AdminReviewDTO saveReply(Long rvwId, AdminReviewReplyRequestDTO request) {
         Rvw rvw = findReview(rvwId);
         rvw.setReplyTxt(request == null ? null : request.getReplyTxt());
+        rvw.setReplyAt(LocalDateTime.now());
         return toAdminReviewDTO(rvw);
     }
 
@@ -76,6 +77,7 @@ public class AdminReviewsService {
     public AdminReviewDTO deleteReply(Long rvwId) {
         Rvw rvw = findReview(rvwId);
         rvw.setReplyTxt(null);
+        rvw.setReplyAt(null);
         return toAdminReviewDTO(rvw);
     }
 
