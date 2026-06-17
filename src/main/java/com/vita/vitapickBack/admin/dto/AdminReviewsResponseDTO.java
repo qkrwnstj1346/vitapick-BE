@@ -32,8 +32,16 @@ public class AdminReviewsResponseDTO {
         private String writerName;
         private Integer rating;
         private String content;
+        private String replyTxt;
         private String useYn;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AdminReviewReplyRequestDTO {
+        private String replyTxt;
     }
 }

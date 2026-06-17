@@ -32,6 +32,7 @@ public class AdminOrdersResponseDTO {
         private String buyerName;
         private Integer totalPrice;
         private String orderStatus;
+        private String payMthdCd;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
     }

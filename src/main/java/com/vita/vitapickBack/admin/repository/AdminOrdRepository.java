@@ -41,15 +41,29 @@ public interface AdminOrdRepository extends JpaRepository<Ord, Long> {
                     AND p.prdId = oi.prdId
                     AND p.catCd = :categoryId
               ))
+              AND (:payMthdCd IS NULL OR :payMthdCd = '' OR EXISTS (
+                  SELECT 1
+                  FROM Pay py
+                  WHERE py.ordId = o.ordId
+                    AND py.payMthdCd = :payMthdCd
+              ))
               AND (:startAt IS NULL OR o.crtAt >= :startAt)
               AND (:endAt IS NULL OR o.crtAt < :endAt)
             """)
     Page<Ord> findAdminOrders(
             @Param("keyword") String keyword,
             @Param("categoryId") Integer categoryId,
+            @Param("payMthdCd") String payMthdCd,
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt,
             Pageable pageable);
+
+    @Query("""
+            SELECT py.payMthdCd
+            FROM Pay py
+            WHERE py.ordId = :ordId
+            """)
+    String findPayMthdCdByOrdId(@Param("ordId") Long ordId);
 
     // Dashboard summary paid order amount by date range.
     @Query("""

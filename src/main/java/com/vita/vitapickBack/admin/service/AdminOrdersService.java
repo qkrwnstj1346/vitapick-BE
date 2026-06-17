@@ -36,6 +36,7 @@ public class AdminOrdersService {
             int size,
             String keyword,
             Integer categoryId,
+            String payMthdCd,
             LocalDate startDate,
             LocalDate endDate) {
 
@@ -46,7 +47,7 @@ public class AdminOrdersService {
         LocalDateTime startAt = startDate == null ? null : startDate.atStartOfDay();
         LocalDateTime endAt = endDate == null ? null : endDate.plusDays(1).atStartOfDay();
 
-        Page<Ord> ordersPage = adminOrdRepository.findAdminOrders(keyword, categoryId, startAt, endAt, pageable);
+        Page<Ord> ordersPage = adminOrdRepository.findAdminOrders(keyword, categoryId, payMthdCd, startAt, endAt, pageable);
 
         return AdminOrdersResponseDTO.builder()
                 .content(ordersPage.getContent().stream()
@@ -61,6 +62,7 @@ public class AdminOrdersService {
 
     private AdminOrderDTO toAdminOrderDTO(Ord ord) {
         Users buyer = usersRepository.findById(ord.getUserNum()).orElse(null);
+        String payMthdCd = adminOrdRepository.findPayMthdCdByOrdId(ord.getOrdId());
 
         return AdminOrderDTO.builder()
                 .orderId(ord.getOrdId())
@@ -70,6 +72,7 @@ public class AdminOrdersService {
                 .buyerName(buyer == null ? null : buyer.getUserNm())
                 .totalPrice(ord.getTotalAmt())
                 .orderStatus(ord.getOrdStCd())
+                .payMthdCd(payMthdCd)
                 .createdAt(ord.getCrtAt())
                 .updatedAt(ord.getUpdAt())
                 .build();

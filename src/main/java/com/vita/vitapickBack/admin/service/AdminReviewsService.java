@@ -7,11 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.vita.vitapickBack.admin.dto.AdminReviewsResponseDTO;
 import com.vita.vitapickBack.admin.dto.AdminReviewsResponseDTO.AdminReviewDTO;
+import com.vita.vitapickBack.admin.dto.AdminReviewsResponseDTO.AdminReviewReplyRequestDTO;
 import com.vita.vitapickBack.admin.repository.AdminRvwRepository;
 import com.vita.vitapickBack.products.prd.Prd;
 import com.vita.vitapickBack.products.prd.PrdRepository;
@@ -58,6 +61,29 @@ public class AdminReviewsService {
                 .build();
     }
 
+    public AdminReviewDTO getReview(Long rvwId) {
+        return toAdminReviewDTO(findReview(rvwId));
+    }
+
+    @Transactional
+    public AdminReviewDTO saveReply(Long rvwId, AdminReviewReplyRequestDTO request) {
+        Rvw rvw = findReview(rvwId);
+        rvw.setReplyTxt(request == null ? null : request.getReplyTxt());
+        return toAdminReviewDTO(rvw);
+    }
+
+    @Transactional
+    public AdminReviewDTO deleteReply(Long rvwId) {
+        Rvw rvw = findReview(rvwId);
+        rvw.setReplyTxt(null);
+        return toAdminReviewDTO(rvw);
+    }
+
+    private Rvw findReview(Long rvwId) {
+        return adminRvwRepository.findById(rvwId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found"));
+    }
+
     private AdminReviewDTO toAdminReviewDTO(Rvw rvw) {
         Users writer = usersRepository.findById(rvw.getUserNum()).orElse(null);
         Prd product = prdRepository.findById(rvw.getPrdId()).orElse(null);
@@ -70,6 +96,7 @@ public class AdminReviewsService {
                 .writerName(writer == null ? null : writer.getUserNm())
                 .rating(rvw.getRating())
                 .content(rvw.getCmt())
+                .replyTxt(rvw.getReplyTxt())
                 .useYn(rvw.getUseYn())
                 .createdAt(rvw.getCrtAt())
                 .updatedAt(rvw.getUpdAt())
