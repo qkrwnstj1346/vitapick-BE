@@ -51,7 +51,7 @@ public class FaqServiceImpl implements FaqService {
 		faq.setTtl(dto.getTtl());
 		faq.setFaqTxt(dto.getFaqTxt());
 		faq.setViewCnt(0);
-		faq.setUseYn("Y");
+		faq.setUseYn(dto.getUseYn() == null || dto.getUseYn().isBlank() ? "Y" : dto.getUseYn());
 
 		return faqRepository.save(faq);
 	}
