@@ -39,4 +39,10 @@ public interface AdminInqRepository extends JpaRepository<Inq, Long> {
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt,
             Pageable pageable);
+
+    // Dashboard summary inquiry status count.
+    Long countByInqStCd(String inqStCd);
+
+    // Dashboard summary daily inquiry count.
+    Long countByCrtAtGreaterThanEqualAndCrtAtLessThan(LocalDateTime startAt, LocalDateTime endAt);
 }

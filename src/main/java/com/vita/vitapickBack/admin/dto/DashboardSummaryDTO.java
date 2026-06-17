@@ -20,6 +20,8 @@ public class DashboardSummaryDTO {
     private List<ProductSalesTopDTO> productSalesTop5;
     private InquiryStatsDTO inquiryStats;
     private MemberStatsDTO memberStats;
+    private List<MonthlyCountDTO> monthlyNewUsers;
+    private List<MonthlyCountDTO> monthlyPaidOrders;
 
     @Data
     @Builder
@@ -64,5 +66,14 @@ public class DashboardSummaryDTO {
         private Long totalCount;
         private Long activeCount;
         private Long withdrawnCount;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MonthlyCountDTO {
+        private String month;
+        private Long count;
     }
 }

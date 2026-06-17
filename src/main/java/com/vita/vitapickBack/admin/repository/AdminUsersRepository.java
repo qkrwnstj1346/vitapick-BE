@@ -1,6 +1,7 @@
 package com.vita.vitapickBack.admin.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,4 +32,21 @@ public interface AdminUsersRepository extends JpaRepository<Users, Long> {
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt,
             Pageable pageable);
+
+    // Dashboard summary monthly new user count.
+    @Query(value = """
+            SELECT DATE_FORMAT(u.crt_at, '%Y-%m') AS month, COUNT(*) AS count
+            FROM users u
+            WHERE u.role_cd = 'USER'
+              AND u.crt_at >= :startAt
+              AND u.crt_at < :endAt
+            GROUP BY DATE_FORMAT(u.crt_at, '%Y-%m')
+            ORDER BY month ASC
+            """, nativeQuery = true)
+    List<Object[]> findMonthlyNewUserCounts(
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt);
+
+    // Dashboard summary member status count.
+    Long countByStatusCd(String statusCd);
 }

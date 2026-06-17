@@ -1,6 +1,7 @@
 package com.vita.vitapickBack.admin.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,4 +50,37 @@ public interface AdminOrdRepository extends JpaRepository<Ord, Long> {
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt,
             Pageable pageable);
+
+    // Dashboard summary paid order amount by date range.
+    @Query("""
+            SELECT COALESCE(SUM(o.totalAmt), 0)
+            FROM Ord o
+            WHERE o.ordStCd = :ordStCd
+              AND o.crtAt >= :startAt
+              AND o.crtAt < :endAt
+            """)
+    Long sumTotalAmtByOrdStCdAndCrtAtRange(
+            @Param("ordStCd") String ordStCd,
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt);
+
+    // Dashboard summary monthly paid order count.
+    @Query(value = """
+            SELECT DATE_FORMAT(o.crt_at, '%Y-%m') AS month, COUNT(*) AS count
+            FROM ord o
+            WHERE o.ord_st_cd = 'PAID'
+              AND o.crt_at >= :startAt
+              AND o.crt_at < :endAt
+            GROUP BY DATE_FORMAT(o.crt_at, '%Y-%m')
+            ORDER BY month ASC
+            """, nativeQuery = true)
+    List<Object[]> findMonthlyPaidOrderCounts(
+            @Param("startAt") LocalDateTime startAt,
+            @Param("endAt") LocalDateTime endAt);
+
+    // Dashboard summary paid order count by date range.
+    Long countByOrdStCdAndCrtAtGreaterThanEqualAndCrtAtLessThan(
+            String ordStCd,
+            LocalDateTime startAt,
+            LocalDateTime endAt);
 }
