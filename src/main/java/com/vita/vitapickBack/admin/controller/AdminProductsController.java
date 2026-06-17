@@ -20,11 +20,11 @@ public class AdminProductsController {
 
     @GetMapping
     public ResponseEntity<AdminProductsResponseDTO> getProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) Integer categoryId) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "categoryId", required = false) Integer categoryId) {
 
         return ResponseEntity.ok(adminProductsService.getProducts(page, size, keyword, status, categoryId));
     }

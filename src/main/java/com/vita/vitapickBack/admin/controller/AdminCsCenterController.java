@@ -30,32 +30,32 @@ public class AdminCsCenterController {
 
     @GetMapping("/notices")
     public ResponseEntity<Page<Ntc>> getNotices(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String useYn,
-            @RequestParam(defaultValue = "latest") String sort) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "useYn", required = false) String useYn,
+            @RequestParam(name = "sort", defaultValue = "latest") String sort) {
         return ResponseEntity.ok(ntcService.findAdminNtcPage(page, size, useYn, sort));
     }
 
     @GetMapping("/faqs")
     public ResponseEntity<Page<Faq>> getFaqs(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String useYn,
-            @RequestParam(required = false) String faqCtgCd,
-            @RequestParam(defaultValue = "latest") String sort) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "useYn", required = false) String useYn,
+            @RequestParam(name = "faqCtgCd", required = false) String faqCtgCd,
+            @RequestParam(name = "sort", defaultValue = "latest") String sort) {
         return ResponseEntity.ok(adminCsCenterService.getFaqs(page, size, useYn, faqCtgCd, sort));
     }
 
     @GetMapping("/inquiries")
     public ResponseEntity<AdminCsInquiriesResponseDTO> getInquiries(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String type,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "type", required = false) String type,
+            @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         return ResponseEntity.ok(adminCsInquiriesService.getInquiries(page, size, keyword, status, type, startDate, endDate));
     }
