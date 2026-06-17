@@ -297,10 +297,6 @@ public class UsersServiceImpl implements UsersService {
         //비밀번호 확인
         if(!passwordEncoder.matches(usersDTO.getPwd(), users.getPwd())) {
         	throw new RuntimeException("비밀번호가 일치하지 않습니다.");}
-        //유저엔티티 DB삭제
-        usersRepository.delete(users);
-        //리프레시토큰 DB삭제
-        refRepository.deleteByUserNum(userNum);
         //리프레시토큰 쿠키만료처리
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", null)
         		.httpOnly(true)
@@ -310,6 +306,11 @@ public class UsersServiceImpl implements UsersService {
         		.maxAge(0)
         		.build();
         response.setHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+        
+        //유저엔티티 DB삭제
+        usersRepository.delete(users);
+        //리프레시토큰 DB삭제
+        refRepository.deleteByUserNum(userNum);
     }
 
     
