@@ -54,7 +54,7 @@ public class Prd {
     @Column(name = "crt_at")
     private LocalDateTime crtAt;
 
-    @Column(name = "upd_at")
+    @Column(name =  "upd_at")
     private LocalDateTime updAt;
 
     @Column(name = "wd_at")
