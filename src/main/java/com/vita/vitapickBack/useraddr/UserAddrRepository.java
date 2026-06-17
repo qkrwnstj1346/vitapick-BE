@@ -4,13 +4,23 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserAddrRepository extends JpaRepository<UserAddr, Long> {
 
 	// 회원 배송지 목록 조회
-	List<UserAddr> findByUserNum(Long userNum);
+	@Query("""
+			SELECT a
+			FROM UserAddr a
+			WHERE a.userNum = :userNum
+			ORDER BY
+			    CASE WHEN a.baseYn = 'Y' THEN 0 ELSE 1 END,
+			    a.addrId DESC
+			""")
+	List<UserAddr> findByUserNum(@Param("userNum") Long userNum);
 
 	// 기본 배송지 조회
 	Optional<UserAddr> findByUserNumAndBaseYn(Long userNum, String baseYn);

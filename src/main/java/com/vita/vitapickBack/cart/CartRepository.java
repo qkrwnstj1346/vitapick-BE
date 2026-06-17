@@ -37,7 +37,9 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 	        LEFT JOIN Cus cu ON c.cusId = cu.cusId
 	        WHERE pi.imgTypeCd = 'THUMB'
 	        AND c.userNum = :userNum
-	        ORDER BY COALESCE(c.updAt, c.crtAt) DESC, c.cartId DESC
+	         ORDER BY
+            CASE WHEN c.cusId IS NOT NULL THEN 0 ELSE 1 END,
+            c.cartId DESC
 	        """)
 	List<CartDTO> findCartListWithProduct(@Param("userNum") Long userNum);
 
