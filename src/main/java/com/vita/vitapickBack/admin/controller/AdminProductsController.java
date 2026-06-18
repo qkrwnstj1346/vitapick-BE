@@ -18,6 +18,7 @@ public class AdminProductsController {
 
     private final AdminProductsService adminProductsService;
 
+    // 관리자 상품 목록 조회 API
     @GetMapping
     public ResponseEntity<AdminProductsResponseDTO> getProducts(
             @RequestParam(name = "page", defaultValue = "0") int page,

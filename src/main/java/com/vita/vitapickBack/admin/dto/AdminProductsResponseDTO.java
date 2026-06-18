@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// 관리자 상품 목록 응답 DTO
 public class AdminProductsResponseDTO {
 
     private List<AdminProductDTO> content;
@@ -24,6 +25,7 @@ public class AdminProductsResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 상품 목록 항목 DTO
     public static class AdminProductDTO {
         private Long prdId;
         private String prdNm;

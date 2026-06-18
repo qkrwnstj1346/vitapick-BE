@@ -57,6 +57,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
     private final AdminUsersRepository adminUsersRepository;
     private final AdminInqRepository adminInqRepository;
 
+    // 관리자 대시보드 요약 데이터를 조회한다.
     @Override
     public DashboardSummaryDTO getSummary() {
         LocalDate today = LocalDate.now();
@@ -86,6 +87,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                 .build();
     }
 
+    // 결제완료 주문 기준 인기 카테고리를 집계한다.
     private PopularCategoryDTO getPopularCategory(LocalDateTime monthStart, LocalDateTime nextMonthStart) {
         List<Object[]> rows = adminOrdItRepository.findPopularCategorySales(monthStart, nextMonthStart);
         if (rows.isEmpty()) {
@@ -107,6 +109,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                 .build();
     }
 
+    // 결제완료 주문 기준 상품 매출 상위 목록을 집계한다.
     private List<ProductSalesTopDTO> getProductSalesTop5(LocalDateTime monthStart, LocalDateTime nextMonthStart) {
         return adminOrdItRepository.findMonthlyProductSalesTop5(monthStart, nextMonthStart).stream()
                 .map(row -> {
@@ -123,6 +126,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                 .toList();
     }
 
+    // 관리자 1:1 문의 상태 통계를 집계한다.
     private InquiryStatsDTO getInquiryStats(LocalDateTime todayStart, LocalDateTime tomorrowStart) {
         Long waitingCount = defaultLong(adminInqRepository.countByInqStCd(WAITING));
         Long answeredCount = defaultLong(adminInqRepository.countByInqStCd(ANSWERED));
@@ -139,6 +143,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                 .build();
     }
 
+    // 관리자 회원 상태 통계를 집계한다.
     private MemberStatsDTO getMemberStats() {
         return MemberStatsDTO.builder()
                 .totalCount(adminUsersRepository.count())
@@ -147,17 +152,17 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                 .build();
     }
 
-    // Dashboard summary monthly new user chart data.
+    // 관리자 대시보드 월별 신규 회원 차트 데이터를 조회한다.
     private List<MonthlyCountDTO> getMonthlyNewUsers(LocalDateTime startAt, LocalDateTime endAt) {
         return toMonthlyCounts(adminUsersRepository.findMonthlyNewUserCounts(startAt, endAt), startAt);
     }
 
-    // Dashboard summary monthly paid order chart data.
+    // 관리자 대시보드 월별 결제완료 주문 차트 데이터를 조회한다.
     private List<MonthlyCountDTO> getMonthlyPaidOrders(LocalDateTime startAt, LocalDateTime endAt) {
         return toMonthlyCounts(adminOrdRepository.findMonthlyPaidOrderCounts(startAt, endAt), startAt);
     }
 
-    // Dashboard summary fills missing months with zero counts.
+    // 월별 차트의 누락된 월을 0건으로 채운다.
     private List<MonthlyCountDTO> toMonthlyCounts(List<Object[]> rows, LocalDateTime startAt) {
         Map<String, Long> countByMonth = rows.stream()
                 .collect(Collectors.toMap(
@@ -178,6 +183,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
                 .toList();
     }
 
+    // 관리자 상품 카테고리명을 조회한다.
     private String getCategoryName(Integer catCd) {
         if (catCd == null) {
             return null;
@@ -185,10 +191,12 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
         return CATEGORY_NAMES.getOrDefault(catCd, "카테고리 " + catCd);
     }
 
+    // null 숫자 값을 0으로 변환한다.
     private Long defaultLong(Long value) {
         return value == null ? 0L : value;
     }
 
+    // 집계 결과 값을 Long으로 변환한다.
     private Long toLong(Object value) {
         if (value == null) {
             return 0L;
@@ -205,6 +213,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
         return Long.valueOf(value.toString());
     }
 
+    // 집계 결과 값을 Integer로 변환한다.
     private Integer toInteger(Object value) {
         if (value == null) {
             return null;

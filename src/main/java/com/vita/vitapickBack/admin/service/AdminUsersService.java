@@ -17,7 +17,7 @@ import com.vita.vitapickBack.users.Users;
 
 import lombok.RequiredArgsConstructor;
 
-// Excel download
+// 엑셀 다운로드 처리
 import java.io.IOException;
 import java.util.List;
 
@@ -35,6 +35,7 @@ public class AdminUsersService {
 
 	private final AdminUsersRepository adminUsersRepository;
 
+	// 관리자 회원 목록 조회 조건을 처리한다.
 	public AdminUsersResponseDTO getUsers(int page, int size, String keyword, String statusCd, LocalDate startDate,
 			LocalDate endDate) {
 
@@ -52,13 +53,14 @@ public class AdminUsersService {
 				.totalPages(usersPage.getTotalPages()).build();
 	}
 
+	// 관리자 회원 응답 DTO로 변환한다.
 	private AdminUserDTO toAdminUserDTO(Users users) {
 		return AdminUserDTO.builder().userNum(users.getUserNum()).loginId(users.getLoginId()).userNm(users.getUserNm())
 				.tel(users.getTel()).statusCd(users.getStatusCd()).roleCd(users.getRoleCd()).crtAt(users.getCrtAt())
 				.updAt(users.getUpdAt()).wdDt(users.getWdDt()).build();
 	}
 
-	// Excel download UserList
+	// 관리자 회원 목록 엑셀 다운로드를 처리한다.
 	public void downloadUsersExcel(String keyword, String statusCd, LocalDate startDate, LocalDate endDate,
 			HttpServletResponse response) throws IOException {
 

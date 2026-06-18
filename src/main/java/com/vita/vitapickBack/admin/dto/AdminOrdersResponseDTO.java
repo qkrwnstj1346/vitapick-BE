@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// 관리자 주문 목록 응답 DTO
 public class AdminOrdersResponseDTO {
 
     private List<AdminOrderDTO> content;
@@ -24,6 +25,7 @@ public class AdminOrdersResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 주문 목록 항목 DTO
     public static class AdminOrderDTO {
         private Long orderId;
         private String orderNo;

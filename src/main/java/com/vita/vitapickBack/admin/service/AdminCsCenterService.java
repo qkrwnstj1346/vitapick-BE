@@ -1,6 +1,7 @@
 package com.vita.vitapickBack.admin.service;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,11 +10,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vita.vitapickBack.admin.dto.AdminFaqUpdateRequestDTO;
+import com.vita.vitapickBack.admin.dto.AdminCsInquiryAnswerRequestDTO;
+import com.vita.vitapickBack.admin.dto.AdminCsInquiryDetailResponseDTO;
 import com.vita.vitapickBack.admin.repository.AdminFaqRepository;
+import com.vita.vitapickBack.admin.repository.AdminInqRepository;
 import com.vita.vitapickBack.admin.repository.AdminNtcRepository;
 import com.vita.vitapickBack.cscenter.faq.Faq;
 import com.vita.vitapickBack.cscenter.faq.FaqDto;
+import com.vita.vitapickBack.cscenter.inq.Inq;
 import com.vita.vitapickBack.cscenter.ntc.Ntc;
+import com.vita.vitapickBack.users.Users;
+import com.vita.vitapickBack.users.UsersRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +32,10 @@ public class AdminCsCenterService {
 
     private final AdminFaqRepository adminFaqRepository;
     private final AdminNtcRepository adminNtcRepository;
+    private final AdminInqRepository adminInqRepository;
+    private final UsersRepository usersRepository;
 
+    // 관리자 공지사항 목록 조회 조건을 처리한다.
     public Page<Ntc> getNotices(int page, int size, String useYn) {
         int safePage = Math.max(page, 0);
         int safeSize = size <= 0 ? 10 : Math.min(size, 100);
@@ -35,6 +46,7 @@ public class AdminCsCenterService {
         return adminNtcRepository.findAdminNotices(noticeUseYn, pageable);
     }
 
+    // 관리자 FAQ 목록 조회 조건을 처리한다.
     public Page<Faq> getFaqs(int page, int size, String useYn, String faqCtgCd, String sort) {
         int safePage = Math.max(page, 0);
         int safeSize = size <= 0 ? 10 : Math.min(size, 100);
@@ -48,6 +60,7 @@ public class AdminCsCenterService {
         return adminFaqRepository.findAdminFaqsByCategoryCodes(useYn, faqCtgCds, pageable);
     }
 
+    // 관리자 FAQ 등록 데이터를 저장한다.
     @Transactional
     public Faq createFaq(FaqDto dto) {
         Faq faq = new Faq();
@@ -60,6 +73,67 @@ public class AdminCsCenterService {
         return adminFaqRepository.save(faq);
     }
 
+    // 관리자 FAQ 수정 데이터를 저장한다.
+    @Transactional
+    public Faq updateFaq(Long faqId, AdminFaqUpdateRequestDTO request) {
+        Faq faq = adminFaqRepository.findById(faqId)
+                .orElseThrow(() -> new RuntimeException("FAQ not found."));
+
+        faq.setFaqCtgCd(request.getFaqCtgCd());
+        faq.setTtl(request.getTtl());
+        faq.setFaqTxt(request.getFaqTxt());
+        if (request.getUseYn() != null && !request.getUseYn().isBlank()) {
+            faq.setUseYn(request.getUseYn());
+        }
+
+        return adminFaqRepository.save(faq);
+    }
+
+    // 관리자 1:1 문의 상세 정보를 조회한다.
+    public AdminCsInquiryDetailResponseDTO getInquiryDetail(Long inqId) {
+        Inq inq = adminInqRepository.findByInqId(inqId)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found."));
+        return toInquiryDetailResponse(inq);
+    }
+
+    // 관리자 1:1 문의 답변을 저장한다.
+    @Transactional
+    public AdminCsInquiryDetailResponseDTO answerInquiry(Long inqId, AdminCsInquiryAnswerRequestDTO request) {
+        String ansTxt = request == null ? null : request.getAnsTxt();
+        if (ansTxt == null || ansTxt.isBlank()) {
+            throw new RuntimeException("Answer text is required.");
+        }
+
+        Inq inq = adminInqRepository.findByInqId(inqId)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found."));
+        inq.setAnsTxt(ansTxt);
+        inq.setAnsAt(LocalDateTime.now());
+        inq.setInqStCd("ANSWERED");
+
+        return toInquiryDetailResponse(adminInqRepository.save(inq));
+    }
+
+    // 관리자 1:1 문의 상세 응답 DTO로 변환한다.
+    private AdminCsInquiryDetailResponseDTO toInquiryDetailResponse(Inq inq) {
+        Users writer = usersRepository.findById(inq.getUserNum()).orElse(null);
+
+        return AdminCsInquiryDetailResponseDTO.builder()
+                .inquiryId(inq.getInqId())
+                .userNum(inq.getUserNum())
+                .writerId(writer == null ? null : writer.getLoginId())
+                .writerName(writer == null ? null : writer.getUserNm())
+                .title(inq.getTtl())
+                .category(inq.getInqTpCd())
+                .status(inq.getInqStCd())
+                .inquiryText(inq.getInqTxt())
+                .ansTxt(inq.getAnsTxt())
+                .answeredAt(inq.getAnsAt())
+                .createdAt(inq.getCrtAt())
+                .updatedAt(inq.getUpdAt())
+                .build();
+    }
+
+    // 관리자 FAQ 분류 검색 코드를 변환한다.
     private List<String> toFaqCategoryCodes(String faqCtgCd) {
         if (faqCtgCd == null || faqCtgCd.isBlank()) {
             return null;

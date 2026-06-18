@@ -15,6 +15,7 @@ import com.vita.vitapickBack.order.Ord;
 @Repository
 public interface AdminOrdRepository extends JpaRepository<Ord, Long> {
 
+    // 관리자 결제완료 주문 목록을 조건별로 조회한다.
     @Query("""
             SELECT DISTINCT o
             FROM Ord o
@@ -58,6 +59,7 @@ public interface AdminOrdRepository extends JpaRepository<Ord, Long> {
             @Param("endAt") LocalDateTime endAt,
             Pageable pageable);
 
+    // 관리자 주문의 결제수단 코드를 조회한다.
     @Query("""
             SELECT py.payMthdCd
             FROM Pay py
@@ -65,7 +67,7 @@ public interface AdminOrdRepository extends JpaRepository<Ord, Long> {
             """)
     String findPayMthdCdByOrdId(@Param("ordId") Long ordId);
 
-    // Dashboard summary paid order amount by date range.
+    // 관리자 대시보드 결제완료 주문 금액을 기간별로 집계한다.
     @Query("""
             SELECT COALESCE(SUM(o.totalAmt), 0)
             FROM Ord o
@@ -78,7 +80,7 @@ public interface AdminOrdRepository extends JpaRepository<Ord, Long> {
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt);
 
-    // Dashboard summary monthly paid order count.
+    // 관리자 대시보드 월별 결제완료 주문 수를 집계한다.
     @Query(value = """
             SELECT DATE_FORMAT(o.crt_at, '%Y-%m') AS month, COUNT(*) AS count
             FROM ord o
@@ -92,7 +94,7 @@ public interface AdminOrdRepository extends JpaRepository<Ord, Long> {
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt);
 
-    // Dashboard summary paid order count by date range.
+    // 관리자 대시보드 결제완료 주문 수를 기간별로 집계한다.
     Long countByOrdStCdAndCrtAtGreaterThanEqualAndCrtAtLessThan(
             String ordStCd,
             LocalDateTime startAt,

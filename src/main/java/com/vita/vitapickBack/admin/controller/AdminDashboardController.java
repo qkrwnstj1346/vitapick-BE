@@ -18,6 +18,7 @@ public class AdminDashboardController {
 
     private final AdminDashboardService adminDashboardService;
 
+    // 관리자 대시보드 요약 데이터 조회 API
     @GetMapping("/summary")
     public ResponseEntity<?> getSummary(Authentication authentication) {
         if (!isAdmin(authentication)) {
@@ -27,6 +28,7 @@ public class AdminDashboardController {
         return ResponseEntity.ok(adminDashboardService.getSummary());
     }
 
+    // 관리자 권한 확인
     private boolean isAdmin(Authentication authentication) {
         if (authentication == null) {
             return false;

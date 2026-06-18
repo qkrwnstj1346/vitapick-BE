@@ -12,6 +12,7 @@ import com.vita.vitapickBack.cscenter.ntc.Ntc;
 @Repository
 public interface AdminNtcRepository extends JpaRepository<Ntc, Long> {
 
+    // 관리자 공지사항 목록을 사용여부별로 조회한다.
     @Query("""
             SELECT n
             FROM Ntc n

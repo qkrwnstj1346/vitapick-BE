@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// 관리자 대시보드 요약 응답 DTO
 public class DashboardSummaryDTO {
 
     private Long todaySalesAmt;
@@ -27,6 +28,7 @@ public class DashboardSummaryDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 대시보드 인기 카테고리 응답 DTO
     public static class PopularCategoryDTO {
         private Integer catCd;
         private String catNm;
@@ -38,6 +40,7 @@ public class DashboardSummaryDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 대시보드 상품 매출 TOP 응답 DTO
     public static class ProductSalesTopDTO {
         private Long prdId;
         private String prdNm;
@@ -51,6 +54,7 @@ public class DashboardSummaryDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 대시보드 1:1 문의 통계 응답 DTO
     public static class InquiryStatsDTO {
         private Long waitingCount;
         private Long answeredCount;
@@ -62,6 +66,7 @@ public class DashboardSummaryDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 대시보드 회원 통계 응답 DTO
     public static class MemberStatsDTO {
         private Long totalCount;
         private Long activeCount;
@@ -72,6 +77,7 @@ public class DashboardSummaryDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 대시보드 월별 건수 응답 DTO
     public static class MonthlyCountDTO {
         private String month;
         private Long count;

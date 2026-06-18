@@ -33,6 +33,7 @@ public class AdminReviewsService {
     private final UsersRepository usersRepository;
     private final PrdRepository prdRepository;
 
+    // 관리자 리뷰 목록 조회 조건을 처리한다.
     public AdminReviewsResponseDTO getReviews(
             int page,
             int size,
@@ -61,10 +62,12 @@ public class AdminReviewsService {
                 .build();
     }
 
+    // 관리자 리뷰 상세 정보를 조회한다.
     public AdminReviewDTO getReview(Long rvwId) {
         return toAdminReviewDTO(findReview(rvwId));
     }
 
+    // 관리자 리뷰 답글을 저장한다.
     @Transactional
     public AdminReviewDTO saveReply(Long rvwId, AdminReviewReplyRequestDTO request) {
         Rvw rvw = findReview(rvwId);
@@ -73,6 +76,7 @@ public class AdminReviewsService {
         return toAdminReviewDTO(rvw);
     }
 
+    // 관리자 리뷰 답글을 삭제한다.
     @Transactional
     public AdminReviewDTO deleteReply(Long rvwId) {
         Rvw rvw = findReview(rvwId);
@@ -81,11 +85,13 @@ public class AdminReviewsService {
         return toAdminReviewDTO(rvw);
     }
 
+    // 관리자 리뷰 단건을 조회한다.
     private Rvw findReview(Long rvwId) {
         return adminRvwRepository.findById(rvwId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found"));
     }
 
+    // 관리자 리뷰 응답 DTO로 변환한다.
     private AdminReviewDTO toAdminReviewDTO(Rvw rvw) {
         Users writer = usersRepository.findById(rvw.getUserNum()).orElse(null);
         Prd product = prdRepository.findById(rvw.getPrdId()).orElse(null);

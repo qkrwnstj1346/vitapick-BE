@@ -12,6 +12,7 @@ import com.vita.vitapickBack.products.prd.Prd;
 @Repository
 public interface AdminPrdRepository extends JpaRepository<Prd, Long> {
 
+    // 관리자 상품 목록을 조건별로 조회한다.
     @Query("""
             SELECT p
             FROM Prd p

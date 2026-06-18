@@ -15,6 +15,7 @@ import com.vita.vitapickBack.users.Users;
 @Repository
 public interface AdminUsersRepository extends JpaRepository<Users, Long> {
 
+	// 관리자 회원 목록을 조건별로 조회한다.
 	@Query("""
 			SELECT u
 			FROM Users u
@@ -29,7 +30,7 @@ public interface AdminUsersRepository extends JpaRepository<Users, Long> {
 	Page<Users> findAdminUsers(@Param("keyword") String keyword, @Param("statusCd") String statusCd,
 			@Param("startAt") LocalDateTime startAt, @Param("endAt") LocalDateTime endAt, Pageable pageable);
 
-	// Dashboard summary monthly new user count.
+	// 관리자 대시보드 월별 신규 회원 수를 집계한다.
 	@Query(value = """
 			SELECT DATE_FORMAT(u.crt_at, '%Y-%m') AS month, COUNT(*) AS count
 			FROM users u
@@ -42,10 +43,10 @@ public interface AdminUsersRepository extends JpaRepository<Users, Long> {
 	List<Object[]> findMonthlyNewUserCounts(@Param("startAt") LocalDateTime startAt,
 			@Param("endAt") LocalDateTime endAt);
 
-	// Dashboard summary member status count.
+	// 관리자 대시보드 회원 상태별 수를 집계한다.
 	Long countByStatusCd(String statusCd);
 
-	// Excel download UserList
+	// 관리자 회원 엑셀 다운로드 목록을 조건별로 조회한다.
 	@Query("""
 			SELECT u
 			FROM Users u

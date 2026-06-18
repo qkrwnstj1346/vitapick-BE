@@ -1,6 +1,6 @@
 package com.vita.vitapickBack.admin.controller;
 
-//Excel download
+// 관리자 회원 엑셀 다운로드
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -24,6 +24,7 @@ public class AdminUsersController {
 
 	private final AdminUsersService adminUsersService;
 
+	// 관리자 회원 목록 조회 API
 	@GetMapping
 	public ResponseEntity<AdminUsersResponseDTO> getUsers(
 			@RequestParam(name = "page", defaultValue = "0") int page,
@@ -37,7 +38,7 @@ public class AdminUsersController {
 		return ResponseEntity.ok(adminUsersService.getUsers(page, size, keyword, statusCd, startDate, endDate));
 	}
 
-	// Excel download UserList
+	// 관리자 회원 엑셀 다운로드 API
 	@GetMapping("/excel")
 	public void downloadUsersExcel(
 			@RequestParam(name = "keyword", required = false) String keyword,

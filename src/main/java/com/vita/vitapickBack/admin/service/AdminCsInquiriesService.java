@@ -27,6 +27,7 @@ public class AdminCsInquiriesService {
     private final AdminInqRepository adminInqRepository;
     private final UsersRepository usersRepository;
 
+    // 관리자 1:1 문의 목록 조회 조건을 처리한다.
     public AdminCsInquiriesResponseDTO getInquiries(
             int page,
             int size,
@@ -38,7 +39,7 @@ public class AdminCsInquiriesService {
 
         int safePage = Math.max(page, 0);
         int safeSize = size <= 0 ? 10 : Math.min(size, 100);
-        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "inqId"));
+        Pageable pageable = PageRequest.of(safePage, safeSize);
 
         LocalDateTime startAt = startDate == null ? null : startDate.atStartOfDay();
         LocalDateTime endAt = endDate == null ? null : endDate.plusDays(1).atStartOfDay();
@@ -56,6 +57,7 @@ public class AdminCsInquiriesService {
                 .build();
     }
 
+    // 관리자 1:1 문의 목록 응답 DTO로 변환한다.
     private AdminCsInquiryDTO toAdminCsInquiryDTO(Inq inq) {
         Users writer = usersRepository.findById(inq.getUserNum()).orElse(null);
 

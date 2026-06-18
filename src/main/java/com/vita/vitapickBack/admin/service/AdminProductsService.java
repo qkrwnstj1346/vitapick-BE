@@ -25,6 +25,7 @@ public class AdminProductsService {
     private final AdminPrdRepository adminPrdRepository;
     private final PrdImgRepository prdImgRepository;
 
+    // 관리자 상품 목록 조회 조건을 처리한다.
     public AdminProductsResponseDTO getProducts(
             int page,
             int size,
@@ -49,6 +50,7 @@ public class AdminProductsService {
                 .build();
     }
 
+    // 관리자 상품 응답 DTO로 변환한다.
     private AdminProductDTO toAdminProductDTO(Prd prd) {
         String thumbImgUrl = prdImgRepository.findByPrdIdAndImgTypeCd(prd.getPrdId(), THUMB)
                 .map(img -> img.getImgUrl())
@@ -69,6 +71,7 @@ public class AdminProductsService {
                 .build();
     }
 
+    // 관리자 상품 카테고리명을 조회한다.
     private String getCategoryName(Integer catCd) {
         if (catCd == null) {
             return null;

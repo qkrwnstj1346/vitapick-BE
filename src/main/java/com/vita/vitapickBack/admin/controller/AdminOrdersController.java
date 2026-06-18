@@ -21,6 +21,7 @@ public class AdminOrdersController {
 
     private final AdminOrdersService adminOrdersService;
 
+    // 관리자 주문 목록 조회 API
     @GetMapping
     public ResponseEntity<AdminOrdersResponseDTO> getOrders(
             @RequestParam(name = "page", defaultValue = "0") int page,

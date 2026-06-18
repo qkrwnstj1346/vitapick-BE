@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// 관리자 리뷰 목록 응답 DTO
 public class AdminReviewsResponseDTO {
 
     private List<AdminReviewDTO> content;
@@ -24,6 +25,7 @@ public class AdminReviewsResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 리뷰 목록 항목 DTO
     public static class AdminReviewDTO {
         private Long reviewId;
         private Long productId;
@@ -41,7 +43,9 @@ public class AdminReviewsResponseDTO {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 리뷰 답글 저장 요청 DTO
     public static class AdminReviewReplyRequestDTO {
+        // 답글 내용
         private String replyTxt;
     }
 }

@@ -31,6 +31,7 @@ public class AdminOrdersService {
     private final OrdItRepository ordItRepository;
     private final UsersRepository usersRepository;
 
+    // 관리자 주문 목록 조회 조건을 처리한다.
     public AdminOrdersResponseDTO getOrders(
             int page,
             int size,
@@ -60,6 +61,7 @@ public class AdminOrdersService {
                 .build();
     }
 
+    // 관리자 주문 응답 DTO로 변환한다.
     private AdminOrderDTO toAdminOrderDTO(Ord ord) {
         Users buyer = usersRepository.findById(ord.getUserNum()).orElse(null);
         String payMthdCd = adminOrdRepository.findPayMthdCdByOrdId(ord.getOrdId());
@@ -78,6 +80,7 @@ public class AdminOrdersService {
                 .build();
     }
 
+    // 관리자 주문 대표 상품명을 조회한다.
     private String getProductName(Long ordId) {
         List<OrdIt> items = ordItRepository.findByOrdId(ordId);
         if (items.isEmpty()) {

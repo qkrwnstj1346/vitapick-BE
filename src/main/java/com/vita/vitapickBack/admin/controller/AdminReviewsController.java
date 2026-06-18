@@ -27,6 +27,7 @@ public class AdminReviewsController {
 
     private final AdminReviewsService adminReviewsService;
 
+    // 관리자 리뷰 목록 조회 API
     @GetMapping
     public ResponseEntity<AdminReviewsResponseDTO> getReviews(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -39,11 +40,13 @@ public class AdminReviewsController {
         return ResponseEntity.ok(adminReviewsService.getReviews(page, size, keyword, rating, startDate, endDate));
     }
 
+    // 관리자 리뷰 상세 조회 API
     @GetMapping("/{rvwId}")
     public ResponseEntity<AdminReviewDTO> getReview(@PathVariable("rvwId") Long rvwId) {
         return ResponseEntity.ok(adminReviewsService.getReview(rvwId));
     }
 
+    // 관리자 리뷰 답글 저장 API
     @PatchMapping("/{rvwId}/reply")
     public ResponseEntity<AdminReviewDTO> saveReply(
             @PathVariable("rvwId") Long rvwId,
@@ -51,6 +54,7 @@ public class AdminReviewsController {
         return ResponseEntity.ok(adminReviewsService.saveReply(rvwId, request));
     }
 
+    // 관리자 리뷰 답글 삭제 API
     @DeleteMapping("/{rvwId}/reply")
     public ResponseEntity<AdminReviewDTO> deleteReply(@PathVariable("rvwId") Long rvwId) {
         return ResponseEntity.ok(adminReviewsService.deleteReply(rvwId));

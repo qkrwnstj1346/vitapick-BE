@@ -14,6 +14,7 @@ import com.vita.vitapickBack.products.rvw.Rvw;
 @Repository
 public interface AdminRvwRepository extends JpaRepository<Rvw, Long> {
 
+    // 관리자 리뷰 목록을 조건별로 조회한다.
     @Query("""
             SELECT r
             FROM Rvw r

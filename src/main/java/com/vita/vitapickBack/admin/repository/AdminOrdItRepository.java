@@ -13,7 +13,7 @@ import com.vita.vitapickBack.order.OrdIt;
 @Repository
 public interface AdminOrdItRepository extends JpaRepository<OrdIt, Long> {
 
-    // Dashboard summary monthly popular category sales.
+    // 관리자 대시보드 월별 인기 카테고리 매출을 집계한다.
     @Query(value = """
             SELECT
                 p.cat_cd,
@@ -35,7 +35,7 @@ public interface AdminOrdItRepository extends JpaRepository<OrdIt, Long> {
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt);
 
-    // Dashboard summary monthly product sales top 5.
+    // 관리자 대시보드 월별 상품 매출 TOP 5를 집계한다.
     @Query(value = """
             SELECT
                 oi.prd_id,

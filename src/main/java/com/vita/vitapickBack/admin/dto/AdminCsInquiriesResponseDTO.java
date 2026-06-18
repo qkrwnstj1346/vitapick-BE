@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// 관리자 1:1 문의 목록 응답 DTO
 public class AdminCsInquiriesResponseDTO {
 
     private List<AdminCsInquiryDTO> content;
@@ -24,6 +25,7 @@ public class AdminCsInquiriesResponseDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 관리자 1:1 문의 목록 항목 DTO
     public static class AdminCsInquiryDTO {
         private Long inquiryId;
         private String title;

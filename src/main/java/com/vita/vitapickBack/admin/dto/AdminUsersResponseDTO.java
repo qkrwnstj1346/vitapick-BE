@@ -7,15 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-//Excel 다운로드
 import java.io.IOException;
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// 관리자 회원 목록 응답 DTO
 public class AdminUsersResponseDTO {
 
 	private List<AdminUserDTO> content;
@@ -28,6 +26,7 @@ public class AdminUsersResponseDTO {
 	@Builder
 	@NoArgsConstructor
 	@AllArgsConstructor
+	// 관리자 회원 목록 항목 DTO
 	public static class AdminUserDTO {
 		private Long userNum;
 		private String loginId;

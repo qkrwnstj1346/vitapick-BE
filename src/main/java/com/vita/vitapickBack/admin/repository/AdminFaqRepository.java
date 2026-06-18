@@ -14,6 +14,7 @@ import com.vita.vitapickBack.cscenter.faq.Faq;
 @Repository
 public interface AdminFaqRepository extends JpaRepository<Faq, Long> {
 
+    // 관리자 FAQ 목록을 사용여부별로 조회한다.
     @Query("""
             SELECT f
             FROM Faq f
@@ -23,6 +24,7 @@ public interface AdminFaqRepository extends JpaRepository<Faq, Long> {
             @Param("useYn") String useYn,
             Pageable pageable);
 
+    // 관리자 FAQ 목록을 사용여부와 분류별로 조회한다.
     @Query("""
             SELECT f
             FROM Faq f
