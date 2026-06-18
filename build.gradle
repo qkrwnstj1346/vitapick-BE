@@ -57,6 +57,9 @@ dependencies {
 
     // GPT 연동 (Spring AI OpenAI)
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+    
+	// 엑셀 다운로드 (Apache POI)
+	implementation 'org.apache.poi:poi-ooxml:5.4.1'
 }
 
 tasks.named('test') {

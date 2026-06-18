@@ -15,38 +15,49 @@ import com.vita.vitapickBack.users.Users;
 @Repository
 public interface AdminUsersRepository extends JpaRepository<Users, Long> {
 
-    @Query("""
-            SELECT u
-            FROM Users u
-            WHERE (:keyword IS NULL OR :keyword = ''
-                   OR LOWER(u.loginId) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                   OR LOWER(u.userNm) LIKE LOWER(CONCAT('%', :keyword, '%')))
-              AND (:statusCd IS NULL OR :statusCd = '' OR u.statusCd = :statusCd)
-              AND u.roleCd = 'USER'
-              AND (:startAt IS NULL OR u.crtAt >= :startAt)
-              AND (:endAt IS NULL OR u.crtAt < :endAt)
-            """)
-    Page<Users> findAdminUsers(
-            @Param("keyword") String keyword,
-            @Param("statusCd") String statusCd,
-            @Param("startAt") LocalDateTime startAt,
-            @Param("endAt") LocalDateTime endAt,
-            Pageable pageable);
+	@Query("""
+			SELECT u
+			FROM Users u
+			WHERE (:keyword IS NULL OR :keyword = ''
+			       OR LOWER(u.loginId) LIKE LOWER(CONCAT('%', :keyword, '%'))
+			       OR LOWER(u.userNm) LIKE LOWER(CONCAT('%', :keyword, '%')))
+			  AND (:statusCd IS NULL OR :statusCd = '' OR u.statusCd = :statusCd)
+			  AND u.roleCd = 'USER'
+			  AND (:startAt IS NULL OR u.crtAt >= :startAt)
+			  AND (:endAt IS NULL OR u.crtAt < :endAt)
+			""")
+	Page<Users> findAdminUsers(@Param("keyword") String keyword, @Param("statusCd") String statusCd,
+			@Param("startAt") LocalDateTime startAt, @Param("endAt") LocalDateTime endAt, Pageable pageable);
 
-    // Dashboard summary monthly new user count.
-    @Query(value = """
-            SELECT DATE_FORMAT(u.crt_at, '%Y-%m') AS month, COUNT(*) AS count
-            FROM users u
-            WHERE u.role_cd = 'USER'
-              AND u.crt_at >= :startAt
-              AND u.crt_at < :endAt
-            GROUP BY DATE_FORMAT(u.crt_at, '%Y-%m')
-            ORDER BY month ASC
-            """, nativeQuery = true)
-    List<Object[]> findMonthlyNewUserCounts(
-            @Param("startAt") LocalDateTime startAt,
-            @Param("endAt") LocalDateTime endAt);
+	// Dashboard summary monthly new user count.
+	@Query(value = """
+			SELECT DATE_FORMAT(u.crt_at, '%Y-%m') AS month, COUNT(*) AS count
+			FROM users u
+			WHERE u.role_cd = 'USER'
+			  AND u.crt_at >= :startAt
+			  AND u.crt_at < :endAt
+			GROUP BY DATE_FORMAT(u.crt_at, '%Y-%m')
+			ORDER BY month ASC
+			""", nativeQuery = true)
+	List<Object[]> findMonthlyNewUserCounts(@Param("startAt") LocalDateTime startAt,
+			@Param("endAt") LocalDateTime endAt);
 
-    // Dashboard summary member status count.
-    Long countByStatusCd(String statusCd);
+	// Dashboard summary member status count.
+	Long countByStatusCd(String statusCd);
+
+	// Excel download UserList
+	@Query("""
+			SELECT u
+			FROM Users u
+			WHERE (:keyword IS NULL OR :keyword = ''
+			       OR LOWER(u.loginId) LIKE LOWER(CONCAT('%', :keyword, '%'))
+			       OR LOWER(u.userNm) LIKE LOWER(CONCAT('%', :keyword, '%')))
+			  AND (:statusCd IS NULL OR :statusCd = '' OR u.statusCd = :statusCd)
+			  AND u.roleCd = 'USER'
+			  AND (:startAt IS NULL OR u.crtAt >= :startAt)
+			  AND (:endAt IS NULL OR u.crtAt < :endAt)
+			ORDER BY u.crtAt DESC
+			""")
+	List<Users> findAdminUsersForExcel(@Param("keyword") String keyword, @Param("statusCd") String statusCd,
+			@Param("startAt") LocalDateTime startAt, @Param("endAt") LocalDateTime endAt);
 }
