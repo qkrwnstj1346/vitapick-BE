@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vita.vitapickBack.admin.dto.AdminFaqUpdateRequestDTO;
+import com.vita.vitapickBack.admin.dto.AdminCsNoticeRequestDTO;
 import com.vita.vitapickBack.admin.dto.AdminCsInquiryAnswerRequestDTO;
 import com.vita.vitapickBack.admin.dto.AdminCsInquiryDetailResponseDTO;
 import com.vita.vitapickBack.admin.dto.AdminCsInquiriesResponseDTO;
@@ -46,6 +48,33 @@ public class AdminCsCenterController {
     }
 
     // 관리자 FAQ 목록 조회 API
+    // 관리자 공지사항 상세 조회 API
+    @GetMapping("/notices/{ntcId}")
+    public ResponseEntity<Ntc> getNotice(@PathVariable("ntcId") Long ntcId) {
+        return ResponseEntity.ok(adminCsCenterService.getNotice(ntcId));
+    }
+
+    // 관리자 공지사항 등록 API
+    @PostMapping("/notices")
+    public ResponseEntity<Ntc> createNotice(@RequestBody AdminCsNoticeRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminCsCenterService.createNotice(request));
+    }
+
+    // 관리자 공지사항 수정 API
+    @PatchMapping("/notices/{ntcId}")
+    public ResponseEntity<Ntc> updateNotice(
+            @PathVariable("ntcId") Long ntcId,
+            @RequestBody AdminCsNoticeRequestDTO request) {
+        return ResponseEntity.ok(adminCsCenterService.updateNotice(ntcId, request));
+    }
+
+    // 관리자 공지사항 삭제 API
+    @DeleteMapping("/notices/{ntcId}")
+    public ResponseEntity<Void> deleteNotice(@PathVariable("ntcId") Long ntcId) {
+        adminCsCenterService.deleteNotice(ntcId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/faqs")
     public ResponseEntity<Page<Faq>> getFaqs(
             @RequestParam(name = "page", defaultValue = "0") int page,

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vita.vitapickBack.admin.dto.AdminFaqUpdateRequestDTO;
+import com.vita.vitapickBack.admin.dto.AdminCsNoticeRequestDTO;
 import com.vita.vitapickBack.admin.dto.AdminCsInquiryAnswerRequestDTO;
 import com.vita.vitapickBack.admin.dto.AdminCsInquiryDetailResponseDTO;
 import com.vita.vitapickBack.admin.repository.AdminFaqRepository;
@@ -47,6 +48,47 @@ public class AdminCsCenterService {
     }
 
     // 관리자 FAQ 목록 조회 조건을 처리한다.
+    // 관리자 공지사항 상세 정보를 조회한다.
+    public Ntc getNotice(Long ntcId) {
+        return adminNtcRepository.findById(ntcId)
+                .orElseThrow(() -> new RuntimeException("Notice not found."));
+    }
+
+    // 관리자 공지사항 등록 데이터를 저장한다.
+    @Transactional
+    public Ntc createNotice(AdminCsNoticeRequestDTO request) {
+        Ntc ntc = new Ntc();
+        ntc.setTtl(request.getTtl());
+        ntc.setNtcTxt(request.getNtcTxt());
+        ntc.setViewCnt(0);
+        ntc.setUseYn(request.getUseYn() == null ? 'Y' : request.getUseYn());
+
+        return adminNtcRepository.save(ntc);
+    }
+
+    // 관리자 공지사항 수정 데이터를 저장한다.
+    @Transactional
+    public Ntc updateNotice(Long ntcId, AdminCsNoticeRequestDTO request) {
+        Ntc ntc = adminNtcRepository.findById(ntcId)
+                .orElseThrow(() -> new RuntimeException("Notice not found."));
+
+        ntc.setTtl(request.getTtl());
+        ntc.setNtcTxt(request.getNtcTxt());
+        if (request.getUseYn() != null) {
+            ntc.setUseYn(request.getUseYn());
+        }
+
+        return adminNtcRepository.save(ntc);
+    }
+
+    // 관리자 공지사항을 삭제한다.
+    @Transactional
+    public void deleteNotice(Long ntcId) {
+        Ntc ntc = adminNtcRepository.findById(ntcId)
+                .orElseThrow(() -> new RuntimeException("Notice not found."));
+        adminNtcRepository.delete(ntc);
+    }
+
     public Page<Faq> getFaqs(int page, int size, String useYn, String faqCtgCd, String sort) {
         int safePage = Math.max(page, 0);
         int safeSize = size <= 0 ? 10 : Math.min(size, 100);
