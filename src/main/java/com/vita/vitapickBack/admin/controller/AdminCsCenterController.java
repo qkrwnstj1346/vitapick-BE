@@ -85,6 +85,12 @@ public class AdminCsCenterController {
         return ResponseEntity.ok(adminCsCenterService.getFaqs(page, size, useYn, faqCtgCd, sort));
     }
 
+    // 관리자 FAQ 상세 조회 API
+    @GetMapping("/faqs/{faqId}")
+    public ResponseEntity<Faq> getFaq(@PathVariable("faqId") Long faqId) {
+        return ResponseEntity.ok(adminCsCenterService.getFaq(faqId));
+    }
+
     // 관리자 FAQ 등록 API
     @PostMapping("/faqs")
     public ResponseEntity<Faq> createFaq(@RequestBody FaqDto dto) {
@@ -97,6 +103,13 @@ public class AdminCsCenterController {
             @PathVariable("faqId") Long faqId,
             @RequestBody AdminFaqUpdateRequestDTO request) {
         return ResponseEntity.ok(adminCsCenterService.updateFaq(faqId, request));
+    }
+
+    // 관리자 FAQ 삭제 API
+    @DeleteMapping("/faqs/{faqId}")
+    public ResponseEntity<Void> deleteFaq(@PathVariable("faqId") Long faqId) {
+        adminCsCenterService.deleteFaq(faqId);
+        return ResponseEntity.noContent().build();
     }
 
     // 관리자 1:1 문의 목록 조회 API

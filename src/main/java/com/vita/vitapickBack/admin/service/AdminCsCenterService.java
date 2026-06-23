@@ -102,6 +102,12 @@ public class AdminCsCenterService {
         return adminFaqRepository.findAdminFaqsByCategoryCodes(useYn, faqCtgCds, pageable);
     }
 
+    // 관리자 FAQ 상세 정보를 조회한다.
+    public Faq getFaq(Long faqId) {
+        return adminFaqRepository.findById(faqId)
+                .orElseThrow(() -> new RuntimeException("FAQ not found."));
+    }
+
     // 관리자 FAQ 등록 데이터를 저장한다.
     @Transactional
     public Faq createFaq(FaqDto dto) {
@@ -129,6 +135,14 @@ public class AdminCsCenterService {
         }
 
         return adminFaqRepository.save(faq);
+    }
+
+    // 관리자 FAQ를 삭제한다.
+    @Transactional
+    public void deleteFaq(Long faqId) {
+        Faq faq = adminFaqRepository.findById(faqId)
+                .orElseThrow(() -> new RuntimeException("FAQ not found."));
+        adminFaqRepository.delete(faq);
     }
 
     // 관리자 1:1 문의 상세 정보를 조회한다.

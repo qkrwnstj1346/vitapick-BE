@@ -67,6 +67,29 @@ public interface AdminOrdRepository extends JpaRepository<Ord, Long> {
             """)
     String findPayMthdCdByOrdId(@Param("ordId") Long ordId);
 
+    Long countByUserNumAndOrdStCd(Long userNum, String ordStCd);
+
+    @Query("""
+            SELECT COALESCE(SUM(o.totalAmt), 0)
+            FROM Ord o
+            WHERE o.userNum = :userNum
+              AND o.ordStCd = :ordStCd
+            """)
+    Long sumTotalAmtByUserNumAndOrdStCd(
+            @Param("userNum") Long userNum,
+            @Param("ordStCd") String ordStCd);
+
+    @Query("""
+            SELECT o
+            FROM Ord o
+            WHERE o.userNum = :userNum
+              AND o.ordStCd = :ordStCd
+            """)
+    List<Ord> findRecentOrdersByUserNumAndOrdStCd(
+            @Param("userNum") Long userNum,
+            @Param("ordStCd") String ordStCd,
+            Pageable pageable);
+
     // 관리자 대시보드 결제완료 주문 금액을 기간별로 집계한다.
     @Query("""
             SELECT COALESCE(SUM(o.totalAmt), 0)
