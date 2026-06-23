@@ -12,7 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vita.vitapickBack.admin.dto.AdminUsersResponseDTO;
 import com.vita.vitapickBack.admin.dto.AdminUsersResponseDTO.AdminUserDTO;
+import com.vita.vitapickBack.admin.dto.AdminUserDetailDTO;
+import com.vita.vitapickBack.admin.dto.AdminUserDetailDTO.AdminUserPurchaseSummaryDTO;
+import com.vita.vitapickBack.admin.dto.AdminUserDetailDTO.AdminUserRecentOrderDTO;
+import com.vita.vitapickBack.admin.repository.AdminOrdRepository;
 import com.vita.vitapickBack.admin.repository.AdminUsersRepository;
+import com.vita.vitapickBack.order.Ord;
 import com.vita.vitapickBack.users.Users;
 
 import lombok.RequiredArgsConstructor;
@@ -33,7 +38,10 @@ import jakarta.servlet.http.HttpServletResponse;
 @Transactional(readOnly = true)
 public class AdminUsersService {
 
+	private static final String PAID = "PAID";
+
 	private final AdminUsersRepository adminUsersRepository;
+	private final AdminOrdRepository adminOrdRepository;
 
 	// 관리자 회원 목록 조회 조건을 처리한다.
 	public AdminUsersResponseDTO getUsers(int page, int size, String keyword, String statusCd, LocalDate startDate,
@@ -61,6 +69,47 @@ public class AdminUsersService {
 	}
 
 	// 관리자 회원 목록 엑셀 다운로드를 처리한다.
+	public AdminUserDetailDTO getUserDetail(Long userNum) {
+		Users users = adminUsersRepository.findById(userNum)
+				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+		Long paidOrderCount = adminOrdRepository.countByUserNumAndOrdStCd(userNum, PAID);
+		Long totalPaidAmount = adminOrdRepository.sumTotalAmtByUserNumAndOrdStCd(userNum, PAID);
+		Pageable recentOrdersPageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "crtAt"));
+		List<AdminUserRecentOrderDTO> recentOrders = adminOrdRepository
+				.findRecentOrdersByUserNumAndOrdStCd(userNum, PAID, recentOrdersPageable).stream()
+				.map(this::toAdminUserRecentOrderDTO)
+				.toList();
+
+		return AdminUserDetailDTO.builder()
+				.userNum(users.getUserNum())
+				.loginId(users.getLoginId())
+				.userNm(users.getUserNm())
+				.genderCd(users.getGenderCd())
+				.email(users.getEmail())
+				.birthYmd(users.getBirthYmd())
+				.crtAt(users.getCrtAt())
+				.roleCd(users.getRoleCd())
+				.statusCd(users.getStatusCd())
+				.tel(users.getTel())
+				.purchaseSummary(AdminUserPurchaseSummaryDTO.builder()
+						.paidOrderCount(paidOrderCount == null ? 0L : paidOrderCount)
+						.totalPaidAmount(totalPaidAmount == null ? 0L : totalPaidAmount)
+						.build())
+				.recentOrders(recentOrders)
+				.build();
+	}
+
+	private AdminUserRecentOrderDTO toAdminUserRecentOrderDTO(Ord ord) {
+		return AdminUserRecentOrderDTO.builder()
+				.orderId(ord.getOrdId())
+				.orderNo(ord.getOrdNo())
+				.orderDate(ord.getCrtAt())
+				.payMthdCd(adminOrdRepository.findPayMthdCdByOrdId(ord.getOrdId()))
+				.orderStatus(ord.getOrdStCd())
+				.totalAmount(ord.getTotalAmt())
+				.build();
+	}
+
 	public void downloadUsersExcel(String keyword, String statusCd, LocalDate startDate, LocalDate endDate,
 			HttpServletResponse response) throws IOException {
 

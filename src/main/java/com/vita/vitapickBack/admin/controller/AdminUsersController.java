@@ -7,10 +7,12 @@ import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vita.vitapickBack.admin.dto.AdminUserDetailDTO;
 import com.vita.vitapickBack.admin.dto.AdminUsersResponseDTO;
 import com.vita.vitapickBack.admin.service.AdminUsersService;
 
@@ -39,6 +41,11 @@ public class AdminUsersController {
 	}
 
 	// 관리자 회원 엑셀 다운로드 API
+	@GetMapping("/{userNum}")
+	public ResponseEntity<AdminUserDetailDTO> getUserDetail(@PathVariable("userNum") Long userNum) {
+		return ResponseEntity.ok(adminUsersService.getUserDetail(userNum));
+	}
+
 	@GetMapping("/excel")
 	public void downloadUsersExcel(
 			@RequestParam(name = "keyword", required = false) String keyword,

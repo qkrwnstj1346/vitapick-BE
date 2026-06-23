@@ -2,10 +2,15 @@ package com.vita.vitapickBack.admin.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vita.vitapickBack.admin.dto.AdminProductDetailDTO;
+import com.vita.vitapickBack.admin.dto.AdminProductUpdateDTO;
 import com.vita.vitapickBack.admin.dto.AdminProductsResponseDTO;
 import com.vita.vitapickBack.admin.service.AdminProductsService;
 
@@ -28,5 +33,18 @@ public class AdminProductsController {
             @RequestParam(name = "categoryId", required = false) Integer categoryId) {
 
         return ResponseEntity.ok(adminProductsService.getProducts(page, size, keyword, status, categoryId));
+    }
+
+    @GetMapping("/{prdId}")
+    public ResponseEntity<AdminProductDetailDTO> getProductDetail(@PathVariable("prdId") Long prdId) {
+        return ResponseEntity.ok(adminProductsService.getProductDetail(prdId));
+    }
+
+    @PatchMapping("/{prdId}")
+    public ResponseEntity<AdminProductDetailDTO> updateProduct(
+            @PathVariable("prdId") Long prdId,
+            @RequestBody AdminProductUpdateDTO request) {
+
+        return ResponseEntity.ok(adminProductsService.updateProduct(prdId, request));
     }
 }

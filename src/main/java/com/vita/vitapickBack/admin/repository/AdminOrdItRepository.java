@@ -58,4 +58,12 @@ public interface AdminOrdItRepository extends JpaRepository<OrdIt, Long> {
     List<Object[]> findMonthlyProductSalesTop5(
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt);
+
+    @Query("""
+            SELECT oi.prdNm
+            FROM OrdIt oi
+            WHERE oi.ordId = :ordId
+            ORDER BY oi.ordItId ASC
+            """)
+    List<String> findProductNamesByOrdId(@Param("ordId") Long ordId);
 }

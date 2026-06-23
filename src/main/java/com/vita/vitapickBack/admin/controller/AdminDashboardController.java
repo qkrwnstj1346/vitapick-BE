@@ -1,5 +1,7 @@
 package com.vita.vitapickBack.admin.controller;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vita.vitapickBack.admin.service.AdminDashboardService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,6 +29,16 @@ public class AdminDashboardController {
         }
 
         return ResponseEntity.ok(adminDashboardService.getSummary());
+    }
+
+    @GetMapping("/excel")
+    public void downloadDashboardExcel(Authentication authentication, HttpServletResponse response) throws IOException {
+        if (!isAdmin(authentication)) {
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            return;
+        }
+
+        adminDashboardService.downloadDashboardExcel(response);
     }
 
     // 관리자 권한 확인
