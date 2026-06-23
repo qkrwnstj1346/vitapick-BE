@@ -67,7 +67,7 @@ public class SecurityConfig {
 		        	.requestMatchers("/api/admin/**").hasRole("ADMIN")
 		        	.requestMatchers("/admin/**").hasRole("ADMIN")
 		        	.requestMatchers("/user/memberlist").hasRole("ADMIN")
-		        	.requestMatchers("/v1/info","/user/logout").authenticated()
+		        	.requestMatchers("/api/v1/info","/user/logout").authenticated()
 		            //.anyRequest().authenticated()) // 모든 요청 인증 필요
 		        	.anyRequest().permitAll())
 		        .build();

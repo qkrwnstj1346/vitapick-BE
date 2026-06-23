@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/address")
+@RequestMapping("/api/address")
 public class UserAddrController {
 
 	private final UserAddrService userAddrService;

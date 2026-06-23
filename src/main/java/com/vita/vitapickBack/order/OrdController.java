@@ -17,7 +17,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/order")
+@RequestMapping("/api/order")
 public class OrdController {
 
 	private final OrdService ordService;

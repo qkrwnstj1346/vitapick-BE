@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/cscenter")
+@RequestMapping("/api/cscenter")
 @Log4j2
 @CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" })
 public class NtcController {
