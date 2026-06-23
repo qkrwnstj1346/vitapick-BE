@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RestController
-@RequestMapping("/v1/cus")
+@RequestMapping("/api/v1/cus")
 @RequiredArgsConstructor
 public class CusController {
 
