@@ -91,12 +91,28 @@ public class UserAddrServiceImpl implements UserAddrService {
 
 	// 배송지 삭제
 	@Override
+	@Transactional
 	public void deleteAddr(Long userNum, Long addrId) {
 
 		UserAddr addr = userAddrRepository.findByAddrIdAndUserNum(addrId, userNum)
 				.orElseThrow(() -> new RuntimeException("배송지가 존재하지 않습니다."));
 
+		// 삭제하려는 배송지가 기본배송지인지 확인
+		boolean isBaseAddr = "Y".equals(addr.getBaseYn());
+
+		// 배송지 삭제
 		userAddrRepository.delete(addr);
+
+		// 기본배송지를 삭제한 경우
+		if (isBaseAddr) {
+			List<UserAddr> addrList = userAddrRepository.findByUserNum(userNum);
+			// 남은 배송지가 있으면 첫 번째 배송지를 기본배송지로 설정
+			if (!addrList.isEmpty()) {
+				UserAddr newBaseAddr = addrList.get(0);
+				newBaseAddr.setBaseYn("Y");
+				userAddrRepository.save(newBaseAddr);
+			}
+		}
 	}
 
 	// 기본 배송지 변경
