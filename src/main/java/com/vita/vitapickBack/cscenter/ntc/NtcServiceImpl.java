@@ -48,13 +48,24 @@ public class NtcServiceImpl implements NtcService {
 		return repository.findByUseYn(useYn.charAt(0), pageable);
 	}
 
+	// 공지사항 단건 조회
+	@Override
+	public Ntc findOne(Long ntcId) {
+
+		return repository.findById(ntcId).orElseThrow(() -> new RuntimeException("공지사항이 존재하지 않습니다."));
+	}
+
 	// 공지사항 상세 조회
 	@Override
 	public Ntc selectOne(Long ntcId) {
 
 		Ntc dbNtc = repository.findById(ntcId).orElseThrow(() -> new RuntimeException("공지사항이 존재하지 않습니다."));
 
-		dbNtc.setViewCnt(dbNtc.getViewCnt() + 1);
+		if (dbNtc.getViewCnt() == null) {
+			dbNtc.setViewCnt(1);
+		} else {
+			dbNtc.setViewCnt(dbNtc.getViewCnt() + 1);
+		}
 
 		return repository.save(dbNtc);
 	}

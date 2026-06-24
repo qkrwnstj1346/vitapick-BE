@@ -69,13 +69,16 @@ public class NtcController {
 	public ResponseEntity<?> ntcDetail(@PathVariable("ntcId") Long ntcId, Authentication authentication) {
 
 		try {
-			Ntc entity = ntcService.selectOne(ntcId);
+
+			Ntc entity = ntcService.findOne(ntcId);
 
 			if (!isAdmin(authentication) && entity.getUseYn() == 'N') {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("비공개 공지사항입니다.");
 			}
 
-			return ResponseEntity.status(HttpStatus.OK).body(entity);
+			Ntc updatedEntity = ntcService.selectOne(ntcId);
+
+			return ResponseEntity.status(HttpStatus.OK).body(updatedEntity);
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("해당하는 번호는 존재하지 않습니다.");

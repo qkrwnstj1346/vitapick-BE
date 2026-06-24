@@ -18,8 +18,11 @@ public interface NtcService {
 
 	Page<Ntc> findAdminNtcPage(int page, int size, String useYn, String sort);
 
-	//  공지사항 상세 조회
+	// 공지사항 상세 조회
 	Ntc selectOne(Long ntcId);
+
+	// 공지사항 단건 조회
+	Ntc findOne(Long ntcId);
 
 	// 공지사항 등록(관리자)
 	Ntc createNtc(Ntc ntc);

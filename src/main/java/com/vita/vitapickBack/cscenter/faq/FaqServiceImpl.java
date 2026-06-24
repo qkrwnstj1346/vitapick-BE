@@ -25,13 +25,22 @@ public class FaqServiceImpl implements FaqService {
 		return faqRepository.findAll();
 	}
 
+	// FAQ 단건 조회
+	@Override
+	public Faq findOne(Long faqId) {
+
+		return faqRepository.findById(faqId).orElseThrow(() -> new RuntimeException("FAQ 상세 정보를 불러오지 못했습니다."));
+	}
+
 	// FAQ 상세 조회
 	@Override
 	public Faq selectOne(Long faqId) {
 
-		return faqRepository.findById(faqId)
-				.orElseThrow(() ->
-						new RuntimeException("FAQ 상세 정보를 불러오지 못했습니다."));
+		Faq dbFaq = faqRepository.findById(faqId).orElseThrow(() -> new RuntimeException("FAQ 상세 정보를 불러오지 못했습니다."));
+
+		dbFaq.setViewCnt(dbFaq.getViewCnt() + 1);
+
+		return faqRepository.save(dbFaq);
 	}
 
 	// FAQ 등록(관리자)
@@ -39,8 +48,7 @@ public class FaqServiceImpl implements FaqService {
 	public Faq createFaq(FaqDto dto) {
 
 		// 제목 또는 내용 미입력 체크
-		if (dto.getTtl() == null || dto.getTtl().isBlank()
-				|| dto.getFaqTxt() == null || dto.getFaqTxt().isBlank()) {
+		if (dto.getTtl() == null || dto.getTtl().isBlank() || dto.getFaqTxt() == null || dto.getFaqTxt().isBlank()) {
 
 			throw new RuntimeException("FAQ 제목과 내용을 입력해주세요.");
 		}
@@ -60,9 +68,7 @@ public class FaqServiceImpl implements FaqService {
 	@Override
 	public Faq updateFaq(Long faqId, FaqDto dto) {
 
-		Faq dbFaq = faqRepository.findById(faqId)
-				.orElseThrow(() ->
-						new RuntimeException("FAQ 상세 정보를 불러오지 못했습니다."));
+		Faq dbFaq = faqRepository.findById(faqId).orElseThrow(() -> new RuntimeException("FAQ 상세 정보를 불러오지 못했습니다."));
 
 		dbFaq.setFaqCtgCd(dto.getFaqCtgCd());
 		dbFaq.setTtl(dto.getTtl());
@@ -114,12 +120,8 @@ public class FaqServiceImpl implements FaqService {
 	// = 일반회원 카테고리별 FAQ 조회
 	// = 공개 FAQ만 조회
 	@Override
-	public List<Faq> findByFaqCtgCdAndUseYn(
-			String faqCtgCd,
-			String useYn) {
+	public List<Faq> findByFaqCtgCdAndUseYn(String faqCtgCd, String useYn) {
 
-		return faqRepository.findByFaqCtgCdAndUseYn(
-				faqCtgCd,
-				useYn);
+		return faqRepository.findByFaqCtgCdAndUseYn(faqCtgCd, useYn);
 	}
 }

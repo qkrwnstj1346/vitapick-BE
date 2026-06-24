@@ -14,6 +14,9 @@ public interface FaqService {
 	// FAQ 상세 조회
 	Faq selectOne(Long faqId);
 
+	// FAQ 단건 조회
+	Faq findOne(Long faqId);
+
 	// FAQ 등록(관리자)
 	Faq createFaq(FaqDto dto);
 
