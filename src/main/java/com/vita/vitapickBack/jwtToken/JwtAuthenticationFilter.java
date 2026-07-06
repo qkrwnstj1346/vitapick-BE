@@ -84,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			String accessToken = parseBearerToken(request);
 			//=> "Bearer" 를 제외한 문자열 제공
 			
-			log.info("** JwtAuthenticationFilter, doFilterInternal(), accessToken 확인=> "+accessToken);
+			log.info("** JwtAuthenticationFilter authentication requested");
 			
 			if (!StringUtils.hasText(accessToken) || accessToken.equalsIgnoreCase("null")) {
 				filterChain.doFilter(request, response);
@@ -101,7 +101,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				Claims claims = tokenProvider.validateToken(accessToken);
 				
 				//=> 검증 성공시 claims 에서 id 와 roleList 가져와 시큐리티 인증정보에 저장함.
-				log.info("** Authenticated 결과 JWT claims: " + claims);
+				log.info("** JwtAuthenticationFilter authentication succeeded");
 				Number userNumNumber = (Number)claims.get("userNum");
 				Long userNum = userNumNumber.longValue();
 				String loginId = (String)claims.get("loginId");

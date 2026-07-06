@@ -169,6 +169,22 @@ public class AdminCsCenterService {
         return toInquiryDetailResponse(adminInqRepository.save(inq));
     }
 
+    // 관리자 1:1 문의 답변만 삭제하고 미답변 상태로 되돌린다.
+    @Transactional
+    public AdminCsInquiryDetailResponseDTO deleteInquiryAnswer(Long inqId) {
+        Inq inq = adminInqRepository.findByInqId(inqId)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found."));
+        if (inq.getAnsTxt() == null || inq.getAnsTxt().isBlank()) {
+            throw new RuntimeException("Inquiry answer not found.");
+        }
+
+        inq.setAnsTxt(null);
+        inq.setAnsAt(null);
+        inq.setInqStCd("WAITING");
+
+        return toInquiryDetailResponse(adminInqRepository.save(inq));
+    }
+
     // 관리자 1:1 문의 상세 응답 DTO로 변환한다.
     private AdminCsInquiryDetailResponseDTO toInquiryDetailResponse(Inq inq) {
         Users writer = usersRepository.findById(inq.getUserNum()).orElse(null);

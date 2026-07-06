@@ -1,11 +1,12 @@
 HELP.md
-.gradle
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
 ### STS ###
+.metadata/
 .apt_generated
 .classpath
 .factorypath
@@ -18,7 +19,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -35,3 +36,12 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Local configuration ###
+src/main/resources/application-local.properties
+.env
+*.env
+
+### OS ###
+.DS_Store
+Thumbs.db

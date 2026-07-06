@@ -37,21 +37,21 @@ public class UsersServiceImpl implements UsersService {
     // 아이디 중복확인
     @Override
     public boolean checkLoginId(String loginId) {
-        log.info("** checkLoginId => " + loginId);
+        log.info("** checkLoginId requested");
         return usersRepository.existsByLoginId(loginId);
     }
 
     // 이메일 중복확인
     @Override
     public boolean checkEmail(String email) {
-        log.info("** checkEmail => " + email);
+        log.info("** checkEmail requested");
         return usersRepository.existsByEmail(email);
     }
 
     // 회원가입
     @Override
     public void signup(UsersDTO usersDTO) {
-        log.info("** signup => " + usersDTO.getLoginId());
+        log.info("** signup requested");
 
         usersDTO.setPwd(passwordEncoder.encode(usersDTO.getPwd()));
 
@@ -86,14 +86,13 @@ public class UsersServiceImpl implements UsersService {
     
     @Override
     public String sendOtpCode(UsersDTO usersDTO) {
-    	log.info("** sendOtpCode ID => " + usersDTO.getLoginId());
+	    log.info("** OTP issuance requested");
     	Users users = usersRepository.findByLoginIdAndUserNmAndEmail(
     			usersDTO.getLoginId(),
     			usersDTO.getUserNm(),
     			usersDTO.getEmail()
     			).orElseThrow(()->new RuntimeException("일치하는 회원정보가 없습니다."));
     	String sendOtpCode = String.valueOf((int)(Math.random() * 900000) + 100000);
-    	log.info("** sendOtpCode => " + sendOtpCode);
     	sendOtpCodeStore.put(users.getLoginId(), sendOtpCode);
     	
     	return sendOtpCode;
@@ -103,10 +102,8 @@ public class UsersServiceImpl implements UsersService {
     @Override
     @Transactional
     public void resetPwd(UsersDTO usersDTO) {
-    	log.info("** resetPwdId => " + usersDTO.getLoginId());
-    	String savedCode = sendOtpCodeStore.get(usersDTO.getLoginId());
-    	log.info("** savedCode => " + savedCode);
-    	log.info("** inputOtpCode =>" + usersDTO.getOtpCode());
+	    log.info("** OTP verification requested");
+	    String savedCode = sendOtpCodeStore.get(usersDTO.getLoginId());
     	if(savedCode==null) {
     		throw new RuntimeException("인증번호 발급 내역이 없습니다.");
     	}
@@ -115,7 +112,10 @@ public class UsersServiceImpl implements UsersService {
     	}
     	Users users = usersRepository.findByLoginId(usersDTO.getLoginId())
     			.orElseThrow(() -> new RuntimeException("회원정보가 없습니다."));
-    	users.setPwd(passwordEncoder.encode(usersDTO.getPwd()));
+		if (passwordEncoder.matches(usersDTO.getPwd(), users.getPwd())) {
+			throw new IllegalArgumentException("기존 비밀번호와 똑같은 비밀번호로 변경이 불가합니다");
+		}
+		users.setPwd(passwordEncoder.encode(usersDTO.getPwd()));
     	usersRepository.save(users);
     	sendOtpCodeStore.remove(usersDTO.getLoginId());
     }
@@ -128,8 +128,7 @@ public class UsersServiceImpl implements UsersService {
         String pwd = entity.getPwd();
         String loginId = entity.getLoginId();
 
-        log.info("** login => " + entity.getLoginId());
-        log.info("** login pwd => " + entity.getPwd());
+        log.info("** login requested");
 
         try {
             entity = usersRepository.findByLoginId(loginId)
@@ -138,7 +137,7 @@ public class UsersServiceImpl implements UsersService {
             if (entity != null && passwordEncoder.matches(pwd, entity.getPwd())) {
                 final UsersDTO usersDTO = tokenProvider.generateToken(entity.claimList());
 
-                log.info("로그인 성공 => " + HttpStatus.OK + entity.claimList());
+                log.info("로그인 성공 => " + HttpStatus.OK);
 
                 RefreshToken refreshTokenEntity = RefreshToken.builder()
                     .userNum(entity.getUserNum())
@@ -206,7 +205,7 @@ public class UsersServiceImpl implements UsersService {
                 .accessToken(tokenProvider.generateAccessToken(claimList))
                 .build();
 
-            log.info("New AccessToken 발급, Token = " + usersDTO.getAccessToken());
+            log.info("New AccessToken 발급 성공");
 
             return ResponseEntity.ok(usersDTO);
 

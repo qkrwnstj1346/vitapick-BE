@@ -139,4 +139,11 @@ public class AdminCsCenterController {
             @RequestBody AdminCsInquiryAnswerRequestDTO request) {
         return ResponseEntity.ok(adminCsCenterService.answerInquiry(inqId, request));
     }
+
+    // 관리자 1:1 문의 답변 삭제 API
+    @DeleteMapping("/inquiries/{inqId}/answer")
+    public ResponseEntity<AdminCsInquiryDetailResponseDTO> deleteInquiryAnswer(
+            @PathVariable("inqId") Long inqId) {
+        return ResponseEntity.ok(adminCsCenterService.deleteInquiryAnswer(inqId));
+    }
 }

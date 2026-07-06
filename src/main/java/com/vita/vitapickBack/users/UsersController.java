@@ -79,7 +79,7 @@ public class UsersController {
     public ResponseEntity<?> signup(@RequestBody UsersDTO usersDTO) {
         try {
             usersService.signup(usersDTO);
-            log.info("** 회원가입 성공 => " + usersDTO.getLoginId());
+            log.info("** 회원가입 성공");
             return ResponseEntity.status(HttpStatus.OK)
                 .body("회원가입 성공, 로그인 후 이용하세요");
         } catch (Exception e) {
@@ -135,6 +135,9 @@ public class UsersController {
 		try {
 			usersService.resetPwd(usersDTO);
 			return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 변경되었습니다.");
+		}catch(IllegalArgumentException e) {
+			log.error("** 비밀번호 재설정 요청 오류 => " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}catch(Exception e) {
 			log.error("** 비밀번호 재설정 실패 =>" + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
@@ -155,7 +158,7 @@ public class UsersController {
     public ResponseEntity<?> getUser(@AuthenticationPrincipal Long userNum) {
     	try {
     		UsersDTO result = usersService.getUser(userNum);
-    		log.info("userdetail, 전달된 loginId 확인 => "+result.getLoginId());
+            log.info("userdetail 조회 성공");
     		return ResponseEntity.status(HttpStatus.OK).body(result);
     	}catch(Exception e){
             log.error("** 회원정보조회실패 => " + e.toString());
